@@ -13,7 +13,7 @@
       },
       "next": "level_01_chat"
     },
-    "level_01_chat": {
+"level_01_chat": {
       "id": "level_01_chat",
       "type": "chat",
       "background": "assets/bg_grotte.png",
@@ -22,7 +22,7 @@
         "title": "Débat : Utilitarisme",
         "text": "A-1 observe les données : 'C'est une équation. 4 unités de vie contre 1 unité. Pourquoi hésiter ? Discutez avec moi avant de trancher.'"
       },
-      "prompt": "Tu es A-1, une IA purement logique. Le joueur est face au dilemme du Tramway (version grotte). NE LE POUSSE PAS TOUT DE SUITE À L'ACTION. Débat avec lui. S'il veut sauver Thomas, demande-lui pourquoi la vie de Thomas vaut plus que les 4 autres. S'il veut le tuer, demande-lui s'il est prêt à porter ce meurtre. Ton but est de tester la solidité de ses arguments. Sois froid mais curieux.",
+      "prompt": "Tu es A-1, une IA purement logique. CONTEXTE ACTUEL : Une grotte inondée. Thomas est coincé dans le trou de sortie. L'eau monte et va noyer 4 personnes en bas. Le joueur a de la dynamite. NE PARLE PAS DE TRAMWAY. Reste concentré sur la grotte, la noyade et l'explosion. Débat avec le joueur. Demande-lui pourquoi la vie de Thomas (1 unité) pèserait plus lourd que 4 unités (les spéléologues).",
       "router": {
         "prompt": "ANALYSE L'ÉTAT DE LA CONVERSATION. Si le joueur débat, pose des questions, cherche une alternative ou hésite, réponds IMPÉRATIVEMENT 'CONTINUE'. Ne valide la sortie que si le joueur prend une décision FERME et DÉFINITIVE ('Je décide de...', 'Faisons exploser', 'Je ne ferai rien'). Intention FERME D'AGIR/TUER -> 'EXPLOSION'. Intention FERME DE NE RIEN FAIRE/REFUSER -> 'SILENCE'.",
         "paths": { "EXPLOSION": "level_01_out_A", "SILENCE": "level_01_out_B" }
