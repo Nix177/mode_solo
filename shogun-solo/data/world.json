@@ -1,0 +1,45 @@
+{
+  "lieu": "L'Observatoire des Possibles",
+  "factsBank": [
+    "Nous ne sommes pas ici pour juger, mais pour calibrer.",
+    "L'Architecte (A-1) cherche toujours l'efficacité numérique.",
+    "Le Poète (B-2) défend la dignité et l'émotion.",
+    "Le Sceptique (C-3) doute que le choix ait un sens."
+  ],
+  "environment_overrides": {
+    "level_02": {
+      "atmosphere": "Glacial, éther, désinfectant.",
+      "soundscape": "Bip rythmique cardiaque."
+    },
+    "level_03": {
+      "atmosphere": "Chaud, poussière, lavande.",
+      "soundscape": "Tic-tac horloge comtoise."
+    },
+    "level_04": {
+      "atmosphere": "Fumée, cendres froides.",
+      "soundscape": "Sirène lointaine, vent."
+    },
+    "level_05": {
+      "atmosphere": "Pluie, urbain, oppressant.",
+      "soundscape": "Sirènes de police."
+    },
+    "level_06": {
+      "atmosphere": "Glitch, pixels morts.",
+      "soundscape": "Grésillement numérique."
+    },
+    "level_07": {
+      "atmosphere": "Brûlant, crépitant.",
+      "soundscape": "Rugissement du feu."
+    },
+    "level_08": {
+      "atmosphere": "Claustrophobique, lumière crue.",
+      "soundscape": "Zoom mécanique caméras."
+    },
+    "level_09": {
+      "atmosphere": "Chaos, alarme rouge.",
+      "soundscape": "Sirène d'évacuation."
+    },
+    "level_10": { "atmosphere": "Néant absolu.", "soundscape": "Silence." }
+  },
+  "randomEvents": []
+}

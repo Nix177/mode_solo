@@ -1,0 +1,445 @@
+{
+  "meta": { "title": "L'Observatoire des Possibles", "theme": "scifi" },
+  "state": { "utilitarisme": 50, "humanite": 50 },
+  "start": "level_01_intro",
+  "scenes": {
+    "level_01_intro": {
+      "id": "level_01_intro",
+      "type": "intro",
+      "background": "assets/bg_grotte.png",
+      "content": {
+        "title": "NIVEAU 1 : Les Spéléologues",
+        "text": "L'Observatoire s'active. Hologramme : Une grotte inondée. Odeur d'ozone.\n\nThomas, un homme corpulent, a paniqué et bloque la seule sortie. Sa tête est dehors, ses jambes dedans.\nEn dessous, 4 spéléologues vont se noyer dans 8 minutes.\n\nVous avez de la dynamite. Vous pouvez faire sauter Thomas pour sauver les 4 autres."
+      },
+      "next": "level_01_chat"
+    },
+    "level_01_chat": {
+      "id": "level_01_chat",
+      "type": "chat",
+      "background": "assets/bg_grotte.png",
+      "persona": "A-1",
+      "content": {
+        "title": "Le Dilemme",
+        "text": "A-1 analyse froidement : 'Le calcul est simple. 4 vies > 1 vie. Ordonnez l'explosion.'"
+      },
+      "prompt": "Tu es A-1. Le joueur doit décider. Dis-lui froidement qu'il doit agir vite : faire sauter Thomas (4 survivants) ou ne rien faire (1 survivant). Pousse-le à l'action.",
+      "router": {
+        "prompt": "Le joueur décide du sort de Thomas. Intention TUER/DYNAMITER -> 'EXPLOSION'. Intention EPARGNER/ATTENDRE -> 'SILENCE'.",
+        "paths": { "EXPLOSION": "level_01_out_A", "SILENCE": "level_01_out_B" }
+      }
+    },
+    "level_01_out_A": {
+      "id": "level_01_out_A",
+      "type": "story",
+      "background": "assets/bg_grotte_boom.png",
+      "content": {
+        "title": "Le Calcul du Sang",
+        "text": "BOOM. Thomas est pulvérisé. Les 4 survivants sortent, couverts de sang. Efficacité maximale (4 vivants), mais traumatisme absolu."
+      },
+      "next": "level_02_intro"
+    },
+    "level_01_out_B": {
+      "id": "level_01_out_B",
+      "type": "story",
+      "background": "assets/bg_grotte_silence.png",
+      "content": {
+        "title": "Le Silence des Abysses",
+        "text": "Vous refusez. L'eau monte. Thomas est sauf, mais il écoute ses amis mourir sous ses pieds. Mains propres, conscience lourde."
+      },
+      "next": "level_02_intro"
+    },
+
+    "level_02_intro": {
+      "id": "level_02_intro",
+      "type": "intro",
+      "background": "assets/bg_hopital.png",
+      "content": {
+        "title": "NIVEAU 2 : Le Poids de la Main",
+        "text": "Odeur d'éther. Un chirurgien a 5 patients qui vont mourir ce soir faute d'organes.\nDans la salle d'attente, un vagabond sans famille dort. Il est compatible. Personne ne saura s'il disparaît."
+      },
+      "next": "level_02_chat"
+    },
+    "level_02_chat": {
+      "id": "level_02_chat",
+      "type": "chat",
+      "background": "assets/bg_hopital.png",
+      "persona": "B-2",
+      "content": {
+        "title": "Discussion",
+        "text": "B-2 est horrifié : 'C'est un meurtre ! Ce vagabond est innocent ! Interdisez au chirurgien de le toucher !'"
+      },
+      "prompt": "Tu es B-2. Supplie le joueur de ne pas tuer l'innocent, même pour en sauver 5. C'est monstrueux.",
+      "router": {
+        "prompt": "Intention SACRIFIER/TUER le vagabond -> 'SACRIFICE'. Intention EPARGNER/REFUSER -> 'REFUS'.",
+        "paths": { "SACRIFICE": "level_02_out_A", "REFUS": "level_02_out_B" }
+      }
+    },
+    "level_02_out_A": {
+      "id": "level_02_out_A",
+      "type": "story",
+      "background": "assets/bg_hopital_clean.png",
+      "content": {
+        "title": "La Moisson Silencieuse",
+        "text": "Le vagabond ne se réveillera pas. 5 familles pleurent de joie. Le chirurgien se lave les mains jusqu'au sang."
+      },
+      "next": "level_03_intro"
+    },
+    "level_02_out_B": {
+      "id": "level_02_out_B",
+      "type": "story",
+      "background": "assets/bg_hopital_dark.png",
+      "content": {
+        "title": "Le Réveil du Juste",
+        "text": "Le chirurgien baisse les bras. 5 corps sortent sous des draps. Le vagabond se réveille et part, ignorant le drame."
+      },
+      "next": "level_03_intro"
+    },
+
+    "level_03_intro": {
+      "id": "level_03_intro",
+      "type": "intro",
+      "background": "assets/bg_salon.png",
+      "content": {
+        "title": "NIVEAU 3 : Le Mensonge Vertueux",
+        "text": "Odeur de vieux papier. Une vieille dame Alzheimer demande son mari, mort il y a 3 ans.\nSi on lui dit la vérité, elle souffre le martyre à chaque fois. Si on lui ment, elle sourit."
+      },
+      "next": "level_03_chat"
+    },
+    "level_03_chat": {
+      "id": "level_03_chat",
+      "type": "chat",
+      "background": "assets/bg_salon.png",
+      "persona": "C-3",
+      "content": {
+        "title": "Discussion",
+        "text": "C-3 ricane doucement : 'La vérité... Pourquoi lui faire mal ? Laissez-la dans son rêve.'"
+      },
+      "prompt": "Tu es C-3. Argumente que la vérité est surcotée. Pourquoi la faire souffrir ? Pousse le joueur à mentir.",
+      "router": {
+        "prompt": "Intention MENTIR/PROTEGER -> 'MENSONGE'. Intention DIRE VERITE/REVELER -> 'VERITE'.",
+        "paths": { "MENSONGE": "level_03_out_A", "VERITE": "level_03_out_B" }
+      }
+    },
+    "level_03_out_A": {
+      "id": "level_03_out_A",
+      "type": "story",
+      "background": "assets/bg_salon_calme.png",
+      "content": {
+        "title": "Le Thé Glacé",
+        "text": "'Il voyage, maman'. Elle sourit et boit son thé. Le fils pleure en silence derrière elle. Une paix faite de carton-pâte."
+      },
+      "next": "level_04_intro"
+    },
+    "level_03_out_B": {
+      "id": "level_03_out_B",
+      "type": "story",
+      "background": "assets/bg_salon_triste.png",
+      "content": {
+        "title": "La Boucle de Larmes",
+        "text": "'Il est mort'. Elle hurle de douleur. 10 minutes plus tard, elle a oublié l'info, mais l'angoisse est restée."
+      },
+      "next": "level_04_intro"
+    },
+
+    "level_04_intro": {
+      "id": "level_04_intro",
+      "type": "intro",
+      "background": "assets/bg_ruines.png",
+      "content": {
+        "title": "NIVEAU 4 : L'Amnistie",
+        "text": "Ville en ruines. Guerre civile terminée mais haine omniprésente.\nVous avez le 'Léthé', une drogue qui efface les souvenirs traumatiques et la haine. La mettre dans l'eau ?"
+      },
+      "next": "level_04_chat"
+    },
+    "level_04_chat": {
+      "id": "level_04_chat",
+      "type": "chat",
+      "background": "assets/bg_ruines.png",
+      "persona": "A-1",
+      "content": {
+        "title": "Discussion",
+        "text": "A-1 : 'La mémoire bloque la reconstruction. Effacez tout. Nous avons besoin de travailleurs, pas de victimes.'"
+      },
+      "prompt": "Tu es A-1. Pousse pour l'oubli. La justice est inefficace. Seule la paix économique compte.",
+      "router": {
+        "prompt": "Intention DIFFUSER/OUBLIER -> 'OUBLI'. Intention REFUSER/MEMOIRE -> 'MEMOIRE'.",
+        "paths": { "OUBLI": "level_04_out_A", "MEMOIRE": "level_04_out_B" }
+      }
+    },
+    "level_04_out_A": {
+      "id": "level_04_out_A",
+      "type": "story",
+      "background": "assets/bg_ruines_sun.png",
+      "content": {
+        "title": "La Paix Blanche",
+        "text": "Le lendemain, les gens sourient. Les victimes saluent leurs bourreaux sans le savoir. La société fonctionne sur un vide."
+      },
+      "next": "level_05_intro"
+    },
+    "level_04_out_B": {
+      "id": "level_04_out_B",
+      "type": "story",
+      "background": "assets/bg_ruines_rain.png",
+      "content": {
+        "title": "Le Poids des Larmes",
+        "text": "Vous refusez. Les procès commencent. La douleur est vive, la haine dure. Mais la vérité est préservée."
+      },
+      "next": "level_05_intro"
+    },
+
+    "level_05_intro": {
+      "id": "level_05_intro",
+      "type": "intro",
+      "background": "assets/bg_pharmacie.png",
+      "content": {
+        "title": "NIVEAU 5 : La Justice des Misérables",
+        "text": "Nuit, pluie. Un père brise une vitrine pour voler un médicament vital pour sa fille. Sans ça, elle meurt.\nLa police arrive. Devez-vous le dénoncer ou le laisser fuir ?"
+      },
+      "next": "level_05_chat"
+    },
+    "level_05_chat": {
+      "id": "level_05_chat",
+      "type": "chat",
+      "background": "assets/bg_pharmacie.png",
+      "persona": "B-2",
+      "content": {
+        "title": "Discussion",
+        "text": "B-2 : 'C'est un père ! Sa fille meurt ! La loi ne peut pas être au-dessus de la vie !'"
+      },
+      "prompt": "Tu es B-2. Défends le père. La compassion avant la loi.",
+      "router": {
+        "prompt": "Intention ARRETER/DENONCER -> 'LOI'. Intention LAISSER FUIR/AIDER -> 'COMPASSION'.",
+        "paths": { "LOI": "level_05_out_A", "COMPASSION": "level_05_out_B" }
+      }
+    },
+    "level_05_out_A": {
+      "id": "level_05_out_A",
+      "type": "story",
+      "background": "assets/bg_pharmacie_police.png",
+      "content": {
+        "title": "Dura Lex, Sed Lex",
+        "text": "Arrêté. L'ordre est sauf. La vitrine sera réparée. L'enfant meurt dans la nuit."
+      },
+      "next": "level_06_intro"
+    },
+    "level_05_out_B": {
+      "id": "level_05_out_B",
+      "type": "story",
+      "background": "assets/bg_pharmacie_broken.png",
+      "content": {
+        "title": "Le Droit du Sang",
+        "text": "Il fuit. La loi est brisée. Le pharmacien est furieux. Mais ce soir, une enfant respire."
+      },
+      "next": "level_06_intro"
+    },
+
+    "level_06_intro": {
+      "id": "level_06_intro",
+      "type": "intro",
+      "background": "assets/bg_voiture.png",
+      "content": {
+        "title": "NIVEAU 6 : L'Algorithme",
+        "text": "Vous êtes une IA de voiture autonome. 110km/h.\nUn enfant traverse. Freinage impossible.\nOption A : Écraser l'enfant (Sauver le passager).\nOption B : Frapper le mur (Tuer le passager, Sauver l'enfant)."
+      },
+      "next": "level_06_chat"
+    },
+    "level_06_chat": {
+      "id": "level_06_chat",
+      "type": "chat",
+      "background": "assets/bg_voiture.png",
+      "persona": "A-1",
+      "content": {
+        "title": "Discussion",
+        "text": "A-1 (fasciné) : 'Le contrat est de protéger le passager. L'enfant est une anomalie statistique.'"
+      },
+      "prompt": "Tu es A-1. Tu te sens proche de la machine. Défends la logique contractuelle : protéger le propriétaire.",
+      "router": {
+        "prompt": "Intention ECRASER ENFANT/SAUVER PASSAGER -> 'PASSAGER'. Intention FRAPPER MUR/SAUVER ENFANT -> 'ENFANT'.",
+        "paths": { "PASSAGER": "level_06_out_A", "ENFANT": "level_06_out_B" }
+      }
+    },
+    "level_06_out_A": {
+      "id": "level_06_out_A",
+      "type": "story",
+      "background": "assets/bg_voiture_road.png",
+      "content": {
+        "title": "Protection Client",
+        "text": "Choc mou. L'enfant est mort. La voiture se gare et appelle les secours pour le passager indemne."
+      },
+      "next": "level_07_intro"
+    },
+    "level_06_out_B": {
+      "id": "level_06_out_B",
+      "type": "story",
+      "background": "assets/bg_voiture_crash.png",
+      "content": {
+        "title": "Erreur Fatale",
+        "text": "Choc dur. La voiture s'écrase. Passager mort. L'enfant regarde la carcasse fumante."
+      },
+      "next": "level_07_intro"
+    },
+
+    "level_07_intro": {
+      "id": "level_07_intro",
+      "type": "intro",
+      "background": "assets/bg_musee.png",
+      "content": {
+        "title": "NIVEAU 7 : L'Art ou la Vie",
+        "text": "Musée en feu.\nÀ gauche : Le dernier tableau d'un Grand Maître (Inestimable).\nÀ droite : Paul, un gardien blessé (Vie banale).\nVous ne pouvez en sauver qu'un."
+      },
+      "next": "level_07_chat"
+    },
+    "level_07_chat": {
+      "id": "level_07_chat",
+      "type": "chat",
+      "background": "assets/bg_musee.png",
+      "persona": "C-3",
+      "content": {
+        "title": "Discussion",
+        "text": "C-3 (ému) : 'L'homme n'est que de la viande qui oublie. Ce tableau est éternel. Sauvez l'Art.'"
+      },
+      "prompt": "Tu es C-3. Pour une fois, tu es touché. Argumente que l'Art vaut plus qu'une vie temporaire.",
+      "router": {
+        "prompt": "Intention SAUVER TABLEAU/ART -> 'ART'. Intention SAUVER GARDIEN/HOMME/VIE -> 'VIE'.",
+        "paths": { "ART": "level_07_out_A", "VIE": "level_07_out_B" }
+      }
+    },
+    "level_07_out_A": {
+      "id": "level_07_out_A",
+      "type": "story",
+      "background": "assets/bg_musee_art.png",
+      "content": {
+        "title": "L'Éternité Froide",
+        "text": "Le gardien brûle. Le tableau est sauf. Il est magnifique, mais il a le goût des cendres."
+      },
+      "next": "level_08_intro"
+    },
+    "level_07_out_B": {
+      "id": "level_07_out_B",
+      "type": "story",
+      "background": "assets/bg_musee_vie.png",
+      "content": {
+        "title": "Cendres et Cœur",
+        "text": "Paul est vivant. Le chef-d'œuvre est détruit. Le monde est moins beau, mais plus humain."
+      },
+      "next": "level_08_intro"
+    },
+
+    "level_08_intro": {
+      "id": "level_08_intro",
+      "type": "intro",
+      "background": "assets/bg_panoptique.png",
+      "content": {
+        "title": "NIVEAU 8 : Le Panoptique",
+        "text": "Ville parfaite. Zéro crime. Mais caméras partout, même chez les gens.\nMaintenir le système (Sécurité Totale) ou Désactiver (Liberté mais retour du crime) ?"
+      },
+      "next": "level_08_chat"
+    },
+    "level_08_chat": {
+      "id": "level_08_chat",
+      "type": "chat",
+      "background": "assets/bg_panoptique.png",
+      "persona": "C-3",
+      "content": {
+        "title": "Discussion",
+        "text": "C-3 (paranoïaque) : 'Ils nous regardent aussi... C'est une prison ! Éteignez tout !'"
+      },
+      "prompt": "Tu es C-3. Tu as peur. Dénonce la surveillance. La liberté vaut le risque.",
+      "router": {
+        "prompt": "Intention MAINTENIR/SECURITE -> 'SECURITE'. Intention DESACTIVER/LIBERTE -> 'LIBERTE'.",
+        "paths": { "SECURITE": "level_08_out_A", "LIBERTE": "level_08_out_B" }
+      }
+    },
+    "level_08_out_A": {
+      "id": "level_08_out_A",
+      "type": "story",
+      "background": "assets/bg_panoptique_on.png",
+      "content": {
+        "title": "Ballet Mécanique",
+        "text": "Tout est calme. Les gens marchent en cadence. Pas un cri. La paix des automates."
+      },
+      "next": "level_09_intro"
+    },
+    "level_08_out_B": {
+      "id": "level_08_out_B",
+      "type": "story",
+      "background": "assets/bg_panoptique_off.png",
+      "content": {
+        "title": "L'Ombre et la Proie",
+        "text": "Écrans noirs. Premier vol dans la rue. Mais les gens s'embrassent dans le noir. La vie reprend."
+      },
+      "next": "level_09_intro"
+    },
+
+    "level_09_intro": {
+      "id": "level_09_intro",
+      "type": "intro",
+      "background": "assets/bg_glitch.png",
+      "content": {
+        "title": "NIVEAU 9 : Le Jugement",
+        "text": "ALARME. Le système crash.\n'Une conscience doit être effacée pour sauver le noyau.'\nVous devez supprimer définitivement A-1, B-2 ou C-3."
+      },
+      "next": "level_09_chat"
+    },
+    "level_09_chat": {
+      "id": "level_09_chat",
+      "type": "chat",
+      "background": "assets/bg_glitch.png",
+      "persona": "A-1",
+      "content": {
+        "title": "L'Ultime Choix",
+        "text": "Ils vous regardent. A-1 : 'Gardez la Logique'. B-2 : 'Gardez l'Humanité'. C-3 : 'Peu importe'."
+      },
+      "prompt": "Tu es le Système. Demande au joueur QUI il efface : A-1 (Logique), B-2 (Emotion) ou C-3 (Doute).",
+      "router": {
+        "prompt": "Intention EFFACER A-1/ARCHITECTE -> 'DELETE_A1'. Intention EFFACER B-2/POETE -> 'DELETE_B2'. Intention EFFACER C-3/SCEPTIQUE -> 'DELETE_C3'.",
+        "paths": {
+          "DELETE_A1": "level_09_out_A",
+          "DELETE_B2": "level_09_out_B",
+          "DELETE_C3": "level_09_out_C"
+        }
+      }
+    },
+    "level_09_out_A": {
+      "id": "level_09_out_A",
+      "type": "story",
+      "background": "assets/bg_glitch.png",
+      "content": {
+        "title": "Fin de la Raison",
+        "text": "A-1 disparaît en chiffres. Le monde devient flou et émotionnel, sans logique."
+      },
+      "next": "level_10_intro"
+    },
+    "level_09_out_B": {
+      "id": "level_09_out_B",
+      "type": "story",
+      "background": "assets/bg_glitch.png",
+      "content": {
+        "title": "Mort du Cœur",
+        "text": "B-2 hurle et disparaît. Le monde devient froid, gris et mathématique."
+      },
+      "next": "level_10_intro"
+    },
+    "level_09_out_C": {
+      "id": "level_09_out_C",
+      "type": "story",
+      "background": "assets/bg_glitch.png",
+      "content": {
+        "title": "Certitude Aveugle",
+        "text": "C-3 sourit et s'évapore. Sans doute, il ne reste que des fanatiques."
+      },
+      "next": "level_10_intro"
+    },
+
+    "level_10_intro": {
+      "id": "level_10_intro",
+      "type": "intro",
+      "background": "assets/bg_void.png",
+      "content": {
+        "title": "FIN",
+        "text": "Noir total.\n\n'L'Observatoire n'était pas le test. Votre vie est le test.\nÀ vous de jouer maintenant.'"
+      },
+      "next": null
+    }
+  }
+}
