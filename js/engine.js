@@ -47,8 +47,7 @@ async function init() {
         Object.keys(GAME_DATA.personas).forEach(id => CHAT_SESSIONS[id] = []);
         renderRoster();
 
-        // Start the game directly or show mode selection if needed
-        // For solo mode, we might want to skip straight to start
+        // Start the game directly
         loadScene(GAME_DATA.scenario.start);
 
     } catch (e) {
@@ -74,21 +73,19 @@ function loadScene(sceneId) {
     }
     window._isUndoing = false;
 
-    // --- RANDOM EVENT LOGIC (Optional for Extended Mode) ---
+    // --- RANDOM EVENT LOGIC ---
     if (GAME_MODE === 'extended' && scene.allowEvents && !sceneId.startsWith('evt_') && Math.random() > 0.6) {
         const events = GAME_DATA.world.randomEvents;
         if (events && events.length > 0) {
-             // ... (Logic for random events remains the same if needed)
+             // ...
         }
     }
 
     CURRENT_SCENE = scene;
 
-    // Set current chat target based on scene persona
+    // Set current chat target
     if (scene.persona) {
         CURRENT_CHAT_TARGET = scene.persona;
-        // Reset chat history for this scene if desired for a fresh start
-        // CHAT_SESSIONS[scene.persona] = []; 
     } else {
         CURRENT_CHAT_TARGET = null;
     }
@@ -98,21 +95,12 @@ function loadScene(sceneId) {
 
     // Initial Bot Message
     if (scene.type === 'chat' && scene.persona && scene.content && scene.content.text) {
-         // Display narrative intro text as a bot message to kickstart chat
-         // This is a design choice: treat content.text as the bot's opening line
-         // OR keep content.text as narrative slide and trigger bot via prompt
-         
-         // For the solo mode, let's treat content.text as the intro narrative 
-         // and then trigger the bot if there is a prompt but no history yet.
          if (CHAT_SESSIONS[scene.persona].length === 0 && scene.prompt) {
-             // We can use the prompt to generate an opening line dynamically
-             // Or assume content.text was the opening. 
-             // Let's stick to generating a fresh opening based on the prompt.
             callBot(scene.prompt, scene.persona, true);
         }
     }
 }
-window.loadScene = loadScene; // <--- FIX: Rend la fonction accessible au HTML
+window.loadScene = loadScene; 
 
 // 3. DISPLAY
 function updateScreen(scene) {
@@ -120,7 +108,7 @@ function updateScreen(scene) {
 
     // Background handling
     if (scene.video) {
-         // ... (Video background logic)
+         // ... 
     } else {
         if (videoContainer) videoContainer.remove();
         if (scene.background) document.body.style.backgroundImage = `url('${scene.background}')`;
@@ -128,7 +116,7 @@ function updateScreen(scene) {
 
     let html = '';
 
-    // Narrative Content Slide
+    // Narrative Content Slide (INTRO / STORY)
     if (scene.content && (scene.type === 'intro' || scene.type === 'story')) {
         html += `
             <div class="slide-content">
@@ -137,27 +125,45 @@ function updateScreen(scene) {
                  ${scene.next ? `<button onclick="loadScene('${scene.next}')" style="margin-top:20px; padding:10px 20px; font-size:1.2em; cursor:pointer; background:#28a745; color:white; border:none; border-radius:5px;">CONTINUER</button>` : ''}
             </div>
         `;
-        // Hide chat input for narrative slides
         if(document.getElementById('teacher-ui')) document.getElementById('teacher-ui').style.display = 'none'; 
     }
 
     // Chat Scene
     if (scene.type === 'chat' || (scene.type !== 'intro' && scene.type !== 'story' && scene.persona)) {
-         if(document.getElementById('teacher-ui')) document.getElementById('teacher-ui').style.display = 'flex';
+        if(document.getElementById('teacher-ui')) document.getElementById('teacher-ui').style.display = 'flex';
         
         const p = GAME_DATA.personas[scene.persona];
         const avatarUrl = (p && p.avatar) ? p.avatar : 'assets/avatar_esprit.png';
         const name = p ? p.displayName : 'Inconnu';
 
-        // Narrative context above chat
-        if(scene.content) {
-             html += `
-            <div class="slide-content" style="margin-bottom: 20px; max-height: 30vh;">
-                <h1>${scene.content.title}</h1>
-                <p>${scene.content.text}</p>
+        // --- GESTION DU CONTEXTE (Récupération de l'intro précédente) ---
+        let contextText = "";
+        
+        // On regarde si la scène précédente était une intro pour récupérer son texte
+        if (SCENE_HISTORY.length > 0) {
+            const lastSceneId = SCENE_HISTORY[SCENE_HISTORY.length - 1];
+            const lastScene = GAME_DATA.scenario.scenes[lastSceneId];
+            // Si la scène d'avant était une intro, on prend son texte
+            if (lastScene && lastScene.type === 'intro' && lastScene.content) {
+                contextText = lastScene.content.text;
+            }
+        }
+
+        // Texte actuel de la scène (ex: "A-1 analyse...")
+        const currentText = (scene.content && scene.content.text) ? scene.content.text : "";
+
+        // Construction de la boîte de contexte affichée au-dessus du chat
+        html += `
+            <div class="slide-content" style="margin-bottom: 20px; max-height: 35vh; overflow-y: auto; text-align: left;">
+                ${contextText ? `
+                    <div style="font-size: 0.95em; color: #bbb; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 15px; line-height: 1.6;">
+                        <strong style="color: #fff; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:5px;">Contexte :</strong> 
+                        ${contextText.replace(/\n/g, '<br>')}
+                    </div>` : ''
+                }
+                ${currentText ? `<p style="color: #fff; font-style: italic; font-weight: 500;">${currentText}</p>` : ''}
             </div>
         `;
-        }
 
         html += `
             <div class="chat-box">
@@ -176,15 +182,10 @@ function updateScreen(scene) {
     }
 }
 
-// 4. TEACHER INTERFACE (Bottom Bar)
+// 4. TEACHER INTERFACE
 function updateTeacherInterface(scene) {
     ui.teacherPanel.innerHTML = '';
     if (ui.teacherNote) ui.teacherNote.innerText = scene.teacherNote || "Narrative Phase.";
-
-    // Only show "Suite" button if it's explicitly a next scene without routing
-    if (scene.next && !scene.router) {
-         // Logic for buttons if needed, mostly handled by router now
-    }
 }
 
 function applyEffects(effects) {
@@ -206,7 +207,7 @@ function renderRoster() {
         div.className = 'roster-btn';
         div.style.backgroundImage = `url('${p.avatar}')`;
         div.onclick = () => openSideChat(p.id);
-        div.innerHTML = `<div class="roster-tooltip">${p.displayName}</div>`; // Changed to displayName
+        div.innerHTML = `<div class="roster-tooltip">${p.displayName}</div>`;
         ui.roster.appendChild(div);
     });
 }
@@ -216,15 +217,6 @@ window.openSideChat = function(personaId) {
     if (!p) return;
 
     CURRENT_CHAT_TARGET = personaId;
-
-    if (ui.modalTitle) {
-        ui.modalTitle.innerHTML = `
-            <div style="display:flex; align-items:center; gap:10px;">
-                <img src="${p.avatar}" style="height:40px; width:40px; border-radius:50%; border:2px solid #ff8800; object-fit:cover;">
-                <span>${p.displayName}</span>
-            </div>`;
-    }
-
     if (ui.modal) ui.modal.style.display = 'flex';
     renderChatHistory(personaId, ui.modalScroll);
 }
@@ -268,12 +260,10 @@ function renderChatHistory(personaId, container) {
 
 // --- 6. MESSAGE MANAGEMENT ---
 
-// --- SOLO ENGINE: ACTION MANAGEMENT ---
-
-window.sendPlayerAction = async function(text) { // Accepts text argument directly
-    // If text not provided (e.g. called from button), get from input
+window.sendPlayerAction = async function(text) { 
+    // Correction ici : Utilisation du bon ID 'player-input' au lieu de 'prof-chat-input'
     if (!text) {
-         const inputEl = document.getElementById('prof-chat-input'); // Using teacher input ID
+         const inputEl = document.getElementById('player-input'); 
          text = inputEl ? inputEl.value.trim() : "";
          if(inputEl) inputEl.value = '';
     }
@@ -297,10 +287,8 @@ window.sendPlayerAction = async function(text) { // Accepts text argument direct
     // 2. CHARACTER RESPONSE (ROLEPLAY)
     const p = GAME_DATA.personas[CURRENT_CHAT_TARGET];
     
-    // Construct system prompt for the character
     let sceneContext = "";
     if (CURRENT_SCENE && CURRENT_SCENE.persona === CURRENT_CHAT_TARGET) {
-         // Pass the router prompt to the character so they know the stakes
         sceneContext = `SITUATION: ${CURRENT_SCENE.prompt}`;
     }
 
@@ -323,21 +311,18 @@ window.sendPlayerAction = async function(text) { // Accepts text argument direct
     }
 };
 
-// Also attach to window.sendUserMessage for compatibility with existing HTML
 window.sendUserMessage = window.sendPlayerAction;
-
 
 // --- AI ROUTER ---
 async function checkAutoRouting(userText, routerConfig) {
     console.log("🕵️ Analyzing destiny...");
 
-    // Call fast AI (GPT-4o-mini) to classify intent
     try {
         const res = await fetch(`${API_BASE}/chat`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                model: "gpt-4o-mini", // Fast model
+                model: "gpt-4o-mini", 
                 messages: [],
                 system: `You are the logic engine of a choose-your-own-adventure game.
                 
@@ -346,21 +331,18 @@ async function checkAutoRouting(userText, routerConfig) {
                 DECISION INSTRUCTIONS:
                 ${routerConfig.prompt}
                 
-                ABSOLUTE RULE: Reply ONLY with one of the defined keywords (e.g., EXPLOSION, SILENCE). 
+                ABSOLUTE RULE: Reply ONLY with one of the defined keywords. 
                 If the action matches nothing decisive, reply "CONTINUE".`
             })
         });
 
         const data = await res.json();
-        const decision = data.reply.trim().replace(/[^A-Z_]/g, ''); // Clean up
+        const decision = data.reply.trim().replace(/[^A-Z_]/g, ''); 
 
         console.log(`🤖 Decision : ${decision}`);
 
-        // If AI returns a keyword that exists in our paths
         if (routerConfig.paths[decision]) {
             const nextSceneId = routerConfig.paths[decision];
-
-            // Wait 3 seconds for player to read bot response, then switch
             setTimeout(() => {
                 console.log(`🚀 Transition to : ${nextSceneId}`);
                 loadScene(nextSceneId);
@@ -398,7 +380,6 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
         });
         const data = await res.json();
 
-        // Remove loader
         if (loadingId) {
             const loader = document.getElementById(loadingId);
             if (loader) loader.remove();
@@ -424,8 +405,6 @@ window.toggleFullScreen = function() {
     if (!document.fullscreenElement) document.documentElement.requestFullscreen();
     else if (document.exitFullscreen) document.exitFullscreen();
 }
-
-// --- SAVE & UNDO MANAGEMENT ---
 
 window.undoLastScene = function() {
     if (SCENE_HISTORY.length === 0) return alert("Cannot undo further.");
