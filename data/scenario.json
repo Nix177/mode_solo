@@ -6,19 +6,19 @@
     "level_1": {
       "id": "level_1",
       "type": "dynamic",
-      "theme": "Terres Sacrées vs Énergie Verte. Un gisement de lithium vital pour la transition écologique se trouve sous un cimetière ancestral.",
+      "theme": "Sacrifice Incertain. Un immense gisement de lithium est découvert sous une forêt sacrée. L'extraire détruira la forêt à coup sûr, mais les experts doutent : ce lithium sera-t-il vraiment utilisé efficacement ou finira-t-il dans des gadgets jetables ?",
       "background": "assets/bg_01.png"
     },
     "level_2": {
       "id": "level_2",
       "type": "dynamic",
-      "theme": "IA Artistique. Une IA crée des chefs-d'œuvre en millisecondes. Faut-il l'interdire pour sauver les artistes humains de la famine ?",
+      "theme": "IA Artistique. Une IA crée des chefs-d'œuvre. Faut-il l'interdire pour sauver les artistes humains, même si l'IA permet à des pauvres d'accéder à l'art gratuitement ?",
       "background": "assets/bg_02.png"
     },
     "level_3": {
       "id": "level_3",
       "type": "dynamic",
-      "theme": "Le Bébé Designer. La technologie permet d'éliminer toutes les maladies génétiques avant la naissance, mais crée une classe de surhommes riches.",
+      "theme": "Le Bébé Designer. La technologie permet d'éliminer les maladies génétiques, mais risque de créer une fracture sociale irréversible entre 'naturels' et 'augmentés'.",
       "background": "assets/bg_03.png"
     },
     "level_4": {
