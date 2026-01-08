@@ -3,7 +3,6 @@ import { API_BASE } from "../assets/config.js";
 // --- GAME STATE ---
 let GAME_DATA = {};
 let CURRENT_SCENE = null;
-let SCENE_HISTORY = [];
 let CHAT_SESSIONS = {};
 let CURRENT_CHAT_TARGET = null;
 let CURRENT_LEVEL_NUMBER = 1;
@@ -19,7 +18,7 @@ const ui = {
 
 // 1. INITIALIZATION
 async function init() {
-    console.log("Starting Generative Engine...");
+    console.log("Starting Philosophical Engine...");
     try {
         const loadFile = async (path) => {
             const res = await fetch(path);
@@ -33,17 +32,12 @@ async function init() {
         ]);
 
         GAME_DATA = { scenario, personas: mapPersonas(personas) };
-        
-        // Init sessions
         Object.keys(GAME_DATA.personas).forEach(id => CHAT_SESSIONS[id] = []);
         renderRoster();
-
-        // Start
         loadScene(GAME_DATA.scenario.start);
 
     } catch (e) {
-        console.error("Critical Error:", e);
-        alert("Erreur de chargement. Vérifiez la console.");
+        console.error("Error:", e);
     }
 }
 
@@ -53,84 +47,68 @@ function mapPersonas(list) {
     return map;
 }
 
-// 2. SCENE ENGINE (MODIFIÉ POUR GÉNÉRATION)
+// 2. SCENE ENGINE
 async function loadScene(sceneId) {
     const scene = GAME_DATA.scenario.scenes[sceneId];
-    if (!scene) {
-        alert("FIN DE L'AVENTURE (ou erreur: scène introuvable)");
-        return;
-    }
+    if (!scene) return alert("FIN DE LA SIMULATION");
 
     CURRENT_SCENE = scene;
-    
-    // Mise à jour visuelle immédiate (Fond d'écran)
     updateBackground(scene.background);
     
-    // Sélection par défaut du Persona "A-1" (Maître du Jeu Principal)
-    // Vous pouvez changer pour un autre si vous voulez varier
+    // On utilise A-1 par défaut pour poser le problème
     const gmPersonaId = "A-1"; 
     CURRENT_CHAT_TARGET = gmPersonaId;
 
-    // Affiche l'interface vide en attendant l'IA
-    renderInterface(scene, "Connexion au Maître du Jeu...", gmPersonaId);
+    renderInterface(scene, "Chargement du dossier...", gmPersonaId);
 
-    // --- MAGIE GÉNÉRATIVE ---
-    // On demande à l'IA de créer le contexte du niveau
+    // --- PROMPT DE GÉNÉRATION DE DILEMME (PAS D'AVENTURE) ---
     const generationPrompt = `
-    TU ES LE MAÎTRE DU JEU.
-    NOUS SOMMES AU NIVEAU ${CURRENT_LEVEL_NUMBER}.
-    THÈME DU NIVEAU : "${scene.theme}".
+    TU ES UN SIMULATEUR DE GESTION ET D'ÉTHIQUE.
+    NIVEAU ${CURRENT_LEVEL_NUMBER}. THÈME : "${scene.theme}".
     
-    TA TÂCHE :
-    1. Décris la scène de manière immersive, dangereuse et visuelle (max 3 phrases).
-    2. Explique clairement le problème immédiat ou le dilemme.
-    3. Termine par une question ouverte : "Que faites-vous ?"
+    TA MISSION :
+    1. Présente la situation comme un dossier politique ou social complexe.
+    2. Expose le conflit : il y a deux "bonnes" raisons qui s'opposent (ex: Progrès vs Tradition, Sécurité vs Liberté).
+    3. Il ne doit PAS y avoir de "bonne" réponse évidente.
+    4. Ne demande pas "Que faites-vous ?" comme dans un RPG d'action.
+    5. Demande plutôt : "Quelle est votre position ?" ou "Comment tranchez-vous ce conflit ?"
     
-    Ne donne pas de choix A/B. C'est un jeu de rôle libre.
+    INTERDIT : Ne parle pas de monstres, d'armes, ou de survie physique immédiate. Parle de conséquences à long terme, de sociologie et de morale.
     `;
 
-    // On efface l'historique de chat pour ce nouveau niveau (nouvelle scène)
     CHAT_SESSIONS[gmPersonaId] = []; 
-    
-    // Appel IA pour générer l'intro
     await callBot(generationPrompt, gmPersonaId, true);
 }
 
-window.loadScene = loadScene; // Pour le debug
+window.loadScene = loadScene; 
 
 // 3. DISPLAY
 function updateBackground(bgUrl) {
-    const container = document.getElementById('game-container');
-    if (bgUrl) {
-        // Fallback si l'image n'existe pas encore
-        const img = new Image();
-        img.src = bgUrl;
-        img.onload = () => document.body.style.backgroundImage = `url('${bgUrl}')`;
-        img.onerror = () => document.body.style.background = "#111"; // Fond noir si pas d'image
-    }
+    const bg = document.getElementById('game-container');
+    // On garde l'image précédente si la nouvelle n'existe pas encore pour éviter le clignotement noir
+    const img = new Image();
+    img.src = bgUrl;
+    img.onload = () => document.body.style.backgroundImage = `url('${bgUrl}')`;
 }
 
 function renderInterface(scene, placeholderText, personaId) {
     const p = GAME_DATA.personas[personaId];
     const avatarUrl = p ? p.avatar : 'assets/avatar_architecte.png';
-    const name = p ? p.displayName : 'Système';
 
     let html = `
         <div class="slide-content" style="margin-bottom: 20px;">
-            <h1 style="font-size:1.5em; color:#888;">NIVEAU ${CURRENT_LEVEL_NUMBER}</h1>
-            <p style="font-style:italic; color:#aaa;">Thème : ${scene.theme}</p>
+            <h1 style="font-size:1.5em; color:#ddd; text-transform:uppercase;">Dossier N°${CURRENT_LEVEL_NUMBER}</h1>
+            <p style="font-style:italic; color:#aaa;">Sujet : ${scene.theme}</p>
         </div>
 
         <div class="chat-box">
-            <div id="chat-scroll" class="chat-messages">
-                </div>
+            <div id="chat-scroll" class="chat-messages"></div>
         </div>
     `;
-    
     ui.screen.innerHTML = html;
 }
 
-// 4. ACTION DU JOUEUR & ROUTER "INTELLIGENT"
+// 4. ACTION JOUEUR & ANALYSE
 window.sendPlayerAction = async function(text) {
     if (!text) {
          const inputEl = document.getElementById('player-input'); 
@@ -139,49 +117,44 @@ window.sendPlayerAction = async function(text) {
     }
     if (!text || !CURRENT_CHAT_TARGET) return;
 
-    // Affiche le message du joueur
     addMessageToUI('user', text, null);
     
-    // Ajoute à l'historique
     if (!CHAT_SESSIONS[CURRENT_CHAT_TARGET]) CHAT_SESSIONS[CURRENT_CHAT_TARGET] = [];
     CHAT_SESSIONS[CURRENT_CHAT_TARGET].push({ role: "user", content: text });
 
-    // --- ANALYSE DE LA RÉUSSITE (ROUTER INVISIBLE) ---
-    // On demande à l'IA si le joueur a résolu le niveau AVANT de répondre
-    const routerCheck = await checkLevelCompletion(text, CURRENT_SCENE.theme);
+    // --- ANALYSE : EST-CE UNE DÉCISION TRANCHÉE ? ---
+    const routerCheck = await checkDecisionMade(text, CURRENT_SCENE.theme);
     
-    if (routerCheck.status === "SOLVED") {
-        // Niveau réussi !
-        addMessageToUI('bot', `[SYSTÈME] : Situation résolue. Transition... (${routerCheck.reason})`, CURRENT_CHAT_TARGET);
+    if (routerCheck.status === "DECIDED") {
+        addMessageToUI('bot', `[SIMULATION] : Choix enregistré. Conséquence : ${routerCheck.reason}`, CURRENT_CHAT_TARGET);
         setTimeout(() => {
             CURRENT_LEVEL_NUMBER++;
             const nextLevelId = `level_${CURRENT_LEVEL_NUMBER}`;
             loadScene(nextLevelId);
-        }, 3000);
+        }, 4000);
         return;
     } 
     
-    // Si pas résolu, on continue le RP
-    const gmPrompt = `
-    Tu es le Maître du Jeu (Style: ${GAME_DATA.personas[CURRENT_CHAT_TARGET].bio}).
+    // Si débat en cours
+    const debatePrompt = `
     Le joueur a dit : "${text}".
-    La situation est : "${CURRENT_SCENE.theme}".
+    Sujet : "${CURRENT_SCENE.theme}".
+    Ton Rôle : ${GAME_DATA.personas[CURRENT_CHAT_TARGET].bio}
     
-    Réagis à son action. 
-    - Si c'est stupide, fais-le échouer ou souffrir.
-    - Si c'est malin, décris le progrès.
-    - Relance toujours avec une conséquence ou un nouveau danger.
-    - Sois bref (max 2 phrases).
+    Réponds sur le fond.
+    - Si l'argument du joueur est simpliste, montre la complexité (effets pervers, coût humain).
+    - Si l'argument est solide, challenge-le sur une autre valeur (ex: "C'est efficace, mais est-ce juste ?").
+    - Reste un conseiller. Ne prends pas la décision à sa place.
     `;
 
-    await callBot(gmPrompt, CURRENT_CHAT_TARGET);
+    await callBot(debatePrompt, CURRENT_CHAT_TARGET);
 };
 window.sendUserMessage = window.sendPlayerAction;
 
 // --- FONCTIONS IA ---
 
-async function checkLevelCompletion(lastUserAction, theme) {
-    // Cette fonction demande à l'IA si l'action du joueur conclut logiquement la scène
+async function checkDecisionMade(lastUserAction, theme) {
+    // Vérifie si le joueur a tranché le débat ou s'il pose encore des questions
     try {
         const res = await fetch(`${API_BASE}/chat`, {
             method: "POST",
@@ -190,32 +163,28 @@ async function checkLevelCompletion(lastUserAction, theme) {
                 model: "gpt-4o-mini",
                 messages: [],
                 system: `
-                You are a Logic Engine judging a Roleplay game.
-                The Scene Theme is: "${theme}".
-                The Player just said: "${lastUserAction}".
+                ANALYZE PLAYER INPUT in a Debate Context.
+                Theme: "${theme}".
+                Input: "${lastUserAction}".
                 
-                Did the player successfully solve the problem, escape, or decisively change the situation to a stable state?
-                or did they die/fail irreversibly?
+                Did the player make a FINAL DECISION or TAKE A CLEAR STANCE to resolve the dilemma?
+                OR are they still arguing, asking questions, or deliberating?
                 
                 Reply ONLY JSON:
-                { "status": "SOLVED" | "CONTINUE", "reason": "short explanation" }
+                { "status": "DECIDED" | "DEBATING", "reason": "1 sentence consequence prediction" }
                 `
             })
         });
         const data = await res.json();
-        // Nettoyage sommaire du JSON retourné (parfois l'IA ajoute des backticks)
         let cleanJson = data.reply.replace(/```json/g, '').replace(/```/g, '').trim();
         return JSON.parse(cleanJson);
     } catch (e) {
-        console.error("Router Error", e);
-        return { status: "CONTINUE" }; // En cas d'erreur, on continue
+        return { status: "DEBATING" };
     }
 }
 
 async function callBot(systemPrompt, targetId, isIntro = false) {
     const container = document.getElementById('chat-scroll');
-    
-    // Indicateur de chargement
     const loadingId = 'loading-' + Date.now();
     if (container) {
         container.innerHTML += buildMsgHTML('bot', '...', targetId).replace('msg-bubble', 'msg-bubble loading').replace('class="msg-row bot"', `id="${loadingId}" class="msg-row bot"`);
@@ -224,7 +193,6 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
 
     try {
         const history = CHAT_SESSIONS[targetId] || [];
-        // Pour l'intro, on n'envoie pas d'historique pour ne pas polluer
         const messagesToSend = isIntro ? [] : history;
 
         const res = await fetch(`${API_BASE}/chat`, {
@@ -238,14 +206,12 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
         });
         const data = await res.json();
         
-        // Retirer loader
         const loader = document.getElementById(loadingId);
         if(loader) loader.remove();
 
         const reply = data.reply;
         addMessageToUI('bot', reply, targetId);
         
-        // Sauvegarde mémoire
         if (!CHAT_SESSIONS[targetId]) CHAT_SESSIONS[targetId] = [];
         CHAT_SESSIONS[targetId].push({ role: "assistant", content: reply });
 
@@ -254,7 +220,6 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
     }
 }
 
-// --- UI UTILS ---
 function addMessageToUI(role, text, personaId) {
     const container = document.getElementById('chat-scroll');
     if (!container) return;
@@ -277,11 +242,28 @@ function buildMsgHTML(role, text, personaId) {
     </div>`;
 }
 
-// Roster (Optionnel maintenant)
 function renderRoster() {
     if (!ui.roster) return;
     ui.roster.innerHTML = '';
-    // On pourrait afficher les PV ou l'état ici
+    Object.values(GAME_DATA.personas).forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'roster-btn';
+        div.style.backgroundImage = `url('${p.avatar}')`;
+        div.onclick = () => openSideChat(p.id);
+        div.innerHTML = `<div class="roster-tooltip">${p.displayName}</div>`;
+        ui.roster.appendChild(div);
+    });
+}
+// Modal logic same as before...
+window.openSideChat = function(personaId) {
+    const p = GAME_DATA.personas[personaId];
+    CURRENT_CHAT_TARGET = personaId;
+    if (ui.modal) ui.modal.style.display = 'flex';
+    // Clean history for modal if needed or sync
+}
+window.closeSideChat = function() {
+    if (ui.modal) ui.modal.style.display = 'none';
+    CURRENT_CHAT_TARGET = "A-1"; // Retour au main speaker
 }
 
 init();
