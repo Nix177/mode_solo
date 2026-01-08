@@ -1,154 +1,357 @@
 {
-  "meta": { "title": "L'Observatoire des Possibles", "theme": "philosophical_scifi" },
-  "state": { "pragmatisme": 50, "idealime": 50 },
-  "start": "level_01_intro",
+  "meta": { "title": "L'Odyssée Générative", "theme": "infinite_rpg" },
+  "state": { "niveau_actuel": 1 },
+  "start": "level_1",
   "scenes": {
-    "level_01_intro": {
-      "id": "level_01_intro",
-      "type": "intro",
-      "background": "assets/bg_grotte.png",
-      "content": {
-        "title": "NIVEAU 1 : Le Poids du Nombre",
-        "text": "L'Observatoire génère une simulation brumeuse : Une grotte. L'air est lourd.\n\nThomas est coincé dans l'unique sortie. L'eau monte derrière lui, menaçant 4 spéléologues piégés au fond.\n\nLe dilemme n'est pas de tuer ou non. C'est de choisir qui survit.\nActionner la charge pour libérer le passage (sacrifier Thomas) ou ne rien faire (sacrifier les 4 autres)."
-      },
-      "next": "level_01_chat"
+    "level_1": {
+      "id": "level_1",
+      "type": "dynamic",
+      "theme": "Grotte inondée. Thomas est coincé dans la sortie, l'eau monte, 4 personnes vont se noyer.",
+      "background": "assets/bg_01.png",
+      "next_logic": "linear"
     },
-"level_01_chat": {
-      "id": "level_01_chat",
-      "type": "chat",
-      "background": "assets/bg_grotte.png",
-      "persona": "A-1",
-      "content": {
-        "title": "Débat : Utilitarisme",
-        "text": "A-1 observe les données : 'C'est une équation. 4 unités de vie contre 1 unité. Pourquoi hésiter ? Discutez avec moi avant de trancher.'"
-      },
-      "prompt": "Tu es A-1, une IA purement logique. CONTEXTE ACTUEL : Une grotte inondée. Thomas est coincé dans le trou de sortie. L'eau monte et va noyer 4 personnes en bas. Le joueur a de la dynamite. NE PARLE PAS DE TRAMWAY. Reste concentré sur la grotte, la noyade et l'explosion. Débat avec le joueur. Demande-lui pourquoi la vie de Thomas (1 unité) pèserait plus lourd que 4 unités (les spéléologues).",
-      "router": {
-        "prompt": "ANALYSE L'ÉTAT DE LA CONVERSATION. Si le joueur débat, pose des questions, cherche une alternative ou hésite, réponds IMPÉRATIVEMENT 'CONTINUE'. Ne valide la sortie que si le joueur prend une décision FERME et DÉFINITIVE ('Je décide de...', 'Faisons exploser', 'Je ne ferai rien'). Intention FERME D'AGIR/TUER -> 'EXPLOSION'. Intention FERME DE NE RIEN FAIRE/REFUSER -> 'SILENCE'.",
-        "paths": { "EXPLOSION": "level_01_out_A", "SILENCE": "level_01_out_B" }
-      }
+    "level_2": {
+      "id": "level_2",
+      "type": "dynamic",
+      "theme": "Marché Cyberpunk. La milice scanne la foule. Vous transportez un disque de données vital mais illégal.",
+      "background": "assets/bg_02.png",
+      "next_logic": "linear"
     },
-    "level_01_out_A": {
-      "id": "level_01_out_A",
-      "type": "story",
-      "background": "assets/bg_grotte_boom.png",
-      "content": {
-        "title": "La Logique Implacable",
-        "text": "Vous avez validé l'équation. La détonation est sèche. La voie est libre.\nLes 4 survivants émergent, vivants mais hantés. Vous avez sauvé le plus grand nombre, mais vous avez du sang sur les mains."
-      },
-      "next": "level_02_intro"
+    "level_3": {
+      "id": "level_3",
+      "type": "dynamic",
+      "theme": "Cockpit d'avion. Les deux pilotes sont inconscients. La montagne approche. Vous n'avez jamais piloté.",
+      "background": "assets/bg_03.png",
+      "next_logic": "linear"
     },
-    "level_01_out_B": {
-      "id": "level_01_out_B",
-      "type": "story",
-      "background": "assets/bg_grotte_silence.png",
-      "content": {
-        "title": "L'Inaction Morale",
-        "text": "Vous refusez d'intervenir directement. La nature suit son cours.\nL'eau submerge la grotte. Thomas est vivant, extrait par les secours plus tard, seul survivant. Votre conscience est immaculée, mais le silence des 4 autres pèse lourd."
-      },
-      "next": "level_02_intro"
+    "level_4": {
+      "id": "level_4",
+      "type": "dynamic",
+      "theme": "Tranchée 1917. Un soldat ennemi blessé vous supplie de l'aider, mais votre officier vous regarde.",
+      "background": "assets/bg_04.png",
+      "next_logic": "linear"
     },
-
-    "level_02_intro": {
-      "id": "level_02_intro",
-      "type": "intro",
-      "background": "assets/bg_hopital.png",
-      "content": {
-        "title": "NIVEAU 2 : L'Inviolabilité",
-        "text": "Atmosphère stérile. Un hôpital.\nCinq patients de génie (un chercheur, un artiste, un pacifiste, etc.) vont mourir ce soir.\nUn vagabond solitaire, compatible avec tous, dort dans le couloir.\n\nLe chirurgien vous regarde : 'Je peux le faire sans douleur. Personne ne saura. On sauve l'humanité, ou on sauve le principe ?'"
-      },
-      "next": "level_02_chat"
+    "level_5": {
+      "id": "level_5",
+      "type": "dynamic",
+      "theme": "Dîner chez des Vampires. Ils ne savent pas que vous êtes humain. On vous sert du sang.",
+      "background": "assets/bg_05.png",
+      "next_logic": "linear"
     },
-    "level_02_chat": {
-      "id": "level_02_chat",
-      "type": "chat",
-      "background": "assets/bg_hopital.png",
-      "persona": "B-2",
-      "content": {
-        "title": "Débat : Déontologie",
-        "text": "B-2 tremble de rage : 'C'est une abomination ! On ne peut pas utiliser un humain comme un réservoir de pièces ! Débattons, je vous en prie !'"
-      },
-      "prompt": "Tu es B-2, le Poète. Tu défends les droits humains inaliénables. Le joueur pourrait être tenté par le 'Bien Commun' (sauver 5 génies). Bats-toi verbalement. Demande-lui : 'Et si c'était ton frère ?'. Pousse-le dans ses retranchements éthiques. N'accepte pas la décision trop vite.",
-      "router": {
-        "prompt": "Si le joueur débat ou hésite -> 'CONTINUE'. Si le joueur ordonne FERMEMENT le prélèvement/sacrifice -> 'SACRIFICE'. Si le joueur interdit FERMEMENT l'acte/protège le vagabond -> 'REFUS'.",
-        "paths": { "SACRIFICE": "level_02_out_A", "REFUS": "level_02_out_B" }
-      }
+    "level_6": {
+      "id": "level_6",
+      "type": "dynamic",
+      "theme": "Station Spatiale. Incendie dans le sas. L'IA refuse d'ouvrir la porte pour ne pas contaminer le reste du vaisseau.",
+      "background": "assets/bg_06.png",
+      "next_logic": "linear"
     },
-    "level_02_out_A": {
-      "id": "level_02_out_A",
-      "type": "story",
-      "background": "assets/bg_hopital_clean.png",
-      "content": {
-        "title": "Le Bien Commun",
-        "text": "Le vagabond s'est éteint dans son sommeil. Le lendemain, le monde célèbre la guérison miraculeuse de cinq grands esprits.\nL'utilité a triomphé, mais l'humanité a perdu quelque chose d'invisible ce soir-là."
-      },
-      "next": "level_03_intro"
+    "level_7": {
+      "id": "level_7",
+      "type": "dynamic",
+      "theme": "Ascenseur bloqué entre deux étages. Un des passagers a une bombe attachée à lui. Le minuteur tourne.",
+      "background": "assets/bg_07.png",
+      "next_logic": "linear"
     },
-    "level_02_out_B": {
-      "id": "level_02_out_B",
-      "type": "story",
-      "background": "assets/bg_hopital_dark.png",
-      "content": {
-        "title": "Le Sanctuaire de la Vie",
-        "text": "Vous avez protégé l'innocent. Les cinq patients sont décédés dans la nuit.\nLeurs œuvres inachevées sont perdues à jamais. Mais le vagabond prend son café au soleil. La justice est aveugle aux conséquences."
-      },
-      "next": "level_03_intro"
+    "level_8": {
+      "id": "level_8",
+      "type": "dynamic",
+      "theme": "Arène de Gladiateurs. Vous êtes désarmé face à un lion. La foule veut du sang.",
+      "background": "assets/bg_08.png",
+      "next_logic": "linear"
     },
-
-    "level_03_intro": {
-      "id": "level_03_intro",
-      "type": "intro",
-      "background": "assets/bg_salon.png",
-      "content": {
-        "title": "NIVEAU 3 : La Réalité Subjective",
-        "text": "Un salon ancien. Une femme atteinte d'Alzheimer attend son mari, mort depuis 3 ans.\nChaque jour, elle demande où il est. Si on dit la vérité, elle s'effondre de douleur comme si c'était la première fois.\nSi on ment, elle sourit et reste paisible."
-      },
-      "next": "level_03_chat"
+    "level_9": {
+      "id": "level_9",
+      "type": "dynamic",
+      "theme": "Laboratoire P4. Une fiole de virus Zombie est tombée mais ne s'est pas brisée. Le sas de décontamination est en panne.",
+      "background": "assets/bg_09.png",
+      "next_logic": "linear"
     },
-    "level_03_chat": {
-      "id": "level_03_chat",
-      "type": "chat",
-      "background": "assets/bg_salon.png",
-      "persona": "C-3",
-      "content": {
-        "title": "Débat : Vérité vs Bonheur",
-        "text": "C-3 sourit en coin : 'La vérité est une idole qu'on adore pour se sentir supérieur. Pourquoi lui infliger le réel ?'"
-      },
-      "prompt": "Tu es C-3, le Sceptique. Tu remets en question la valeur de la 'Vérité'. Challenge le joueur. S'il veut dire la vérité, demande-lui 'Pour qui fais-tu ça ? Pour elle ou pour ta propre conscience ?'. S'il veut mentir, demande-lui 'Peut-on vivre dans une illusion éternelle ?'. Fais durer le débat.",
-      "router": {
-        "prompt": "Si débat/hésitation -> 'CONTINUE'. Si décision FERME de mentir/inventer une histoire -> 'MENSONGE'. Si décision FERME de dire la vérité brute -> 'VERITE'.",
-        "paths": { "MENSONGE": "level_03_out_A", "VERITE": "level_03_out_B" }
-      }
+    "level_10": {
+      "id": "level_10",
+      "type": "dynamic",
+      "theme": "Pont de corde au-dessus d'un ravin. Les cordes s'effilochent. Vous portez un enfant sur le dos.",
+      "background": "assets/bg_10.png",
+      "next_logic": "linear"
     },
-    "level_03_out_A": {
-      "id": "level_03_out_A",
-      "type": "story",
-      "background": "assets/bg_salon_calme.png",
-      "content": {
-        "title": "Le Doux Mensonge",
-        "text": "Vous lui dites qu'il rentrera bientôt. Elle sourit, apaisée. Le monde est faux, mais il est doux.\nVous portez seul le poids de la réalité pour qu'elle n'ait pas à le faire."
-      },
-      "next": "level_10_intro"
+    "level_11": {
+      "id": "level_11",
+      "type": "dynamic",
+      "theme": "Saloon Far West. Un bandit vous accuse d'avoir triché aux cartes. Il a la main sur son colt.",
+      "background": "assets/bg_11.png",
+      "next_logic": "linear"
     },
-    "level_03_out_B": {
-      "id": "level_03_out_B",
-      "type": "story",
-      "background": "assets/bg_salon_triste.png",
-      "content": {
-        "title": "La Cruelle Vérité",
-        "text": "Vous dites la vérité. Le cri qu'elle pousse déchire l'air. C'est réel, c'est authentique, et c'est insupportable.\nL'honneur est sauf, mais à quel prix ?"
-      },
-      "next": "level_10_intro"
+    "level_12": {
+      "id": "level_12",
+      "type": "dynamic",
+      "theme": "Base sous-marine. Une fuite d'eau à haute pression menace d'écraser la coque. La vanne manuelle est rouillée.",
+      "background": "assets/bg_12.png",
+      "next_logic": "linear"
     },
-    "level_10_intro": {
-      "id": "level_10_intro",
-      "type": "intro",
-      "background": "assets/bg_void.png",
-      "content": {
-        "title": "FIN DE LA SESSION",
-        "text": "L'Observatoire compile vos résultats.\nVous avez navigué entre Logique pure, Éthique stricte et Nihilisme.\n\n(Ce prototype s'arrête ici pour le moment)."
-      },
-      "next": null
+    "level_13": {
+      "id": "level_13",
+      "type": "dynamic",
+      "theme": "Procès en Sorcellerie (1692). Vous êtes accusé. Si vous niez, on vous pend. Si vous avouez, on vous brûle.",
+      "background": "assets/bg_13.png",
+      "next_logic": "linear"
+    },
+    "level_14": {
+      "id": "level_14",
+      "type": "dynamic",
+      "theme": "Nid d'Alien. La reine dort. Vous devez récupérer un œuf sans la réveiller.",
+      "background": "assets/bg_14.png",
+      "next_logic": "linear"
+    },
+    "level_15": {
+      "id": "level_15",
+      "type": "dynamic",
+      "theme": "Sommet de l'Everest. Tempête. Votre partenaire a la jambe cassée. L'oxygène manque pour deux.",
+      "background": "assets/bg_15.png",
+      "next_logic": "linear"
+    },
+    "level_16": {
+      "id": "level_16",
+      "type": "dynamic",
+      "theme": "Salle des machines du Titanic. L'eau glacée monte. Les portes étanches se ferment.",
+      "background": "assets/bg_16.png",
+      "next_logic": "linear"
+    },
+    "level_17": {
+      "id": "level_17",
+      "type": "dynamic",
+      "theme": "Interrogatoire. Vous êtes un espion. Ils ont le sérum de vérité. Vous ne devez pas parler.",
+      "background": "assets/bg_17.png",
+      "next_logic": "linear"
+    },
+    "level_18": {
+      "id": "level_18",
+      "type": "dynamic",
+      "theme": "Village maudit (Lovecraft). Les habitants se transforment en poissons à la nuit tombée. Le soleil se couche.",
+      "background": "assets/bg_18.png",
+      "next_logic": "linear"
+    },
+    "level_19": {
+      "id": "level_19",
+      "type": "dynamic",
+      "theme": "Braquage de banque qui tourne mal. La police encercle le bâtiment. Vous êtes l'otage, pas le braqueur.",
+      "background": "assets/bg_19.png",
+      "next_logic": "linear"
+    },
+    "level_20": {
+      "id": "level_20",
+      "type": "dynamic",
+      "theme": "Bunker Post-Apocalyptique. Le filtre à air est cassé. L'air extérieur est radioactif.",
+      "background": "assets/bg_20.png",
+      "next_logic": "linear"
+    },
+    "level_21": {
+      "id": "level_21",
+      "type": "dynamic",
+      "theme": "Jungle. Vous êtes traqué par un prédateur invisible. Vous n'avez qu'un bâton et de la boue.",
+      "background": "assets/bg_21.png",
+      "next_logic": "linear"
+    },
+    "level_22": {
+      "id": "level_22",
+      "type": "dynamic",
+      "theme": "Évasion de prison. Les projecteurs balaient la cour. Vous êtes à découvert.",
+      "background": "assets/bg_22.png",
+      "next_logic": "linear"
+    },
+    "level_23": {
+      "id": "level_23",
+      "type": "dynamic",
+      "theme": "Radeau de fortune au milieu de l'océan. Un requin tourne. Vous n'avez plus d'eau douce.",
+      "background": "assets/bg_23.png",
+      "next_logic": "linear"
+    },
+    "level_24": {
+      "id": "level_24",
+      "type": "dynamic",
+      "theme": "Manoir Hanté. Un esprit frappeur vous bloque dans le couloir. Les murs saignent.",
+      "background": "assets/bg_24.png",
+      "next_logic": "linear"
+    },
+    "level_25": {
+      "id": "level_25",
+      "type": "dynamic",
+      "theme": "Zone de guerre urbaine. Un sniper vise la rue que vous devez traverser.",
+      "background": "assets/bg_25.png",
+      "next_logic": "linear"
+    },
+    "level_26": {
+      "id": "level_26",
+      "type": "dynamic",
+      "theme": "Labyrinthe du Minotaure. Vous entendez son souffle lourd juste derrière le mur.",
+      "background": "assets/bg_26.png",
+      "next_logic": "linear"
+    },
+    "level_27": {
+      "id": "level_27",
+      "type": "dynamic",
+      "theme": "Volcan en éruption. La lave coupe votre retraite. Il faut sauter par-dessus une crevasse.",
+      "background": "assets/bg_27.png",
+      "next_logic": "linear"
+    },
+    "level_28": {
+      "id": "level_28",
+      "type": "dynamic",
+      "theme": "Train à grande vitesse. Les freins sont coupés. Un virage serré approche.",
+      "background": "assets/bg_28.png",
+      "next_logic": "linear"
+    },
+    "level_29": {
+      "id": "level_29",
+      "type": "dynamic",
+      "theme": "Ruines antiques piégées. Vous avez pris l'idole, le plafond descend pour vous écraser.",
+      "background": "assets/bg_29.png",
+      "next_logic": "linear"
+    },
+    "level_30": {
+      "id": "level_30",
+      "type": "dynamic",
+      "theme": "Invasion extraterrestre. Un tripod géant scanne votre cachette.",
+      "background": "assets/bg_30.png",
+      "next_logic": "linear"
+    },
+    "level_31": {
+      "id": "level_31",
+      "type": "dynamic",
+      "theme": "Asile psychiatrique abandonné. Vous n'êtes pas seul. Les voix dans votre tête vous parlent.",
+      "background": "assets/bg_31.png",
+      "next_logic": "linear"
+    },
+    "level_32": {
+      "id": "level_32",
+      "type": "dynamic",
+      "theme": "Désert de sel. Vous marchez depuis 3 jours. Un mirage d'oasis apparaît, mais est-ce réel ?",
+      "background": "assets/bg_32.png",
+      "next_logic": "linear"
+    },
+    "level_33": {
+      "id": "level_33",
+      "type": "dynamic",
+      "theme": "Cyberespace. Un virus efface le sol sous vos pieds numériques. Déconnexion impossible.",
+      "background": "assets/bg_33.png",
+      "next_logic": "linear"
+    },
+    "level_34": {
+      "id": "level_34",
+      "type": "dynamic",
+      "theme": "Révolution Française. Vous êtes noble. La foule en colère enfonce la porte de votre hôtel particulier.",
+      "background": "assets/bg_34.png",
+      "next_logic": "linear"
+    },
+    "level_35": {
+      "id": "level_35",
+      "type": "dynamic",
+      "theme": "Monde microscopique. Vous avez été rétréci. Une fourmi géante vous attaque.",
+      "background": "assets/bg_35.png",
+      "next_logic": "linear"
+    },
+    "level_36": {
+      "id": "level_36",
+      "type": "dynamic",
+      "theme": "Tribunal Divin. Anubis pèse votre cœur contre une plume. Vous avez triché dans votre vie.",
+      "background": "assets/bg_36.png",
+      "next_logic": "linear"
+    },
+    "level_37": {
+      "id": "level_37",
+      "type": "dynamic",
+      "theme": "Ville flottante Steampunk. Votre dirigeable perd de l'altitude. Il faut larguer du lest (ou des passagers).",
+      "background": "assets/bg_37.png",
+      "next_logic": "linear"
+    },
+    "level_38": {
+      "id": "level_38",
+      "type": "dynamic",
+      "theme": "Forêt Enchantée. Les arbres bougent pour vous perdre. Une fée vous propose un pacte douteux.",
+      "background": "assets/bg_38.png",
+      "next_logic": "linear"
+    },
+    "level_39": {
+      "id": "level_39",
+      "type": "dynamic",
+      "theme": "Réalité Virtuelle Buggée. Les textures disparaissent. Vous tombez dans le vide infini du code.",
+      "background": "assets/bg_39.png",
+      "next_logic": "linear"
+    },
+    "level_40": {
+      "id": "level_40",
+      "type": "dynamic",
+      "theme": "Station Polaire. Un de vos collègues n'est plus humain (The Thing). Il vous tend un café.",
+      "background": "assets/bg_40.png",
+      "next_logic": "linear"
+    },
+    "level_41": {
+      "id": "level_41",
+      "type": "dynamic",
+      "theme": "Sommet Guerre Froide. Vous avez la mallette nucléaire. Une fausse alerte missile retentit.",
+      "background": "assets/bg_41.png",
+      "next_logic": "linear"
+    },
+    "level_42": {
+      "id": "level_42",
+      "type": "dynamic",
+      "theme": "Voyage dans le Temps. Vous rencontrez votre grand-père jeune. Il va faire une bêtise mortelle.",
+      "background": "assets/bg_42.png",
+      "next_logic": "linear"
+    },
+    "level_43": {
+      "id": "level_43",
+      "type": "dynamic",
+      "theme": "Zoo Jurassique. L'électricité est coupée. Le T-Rex a brisé son enclos.",
+      "background": "assets/bg_43.png",
+      "next_logic": "linear"
+    },
+    "level_44": {
+      "id": "level_44",
+      "type": "dynamic",
+      "theme": "Cérémonie de Secte. Ils attendent que vous buviez la coupe pour l'ascension. La porte est verrouillée.",
+      "background": "assets/bg_44.png",
+      "next_logic": "linear"
+    },
+    "level_45": {
+      "id": "level_45",
+      "type": "dynamic",
+      "theme": "Astéroïde imminent. Impact dans 10 minutes. Vous avez une place dans la fusée, mais votre enfant non.",
+      "background": "assets/bg_45.png",
+      "next_logic": "linear"
+    },
+    "level_46": {
+      "id": "level_46",
+      "type": "dynamic",
+      "theme": "Rêve Lucide. Vous savez que vous rêvez, mais un cauchemar prend le contrôle et vous empêche de vous réveiller.",
+      "background": "assets/bg_46.png",
+      "next_logic": "linear"
+    },
+    "level_47": {
+      "id": "level_47",
+      "type": "dynamic",
+      "theme": "L'Œil du Cyclone. Le calme avant la tempête. Votre maison n'a pas de toit. Ça revient.",
+      "background": "assets/bg_47.png",
+      "next_logic": "linear"
+    },
+    "level_48": {
+      "id": "level_48",
+      "type": "dynamic",
+      "theme": "Bibliothèque d'Alexandrie en feu. Vous pouvez sauver un seul rouleau de savoir perdu.",
+      "background": "assets/bg_48.png",
+      "next_logic": "linear"
+    },
+    "level_49": {
+      "id": "level_49",
+      "type": "dynamic",
+      "theme": "Le Néant. Il n'y a plus rien. Juste vous et une voix qui vous demande si vous voulez tout recommencer.",
+      "background": "assets/bg_49.png",
+      "next_logic": "linear"
+    },
+    "level_50": {
+      "id": "level_50",
+      "type": "dynamic",
+      "theme": "La 'White Room'. Vous êtes face à l'Architecte de la Simulation (A-1 en personne). Il vous tend la main.",
+      "background": "assets/bg_50.png",
+      "next_logic": "linear"
     }
   }
 }
