@@ -112,6 +112,7 @@ function loadScene(sceneId) {
         }
     }
 }
+window.loadScene = loadScene; // <--- FIX: Rend la fonction accessible au HTML
 
 // 3. DISPLAY
 function updateScreen(scene) {
