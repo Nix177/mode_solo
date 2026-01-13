@@ -40,7 +40,7 @@ async function init() {
         GAME_DATA = { scenario, personas: mapPersonas(personas) };
         Object.keys(GAME_DATA.personas).forEach(id => CHAT_SESSIONS[id] = []);
         renderRoster();
-        
+
         // Start with the defined start scene, or pick one dynamically if start is generic
         const startId = GAME_DATA.scenario.start || "level_1";
         loadScene(startId);
@@ -63,11 +63,12 @@ async function loadScene(sceneId) {
 
     console.log(`Loading scene: ${sceneId}`);
     CURRENT_SCENE = scene;
-    PLAYED_SCENES.push(sceneId);
+    if (!PLAYED_SCENES.includes(sceneId)) PLAYED_SCENES.push(sceneId);
+
     updateBackground(scene.background);
-    
+
     // Default GM persona
-    const gmPersonaId = "A-1"; 
+    const gmPersonaId = "A-1";
     CURRENT_CHAT_TARGET = gmPersonaId;
 
     renderInterface(scene);
@@ -80,7 +81,7 @@ async function loadScene(sceneId) {
     
     TA MISSION :
     1. Présente le dilemme en 2 phrases max.
-    2. Adapte ton ton au profil du joueur (ex: s'il est rebelle, sois plus autoritaire ou complice, selon ta stratégie).
+    2. Adapte ton ton au profil du joueur.
     3. Termine par : "Quelle est votre position ?"
     
     CONTRAINTES :
@@ -88,17 +89,22 @@ async function loadScene(sceneId) {
     - Pas de long monologue.
     `;
 
-    CHAT_SESSIONS[gmPersonaId] = []; 
+    CHAT_SESSIONS[gmPersonaId] = [];
     await callBot(introPrompt, gmPersonaId, true);
 }
 
-window.loadScene = loadScene; 
+window.loadScene = loadScene;
 
 // 3. DISPLAY
 function updateBackground(bgUrl) {
-    const img = new Image();
-    img.src = bgUrl;
-    img.onload = () => document.body.style.backgroundImage = `url('${bgUrl}')`;
+    // Apply to game-container with a dark overlay for text readability
+    // Note: The browser handles mismatched extensions (jpg inside png) fine mostly.
+    if (ui.screen) {
+        ui.screen.style.background = `
+            linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%),
+            url('${bgUrl}') center/cover no-repeat
+        `;
+    }
 }
 
 function renderInterface(scene) {
@@ -107,7 +113,7 @@ function renderInterface(scene) {
     let html = `
         <div class="slide-content" style="margin-bottom: 20px; padding: 20px;">
             <h1 style="font-size:1.2em; color:#ddd; text-transform:uppercase; margin:0;">
-                Séquence ${stepCount} <span style="font-weight:normal; opacity:0.6;">// ${scene.id}</span>
+                Séquence ${stepCount}
             </h1>
         </div>
 
@@ -119,32 +125,31 @@ function renderInterface(scene) {
 }
 
 // 4. PLAYER ACTION & AI ROUTER
-window.sendPlayerAction = async function(text) {
+window.sendPlayerAction = async function (text) {
     if (!text) {
-         const inputEl = document.getElementById('player-input'); 
-         text = inputEl ? inputEl.value.trim() : "";
-         if(inputEl) inputEl.value = '';
+        const inputEl = document.getElementById('player-input');
+        text = inputEl ? inputEl.value.trim() : "";
+        if (inputEl) inputEl.value = '';
     }
     if (!text || !CURRENT_CHAT_TARGET) return;
 
     addMessageToUI('user', text, null);
-    
+
     if (!CHAT_SESSIONS[CURRENT_CHAT_TARGET]) CHAT_SESSIONS[CURRENT_CHAT_TARGET] = [];
     CHAT_SESSIONS[CURRENT_CHAT_TARGET].push({ role: "user", content: text });
 
-    // --- CHECK FOR END OF LEVEL ---
-    // We check if the player has expressed a clear stance OR if they are stuck/asking to move on.
-    const decisionCheck = await checkDecisionMade(text, CURRENT_SCENE.theme);
-    
-    if (decisionCheck.status === "DECIDED") {
-        addMessageToUI('bot', `[SYSTÈME] : Analyse en cours...`, CURRENT_CHAT_TARGET);
-        
-        // 1. Analyze Moral Profile update
-        await updatePlayerProfile(text, CURRENT_SCENE.theme);
+    // SAFETY MECHANISM: If debate is too long (> 3 turns), force decision check to be very lenient
+    const turnCount = CHAT_SESSIONS[CURRENT_CHAT_TARGET].filter(m => m.role === 'user').length;
 
-        // 2. Pick next scene
+    // --- CHECK FOR END OF LEVEL ---
+    const decisionCheck = await checkDecisionMade(text, CURRENT_SCENE.theme, turnCount);
+
+    if (decisionCheck.status === "DECIDED") {
+        addMessageToUI('bot', `[SYSTÈME] : Choix enregistré.`, CURRENT_CHAT_TARGET);
+
+        await updatePlayerProfile(text, CURRENT_SCENE.theme);
         const nextSceneId = await pickNextScene();
-        
+
         setTimeout(() => {
             if (nextSceneId) {
                 loadScene(nextSceneId);
@@ -153,18 +158,18 @@ window.sendPlayerAction = async function(text) {
             }
         }, 3000);
         return;
-    } 
-    
+    }
+
     // --- DEBATE (Socratic) ---
+    const isLateGame = turnCount >= 3;
     const debatePrompt = `
     JOUEUR : "${text}".
     SCENARIO : "${CURRENT_SCENE.theme}".
     PERSONA : ${GAME_DATA.personas[CURRENT_CHAT_TARGET].bio}
-    PROFIL JOUEUR CONNU : "${PLAYER_PROFILE.summary}"
+    PROFIL JOUEUR : "${PLAYER_PROFILE.summary}"
     
     OBJECTIF :
-    - Challenge la position du joueur. Cherche la faille éthique.
-    - Si le joueur est trop sûr de lui, introduis un doute.
+    ${isLateGame ? "- Le débat s'éternise. Sois plus tranchant : demande une décision finale." : "- Challenge la position du joueur. Cherche la faille."}
     - Sois court (1-2 phrases). Style naturel.
     `;
 
@@ -174,21 +179,29 @@ window.sendUserMessage = window.sendPlayerAction;
 
 // --- AI FUNCTIONS ---
 
-async function checkDecisionMade(lastUserAction, theme) {
+async function checkDecisionMade(lastUserAction, theme, turnCount) {
+    // If turns > 4, almost anything counts as a decision to avoid getting stuck
+    const leniency = turnCount > 4 ? "VERY LENIENT: If the player seems tired, repeats themselves, or gives ANY opinion, count as DECIDED." : "NORMAL";
+
     try {
         const res = await callAIInternal(`
             ANALYZE PLAYER INPUT. Theme: "${theme}". Input: "${lastUserAction}".
-            Did the player make a clear decision or express a firm stance that resolves the dilemma for them?
+            Mode: ${leniency}
+            
+            Did the player make a choice, express a preference, OR reject the premise?
+            Even if they just say "I agree", "No", "Do it", "Impossible", it is a DECISION.
+            Only return "DEBATING" if they are explicitly asking a question to the bot.
+            
             Reply ONLY JSON: { "status": "DECIDED" | "DEBATING" }
         `);
         return JSON.parse(res);
     } catch (e) {
-        return { status: "DEBATING" };
+        // If API fails, default to debating unless very late game
+        return { status: turnCount > 6 ? "DECIDED" : "DEBATING" };
     }
 }
 
 async function updatePlayerProfile(lastArgument, theme) {
-    // Analyze the whole conversation or just the conclusion to update the profile
     const prompt = `
     ANALYSE PSYCHO-PHILOSOPHIQUE.
     Ancien Profil: "${PLAYER_PROFILE.summary}"
@@ -196,30 +209,29 @@ async function updatePlayerProfile(lastArgument, theme) {
     Dernière position du joueur : "${lastArgument}"
     
     Tâche : Mets à jour le résumé du profil du joueur en 1 phrase courte.
-    Concentre-toi sur ses valeurs (ex: "Privilégie la sécurité collective au détriment de la liberté individuelle").
+    Concentre-toi sur ses valeurs.
     
     Réponds UNIQUEMENT le nouveau résumé texte.
     `;
-    
+
     try {
         const newSummary = await callAIInternal(prompt);
         console.log("Updated Profile:", newSummary);
         PLAYER_PROFILE.summary = newSummary;
-    } catch(e) { console.error(e); }
+    } catch (e) { console.error(e); }
 }
 
 async function pickNextScene() {
     // Get list of unplayed scenes
     const allIds = Object.keys(GAME_DATA.scenario.scenes);
     const available = allIds.filter(id => !PLAYED_SCENES.includes(id));
-    
+
     if (available.length === 0) return null;
 
-    // Pick a subset to avoid token limits if list is huge, or send all IDs + themes
-    // We will send a simplified list to the AI
+    // Send a simplified list to the AI
     const options = available.map(id => {
         return { id: id, theme: GAME_DATA.scenario.scenes[id].theme };
-    }).slice(0, 15); // Limit to 15 options for analysis to be fast
+    }).slice(0, 15);
 
     const prompt = `
     MAÎTRE DU JEU.
@@ -230,7 +242,6 @@ async function pickNextScene() {
     ${JSON.stringify(options)}
     
     MISSION : Choisis le prochain scénario pour CHALLENGER ce joueur.
-    - Si le joueur est trop utilitariste, trouve un scénario qui montre les limites de l'utilitarisme.
     - Cherche la variété thématique.
     
     Réponds UNIQUEMENT l'ID du scénario (ex: "level_12").
@@ -239,12 +250,11 @@ async function pickNextScene() {
     try {
         let bestId = await callAIInternal(prompt);
         bestId = bestId.trim().replace(/['"]/g, '');
-        // Fallback if AI hallucinates an ID
-        if (!APP_EXISTS(bestId, available)) return available[0];
+        if (!APP_EXISTS(bestId, available)) return available[0].id; // Fix: Access .id property
         return bestId;
     } catch (e) {
         console.error(e);
-        return available[0]; // Fallback random/linear
+        return available[0].id;
     }
 }
 
@@ -277,7 +287,7 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
 
     try {
         const history = CHAT_SESSIONS[targetId] || [];
-        const recentHistory = history.slice(-6); 
+        const recentHistory = history.slice(-6);
         const messagesToSend = isIntro ? [] : recentHistory;
 
         const res = await fetch(`${API_BASE}/chat`, {
@@ -290,13 +300,13 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
             })
         });
         const data = await res.json();
-        
+
         const loader = document.getElementById(loadingId);
-        if(loader) loader.remove();
+        if (loader) loader.remove();
 
         const reply = data.reply;
         addMessageToUI('bot', reply, targetId);
-        
+
         if (!CHAT_SESSIONS[targetId]) CHAT_SESSIONS[targetId] = [];
         CHAT_SESSIONS[targetId].push({ role: "assistant", content: reply });
 
@@ -339,14 +349,14 @@ function renderRoster() {
         ui.roster.appendChild(div);
     });
 }
-window.openSideChat = function(personaId) {
+window.openSideChat = function (personaId) {
     const p = GAME_DATA.personas[personaId];
     CURRENT_CHAT_TARGET = personaId;
     if (ui.modal) ui.modal.style.display = 'flex';
 }
-window.closeSideChat = function() {
+window.closeSideChat = function () {
     if (ui.modal) ui.modal.style.display = 'none';
-    CURRENT_CHAT_TARGET = "A-1"; 
+    CURRENT_CHAT_TARGET = "A-1";
 }
 
 init();
