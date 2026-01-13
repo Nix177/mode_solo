@@ -10,7 +10,7 @@ let CURRENT_CHAT_TARGET = null;
 let PLAYED_SCENES = [];
 let PLAYER_PROFILE = {
     summary: "Nouveau venu curieux.",
-    traits: {} // ex: { "authority": -2, "technology": 5 }
+    traits: {}
 };
 
 // --- DOM ELEMENTS ---
@@ -97,8 +97,6 @@ window.loadScene = loadScene;
 
 // 3. DISPLAY
 function updateBackground(bgUrl) {
-    // Apply to game-container with a dark overlay for text readability
-    // Note: The browser handles mismatched extensions (jpg inside png) fine mostly.
     if (ui.screen) {
         ui.screen.style.background = `
             linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%),
@@ -108,7 +106,6 @@ function updateBackground(bgUrl) {
 }
 
 function renderInterface(scene) {
-    // Show Scene Count instead of Level Number since it's non-linear
     const stepCount = PLAYED_SCENES.length;
     let html = `
         <div class="slide-content" style="margin-bottom: 20px; padding: 20px;">
@@ -138,7 +135,6 @@ window.sendPlayerAction = async function (text) {
     if (!CHAT_SESSIONS[CURRENT_CHAT_TARGET]) CHAT_SESSIONS[CURRENT_CHAT_TARGET] = [];
     CHAT_SESSIONS[CURRENT_CHAT_TARGET].push({ role: "user", content: text });
 
-    // SAFETY MECHANISM: If debate is too long (> 3 turns), force decision check to be very lenient
     const turnCount = CHAT_SESSIONS[CURRENT_CHAT_TARGET].filter(m => m.role === 'user').length;
 
     // --- CHECK FOR END OF LEVEL ---
@@ -154,13 +150,12 @@ window.sendPlayerAction = async function (text) {
             if (nextSceneId) {
                 loadScene(nextSceneId);
             } else {
-                alert("Fin de la simulation. Merci.");
+                showGameSummary();
             }
         }, 3000);
         return;
     }
 
-    // --- DEBATE (Socratic) ---
     const isLateGame = turnCount >= 3;
     const debatePrompt = `
     JOUEUR : "${text}".
@@ -177,10 +172,49 @@ window.sendPlayerAction = async function (text) {
 };
 window.sendUserMessage = window.sendPlayerAction;
 
+// --- END GAME SUMMARY ---
+async function showGameSummary() {
+    // Show loading state
+    ui.screen.innerHTML = `
+        <div class="slide-content" style="text-align:center;">
+            <h1>ANALYSE FINALE EN COURS...</h1>
+            <p>L'IA compile votre profil philosophique...</p>
+        </div>`;
+
+    const prompt = `
+    RÔLE : PSYCHOLOGUE PHILOSOPHE IA.
+    PROFIL FINAL JOUEUR : "${PLAYER_PROFILE.summary}".
+    SCÉNARIOS JOUÉS : ${PLAYED_SCENES.length}.
+    
+    TÂCHE : Rédige une analyse finale de 150 mots s'adressant au joueur ("Vous").
+    1. Définis son archétype (ex: "L'Utilitariste Pragmatique", "Le Gardien des Traditions").
+    2. Résume ses forces morales.
+    3. Souligne ses contradictions ou points aveugles.
+    
+    Format : HTML simple (sans balises <html>, juste <p>, <h2>, etc).
+    `;
+
+    try {
+        const report = await callAIInternal(prompt);
+        ui.screen.innerHTML = `
+            <div class="slide-content" style="max-width: 800px; text-align: left; overflow-y:auto; max-height:80vh;">
+                <h1 style="color: #4cd137;">Rapport de Fin de Simulation</h1>
+                <div style="background: rgba(0,0,0,0.3); padding: 25px; border-radius: 8px; margin-top:20px; line-height: 1.6; font-size: 1.1em;">
+                    ${report}
+                </div>
+                <div style="text-align:center; margin-top:30px;">
+                    <button onclick="location.reload()" style="padding: 15px 30px; cursor:pointer; background:#ddd; color:#000; border:none; border-radius:4px; font-weight:bold;">Recommencer</button>
+                </div>
+            </div>
+        `;
+    } catch (e) {
+        ui.screen.innerHTML = "<div class='slide-content'><h1>Erreur de génération du rapport.</h1></div>";
+    }
+}
+
 // --- AI FUNCTIONS ---
 
 async function checkDecisionMade(lastUserAction, theme, turnCount) {
-    // If turns > 4, almost anything counts as a decision to avoid getting stuck
     const leniency = turnCount > 4 ? "VERY LENIENT: If the player seems tired, repeats themselves, or gives ANY opinion, count as DECIDED." : "NORMAL";
 
     try {
@@ -196,7 +230,6 @@ async function checkDecisionMade(lastUserAction, theme, turnCount) {
         `);
         return JSON.parse(res);
     } catch (e) {
-        // If API fails, default to debating unless very late game
         return { status: turnCount > 6 ? "DECIDED" : "DEBATING" };
     }
 }
@@ -222,13 +255,11 @@ async function updatePlayerProfile(lastArgument, theme) {
 }
 
 async function pickNextScene() {
-    // Get list of unplayed scenes
     const allIds = Object.keys(GAME_DATA.scenario.scenes);
     const available = allIds.filter(id => !PLAYED_SCENES.includes(id));
 
     if (available.length === 0) return null;
 
-    // Send a simplified list to the AI
     const options = available.map(id => {
         return { id: id, theme: GAME_DATA.scenario.scenes[id].theme };
     }).slice(0, 15);
@@ -250,7 +281,7 @@ async function pickNextScene() {
     try {
         let bestId = await callAIInternal(prompt);
         bestId = bestId.trim().replace(/['"]/g, '');
-        if (!APP_EXISTS(bestId, available)) return available[0].id; // Fix: Access .id property
+        if (!APP_EXISTS(bestId, available)) return available[0].id;
         return bestId;
     } catch (e) {
         console.error(e);
