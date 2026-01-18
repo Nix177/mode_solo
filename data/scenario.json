@@ -51,7 +51,13 @@
           "extract": "La forêt est rasée. Le cours du lithium chute, rendant les VE abordables. Elara disparaît. La vallée devient une zone industrielle morte mais riche.",
           "protect": "La forêt est sauvée. Lithos fait faillite, crise économique régionale. La forêt finit par mourir de sa maladie 10 ans plus tard, mais le symbole reste."
         }
-      }
+      },
+      "phases": [
+        { "turn": 0, "image": "assets/l1_intro.png" },
+        { "turn": 2, "image": "assets/l1_confrontation.png" },
+        { "turn": 4, "image": "assets/l1_crisis.png" },
+        { "turn": 6, "image": "assets/l1_climax.png" }
+      ]
     },
     "level_2": {
       "id": "level_2",

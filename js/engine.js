@@ -257,6 +257,15 @@ window.sendPlayerAction = async function (text) {
 
     const activePersonas = GAME_DATA.currentPersonas || GAME_DATA.personas;
 
+    // --- DYNAMIC BACKGROUND PHASE ---
+    if (CURRENT_SCENE.phases) {
+        // Find the matching phase for this turn
+        const phase = CURRENT_SCENE.phases.find(p => p.turn === turnCount);
+        if (phase && phase.image) {
+            updateBackground(phase.image);
+        }
+    }
+
     // --- CHECK FOR END OF LEVEL ---
     // Pass the narrative steps to the checker to see if we are deep enough
     const decisionCheck = await checkDecisionMade(text, CURRENT_SCENE.theme, turnCount);
@@ -430,7 +439,7 @@ function APP_EXISTS(id, list) {
 
 // Low-level API call wrapper
 async function callAIInternal(systemPrompt) {
-    const res = await fetch(`${API_BASE}/chat`, {
+    let res = await fetch(`${API_BASE}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -439,7 +448,31 @@ async function callAIInternal(systemPrompt) {
             system: systemPrompt
         })
     });
-    const data = await res.json();
+
+    let data;
+    try {
+        const text = await res.text();
+        data = JSON.parse(text);
+    } catch (e) {
+        console.error("AI Internal Parse Error", e);
+    }
+
+    if (!res.ok || !data || !data.reply) {
+        console.warn("AI Internal Failed with model " + CURRENT_MODEL + ". Retrying with gpt-4o-mini.");
+        res = await fetch(`${API_BASE}/chat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",
+                messages: [],
+                system: systemPrompt
+            })
+        });
+        data = await res.json();
+    }
+
+    if (!data.reply) return '{ "status": "DEBATING" }'; // Fail-safe default
+
     return data.reply.replace(/```json/g, '').replace(/```/g, '').trim();
 }
 
@@ -470,13 +503,38 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
                 model: CURRENT_MODEL
             })
         });
-        const data = await res.json();
+
+        let data;
+        const textResp = await res.text();
+        try {
+            data = JSON.parse(textResp);
+        } catch (e) {
+            console.error("Invalid JSON:", textResp);
+            throw new Error("API returned non-JSON: " + res.status);
+        }
+
+        if (!res.ok || !data.reply) {
+            console.warn(`Model ${CURRENT_MODEL} failed (Status ${res.status}). Retrying with gpt-4o-mini...`);
+            // Fallback to gpt-4o-mini
+            const fallbackRes = await fetch(`${API_BASE}/chat`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    messages: messagesToSend,
+                    system: systemPrompt,
+                    model: "gpt-4o-mini"
+                })
+            });
+            const fallbackData = await fallbackRes.json();
+            if (!fallbackData.reply) throw new Error("Fallback failed");
+            data = fallbackData;
+        }
 
         // Remove initial loader immediately as we will process chunks
         const loader = document.getElementById(loadingId);
         if (loader) loader.remove();
 
-        const reply = data.reply;
+        const reply = data.reply || ""; // Safety check
 
         // --- SPLIT MESSAGES BY DELIMITER ### ---
         const chunks = reply.split('###').map(s => s.trim()).filter(s => s.length > 0);
