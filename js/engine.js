@@ -481,26 +481,28 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
         // --- SPLIT MESSAGES BY DELIMITER ### ---
         const chunks = reply.split('###').map(s => s.trim()).filter(s => s.length > 0);
 
-        for (const chunk of chunks) {
-            // CALCULATE DELAY: ~200 words/min = ~3 words/sec => ~300ms per word.
-            const wordCount = chunk.split(' ').length;
-            const delayMs = Math.min(Math.max(wordCount * 300, 1500), 5000);
+        for (let i = 0; i < chunks.length; i++) {
+            const chunk = chunks[i];
+            const isLast = (i === chunks.length - 1);
 
             // Show new typing indicator for THIS chunk
             let chunkLoadingId = null;
             // Improved Regex to catch *Text* even with spaces like " * Text * "
             const isNarrative = /^\s*\*.*\*\s*$/.test(chunk);
 
+            // Artificial delay for feeling (shorter than before because we have the button)
+            // Just a small 1s-1.5s typing feel
             if (!isNarrative && container) {
                 chunkLoadingId = 'chunk-loading-' + Date.now() + Math.random();
                 container.innerHTML += buildMsgHTML('bot', '...', targetId)
                     .replace('msg-bubble', 'msg-bubble loading')
                     .replace('class="msg-row bot"', `id="${chunkLoadingId}" class="msg-row bot"`);
                 container.scrollTop = container.scrollHeight;
+                await new Promise(r => setTimeout(r, 800 + Math.random() * 500));
+            } else {
+                // Narrative pause (shorter)
+                await new Promise(r => setTimeout(r, 600));
             }
-
-            // Wait for reading/typing time
-            await new Promise(r => setTimeout(r, delayMs));
 
             // Remove chunk loader
             if (chunkLoadingId) {
@@ -523,6 +525,34 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
                 speakerName: speakerName,
                 content: chunk
             });
+
+            // WAITING FOR USER "NEXT" (SUITE)
+            // Only if NOT the last chunk
+            if (!isLast && container) {
+                const btnId = 'next-btn-' + Date.now();
+                const btnHTML = `
+                    <div id="${btnId}" style="display:flex; justify-content:flex-start; margin: 10px 0 20px 0; animation: fadeIn 0.5s;">
+                        <button style="background:transparent; border:1px solid #ff8800; color:#ff8800; padding:5px 15px; border-radius:20px; cursor:pointer; font-size:0.9em;">
+                            Suite ➜
+                        </button>
+                    </div>
+                `;
+                container.innerHTML += btnHTML;
+                container.scrollTop = container.scrollHeight;
+
+                // Promisify the click
+                await new Promise(resolve => {
+                    const btnEl = document.getElementById(btnId);
+                    if (btnEl) {
+                        btnEl.onclick = function () {
+                            btnEl.remove();
+                            resolve();
+                        }
+                    } else {
+                        resolve(); // Fallback
+                    }
+                });
+            }
         }
 
     } catch (e) {
