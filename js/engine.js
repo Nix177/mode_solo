@@ -577,7 +577,7 @@ function buildMsgHTML(role, text, personaId) {
         const cleanText = text.replace(/\*/g, '').trim();
         return `
         <div class="msg-row narrative" style="display:flex; justify-content:center; margin: 15px 0; opacity:0; animation:fadeIn 0.5s forwards;">
-            <div style="color: #aaa; font-style: italic; font-size: 0.95em; text-align:center; max-width:90%;">
+            <div style="color: #aaa; font-style: italic; font-size: 0.95em; text-align:justify; max-width:90%;">
                 ${cleanText}
             </div>
         </div>`;
