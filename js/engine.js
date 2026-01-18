@@ -41,7 +41,7 @@ async function init() {
         Object.keys(GAME_DATA.personas).forEach(id => CHAT_SESSIONS[id] = []);
         renderRoster();
 
-        // Start with the defined start scene, or pick one dynamically if start is generic
+        // Start with the defined start scene, or pick one dynamically
         const startId = GAME_DATA.scenario.start || "level_1";
         loadScene(startId);
 
@@ -58,12 +58,18 @@ function mapPersonas(list) {
 
 // 2. SCENE ENGINE
 async function loadScene(sceneId) {
-    const scene = GAME_DATA.scenario.scenes[sceneId];
-    if (!scene) return alert("FIN DE LA SIMULATION");
+    // Petit fix pour gérer le saut manuel par numéro (ex: "2" -> "level_2")
+    let targetId = sceneId;
+    if (!GAME_DATA.scenario.scenes[targetId] && GAME_DATA.scenario.scenes[`level_${targetId}`]) {
+        targetId = `level_${targetId}`;
+    }
 
-    console.log(`Loading scene: ${sceneId}`);
+    const scene = GAME_DATA.scenario.scenes[targetId];
+    if (!scene) return alert("FIN DE LA SIMULATION (ou Scène introuvable)");
+
+    console.log(`Loading scene: ${targetId}`);
     CURRENT_SCENE = scene;
-    if (!PLAYED_SCENES.includes(sceneId)) PLAYED_SCENES.push(sceneId);
+    if (!PLAYED_SCENES.includes(targetId)) PLAYED_SCENES.push(targetId);
 
     updateBackground(scene.background);
 
@@ -93,11 +99,17 @@ async function loadScene(sceneId) {
     await callBot(introPrompt, gmPersonaId, true);
 }
 
+// --- AJOUT : FONCTION ADMIN POUR SAUTER DE NIVEAU ---
+window.manualLevelJump = function() {
+    const target = prompt("ADMIN - Aller à la scène ID (ex: level_2) :");
+    if (target) loadScene(target);
+}
+
 window.loadScene = loadScene;
 
 // 3. DISPLAY
 function updateBackground(bgUrl) {
-    if (ui.screen) {
+    if (ui.screen && bgUrl) {
         ui.screen.style.background = `
             linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%),
             url('${bgUrl}') center/cover no-repeat
@@ -107,15 +119,26 @@ function updateBackground(bgUrl) {
 
 function renderInterface(scene) {
     const stepCount = PLAYED_SCENES.length;
+    
+    // Récupération Avatar pour le Header
+    const p = GAME_DATA.personas[CURRENT_CHAT_TARGET];
+    const avatarUrl = (p && p.avatar) ? p.avatar : 'assets/avatar_architecte.png';
+    const name = p ? p.displayName : 'Système';
+
+    // MODIFICATION : Header avec Avatar + Titre cliquable (Admin)
     let html = `
-        <div class="slide-content" style="margin-bottom: 20px; padding: 20px;">
+        <div class="slide-content" style="margin-bottom: 20px; padding: 20px; cursor:pointer;" onclick="window.manualLevelJump()" title="Admin: Changer de scène">
             <h1 style="font-size:1.2em; color:#ddd; text-transform:uppercase; margin:0;">
-                Séquence ${stepCount}
+                Séquence ${stepCount} <span style="font-size:0.8em; opacity:0.5;">(⚙️)</span>
             </h1>
         </div>
 
         <div class="chat-box">
-            <div id="chat-scroll" class="chat-messages"></div>
+            <div class="avatar-header" style="display:flex; align-items:center; gap:15px; padding:15px; border-bottom:1px solid rgba(255,255,255,0.1);">
+                <img src="${avatarUrl}" style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid #ff8800;">
+                <h3 style="margin:0; color:#ff8800; font-size:1.2em;">${name}</h3>
+            </div>
+            <div id="chat-scroll" class="chat-messages" style="padding:15px;"></div>
         </div>
     `;
     ui.screen.innerHTML = html;
@@ -174,7 +197,6 @@ window.sendUserMessage = window.sendPlayerAction;
 
 // --- END GAME SUMMARY ---
 async function showGameSummary() {
-    // Show loading state
     ui.screen.innerHTML = `
         <div class="slide-content" style="text-align:center;">
             <h1>COMPILATION DES RÉSULTATS...</h1>
@@ -313,7 +335,11 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
     const container = document.getElementById('chat-scroll');
     const loadingId = 'loading-' + Date.now();
     if (container) {
-        container.innerHTML += buildMsgHTML('bot', '...', targetId).replace('msg-bubble', 'msg-bubble loading').replace('class="msg-row bot"', `id="${loadingId}" class="msg-row bot"`);
+        // Chargement AVEC Avatar
+        const loadingHTML = buildMsgHTML('bot', '...', targetId)
+            .replace('msg-bubble', 'msg-bubble loading')
+            .replace('class="msg-row bot"', `id="${loadingId}" class="msg-row bot"`);
+        container.innerHTML += loadingHTML;
         container.scrollTop = container.scrollHeight;
     }
 
@@ -354,18 +380,21 @@ function addMessageToUI(role, text, personaId) {
     container.scrollTop = container.scrollHeight;
 }
 
+// MODIFICATION : Style CSS-in-JS pour alignement Avatar + Bulle
 function buildMsgHTML(role, text, personaId) {
     const isUser = role === 'user';
     let avatarImg = '';
+    
     if (!isUser && personaId) {
         const p = GAME_DATA.personas[personaId];
         const url = (p && p.avatar) ? p.avatar : 'assets/avatar_architecte.png';
-        avatarImg = `<img src="${url}" class="chat-avatar-img">`;
+        avatarImg = `<img src="${url}" style="width:40px; height:40px; border-radius:50%; margin-right:10px; border:2px solid #ff8800; object-fit:cover; flex-shrink:0;">`;
     }
+    
     return `
-    <div class="msg-row ${isUser ? 'user' : 'bot'}">
+    <div class="msg-row ${isUser ? 'user' : 'bot'}" style="display:flex; align-items:flex-start; margin-bottom:10px; ${isUser ? 'justify-content:flex-end;' : ''}">
         ${!isUser ? avatarImg : ''} 
-        <div class="msg-bubble">${text}</div>
+        <div class="msg-bubble" style="${!isUser ? 'background:#4a3b2a; border-left:4px solid #ff8800; color:white; padding:10px; border-radius:10px; max-width:80%;' : 'background:#333; color:#ddd; padding:10px; border-radius:10px; max-width:80%;'}">${text}</div>
     </div>`;
 }
 
@@ -381,11 +410,23 @@ function renderRoster() {
         ui.roster.appendChild(div);
     });
 }
+
+// MODIFICATION : Avatar dans le titre de la modale
 window.openSideChat = function (personaId) {
     const p = GAME_DATA.personas[personaId];
     CURRENT_CHAT_TARGET = personaId;
-    if (ui.modal) ui.modal.style.display = 'flex';
+    if (ui.modal) {
+        const avatarUrl = (p && p.avatar) ? p.avatar : 'assets/avatar_architecte.png';
+        ui.modalTitle.innerHTML = `
+            <div style="display:flex; align-items:center; gap:10px;">
+                <img src="${avatarUrl}" style="width:30px; height:30px; border-radius:50%; border:1px solid #ff8800; object-fit:cover;">
+                <span>${p.displayName}</span>
+            </div>
+        `;
+        ui.modal.style.display = 'flex';
+    }
 }
+
 window.closeSideChat = function () {
     if (ui.modal) ui.modal.style.display = 'none';
     CURRENT_CHAT_TARGET = "A-1";
