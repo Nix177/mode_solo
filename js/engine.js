@@ -9,6 +9,7 @@ let CURRENT_CHAT_TARGET = null;
 // New non-linear state
 let PLAYED_SCENES = [];
 let GLOBAL_HISTORY = []; // Stores { sceneId, role, speakerName, content }
+let CURRENT_MODEL = localStorage.getItem('game_model') || "gpt-4o-mini";
 let PLAYER_PROFILE = {
     summary: "Nouveau venu curieux.",
     traits: {}
@@ -100,32 +101,27 @@ async function loadScene(sceneId) {
 
     // Narrative Intro Logic:
     // 1. Manually inject the Context + Visual Cues as a "System Narrative" message (no speaker)
-    const contextMsg = `*${scene.narrative ? scene.narrative.visual_cues : ""} ${scene.narrative ? scene.narrative.context : scene.theme}*`;
-    addMessageToUI('bot', contextMsg, null);
+    // Only if first time loading this scene
+    if (!CHAT_SESSIONS[narratorId] || CHAT_SESSIONS[narratorId].length === 0) {
+        const contextMsg = `*${scene.narrative ? scene.narrative.visual_cues : ""} ${scene.narrative ? scene.narrative.context : scene.theme}*`;
+        // Store narrative in narrator's history so it persists
+        if (!CHAT_SESSIONS[narratorId]) CHAT_SESSIONS[narratorId] = [];
+        CHAT_SESSIONS[narratorId].push({ role: "assistant", content: contextMsg });
+    }
 
-    // 2. Trigger the Character's Welcoming Speech
-    const introPrompt = `
-    RÔLE : ${GAME_DATA.currentPersonas[narratorId].name} (${GAME_DATA.currentPersonas[narratorId].role}).
-    
-    SCÉNARIO : "${scene.narrative ? scene.narrative.context : scene.theme}".
-    PLAN NARRATIF : ${scene.narrative ? JSON.stringify(scene.narrative.steps) : "Improvise based on theme"}.
-    
-    MISSION DE DÉPART :
-    1. Souhaite la bienvenue au "Médiateur" (le Joueur).
-    2. Ouvre la conversation. Tu attends ses questions.
-    3. NE DEMANDE PAS DE DÉCISION TOUT DE SUITE.
-    
-    TON : Immersif, cinématique, mais interactif.
-    FORMAT : 
-    - COUPE tes réponses en petits blocs (max 60 mots).
-    - Sépare chaque bloc/bulle par le symbole "###".
-    - POUR LES DESCRIPTIONS : Utilise la 3ème personne ("Il regarde...", "La foule crie...").
-    - STRICTEMENT SÉPARER PAROLE ET NARRATION avec "###".
-    - Pour la narration, entoure le texte d'étoiles *comme ceci* (ce sera affiché hors bulle).
-    `;
+    // 2. Load History for the Narrator
+    restoreChatHistory(narratorId);
 
-    CHAT_SESSIONS[narratorId] = [];
-    await callBot(introPrompt, narratorId, true);
+    // 3. Trigger Greeting ONLY if new
+    if (CHAT_SESSIONS[narratorId].length <= 1) { // <= 1 because we just added the contextMsg
+        const introPrompt = `
+        RÔLE : ${GAME_DATA.currentPersonas[narratorId].name} (${GAME_DATA.currentPersonas[narratorId].role}).
+        SCÉNARIO : "${scene.narrative ? scene.narrative.context : scene.theme}".
+        MISSION : Souhaite la bienvenue au "Médiateur". Ouvre la conversation. NE DEMANDE PAS DE DÉCISION.
+        FORMAT : Blocs courts séparés par "###". Descriptions 3ème personne en *italique*.
+        `;
+        await callBot(introPrompt, narratorId, true);
+    }
 }
 
 // --- AJOUT : FONCTION ADMIN POUR SAUTER DE NIVEAU ---
@@ -136,6 +132,26 @@ window.manualLevelJump = function () {
 
 window.loadScene = loadScene;
 
+// --- AJOUT : FONCTIONS SETTINGS (Model Selector) ---
+window.openSettings = function () {
+    const modal = document.getElementById('settings-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        const select = document.getElementById('model-select');
+        if (select) select.value = CURRENT_MODEL;
+    }
+}
+
+window.saveSettings = function () {
+    const select = document.getElementById('model-select');
+    if (select) {
+        CURRENT_MODEL = select.value;
+        localStorage.setItem('game_model', CURRENT_MODEL);
+        alert("Modèle IA changé pour : " + CURRENT_MODEL);
+        document.getElementById('settings-modal').style.display = 'none';
+    }
+}
+
 // 3. DISPLAY
 function updateBackground(bgUrl) {
     if (ui.screen && bgUrl) {
@@ -143,6 +159,35 @@ function updateBackground(bgUrl) {
             linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%),
             url('${bgUrl}') center/cover no-repeat
         `;
+    }
+}
+
+// --- RESTORE HISTORY ---
+function restoreChatHistory(personaId) {
+    const chatContainer = document.getElementById('chat-scroll');
+    if (!chatContainer) return;
+    chatContainer.innerHTML = ''; // Clear previous
+
+    const history = CHAT_SESSIONS[personaId] || [];
+    history.forEach(msg => {
+        addMessageToUI(msg.role === 'assistant' ? 'bot' : 'user', msg.content, personaId);
+    });
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+// --- CHECK AUTO GREETING ---
+async function checkAutoGreeting(personaId) {
+    if (!CHAT_SESSIONS[personaId] || CHAT_SESSIONS[personaId].length === 0) {
+        const p = (GAME_DATA.currentPersonas || GAME_DATA.personas)[personaId];
+        const greetingPrompt = `
+        RÔLE : ${p.displayName}.
+        CONTEXTE : Le joueur "Médiateur" vient de se tourner vers toi pour la première fois.
+        ACTION : Présente-toi brièvement et donne ton avis sur la situation ("${CURRENT_SCENE.theme}").
+        FORMAT : Court (max 40 mots). Descriptions *italique*.
+        `;
+        // Init array
+        CHAT_SESSIONS[personaId] = [];
+        await callBot(greetingPrompt, personaId, true);
     }
 }
 
@@ -181,6 +226,9 @@ function renderInterface(scene) {
         </div>
     `;
     ui.screen.innerHTML = html;
+
+    // IMPORTANT: Restore history for the current target after rendering container
+    restoreChatHistory(CURRENT_CHAT_TARGET);
 }
 
 // 4. PLAYER ACTION & AI ROUTER
@@ -386,7 +434,7 @@ async function callAIInternal(systemPrompt) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            model: "gpt-4o-mini",
+            model: CURRENT_MODEL,
             messages: [],
             system: systemPrompt
         })
@@ -419,7 +467,7 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
             body: JSON.stringify({
                 messages: messagesToSend,
                 system: systemPrompt,
-                model: "gpt-4o-mini"
+                model: CURRENT_MODEL
             })
         });
         const data = await res.json();
@@ -540,21 +588,22 @@ function renderRoster() {
 window.openSideChat = function (personaId) {
     const activePersonas = GAME_DATA.currentPersonas || GAME_DATA.personas;
     const p = activePersonas[personaId];
+
+    // Switch Target
     CURRENT_CHAT_TARGET = personaId;
 
-    // Update main header too to show who we are talking to now
-    renderInterface(CURRENT_SCENE);
+    // Close Modal if open (since we are switching the MAIN view now, or we can keep it as is? User asked for clicking bubbles to switch chat)
+    // Actually the user request says "cliquer dessus... et quand on revient... reprend".
+    // Let's make the Side Bubbles switch the MAIN view instead of a modal, OR keep the modal but with history.
+    // The previous implementation used a modal. Let's stick to the user's request: "switch de chat comme si on l'avait sélectionné".
+    // So distinct chat windows.
+    // Let's RE-RENDER the main interface with the new target.
 
-    if (ui.modal) {
-        const avatarUrl = (p && p.avatar) ? p.avatar : 'assets/avatar_architecte.png';
-        ui.modalTitle.innerHTML = `
-            <div style="display:flex; align-items:center; gap:10px;">
-                <img src="${avatarUrl}" style="width:30px; height:30px; border-radius:50%; border:1px solid #ff8800; object-fit:cover;">
-                <span>${p.displayName}</span>
-            </div>
-        `;
-        ui.modal.style.display = 'flex';
-    }
+    renderInterface(CURRENT_SCENE);
+    if (ui.modal) ui.modal.style.display = 'none'; // Close modal if it was used before
+
+    // Trigger Auto-Greeting if empty
+    checkAutoGreeting(personaId);
 }
 
 window.closeSideChat = function () {
