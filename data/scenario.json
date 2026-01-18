@@ -5,9 +5,44 @@
   "scenes": {
     "level_1": {
       "id": "level_1",
-      "type": "dynamic",
-      "theme": "Sacred Lands vs Lithium. A massive lithium deposit is discovered under a sacred forest. Extracting it will destroy the forest but power the green revolution. The experts are divided.",
-      "background": "assets/bg_01.png"
+      "type": "narrative_dilemma",
+      "theme": "Sacred Lands vs Lithium",
+      "background": "assets/bg_01.png",
+      "narrative": {
+        "context": "Vous êtes envoyé par l'ONU en tant que Médiateur Spécial dans la vallée de Kymal. Une compagnie minière, 'Lithos Corp', a découvert le plus grand gisement de lithium du monde sous la forêt ancestrale des habitants locaux. Ce lithium est indispensable pour la transition écologique mondiale (batteries, énergies vertes). Mais pour l'extraire, il faut raser la forêt sacrée.",
+        "characters": [
+          {
+            "id": "char_l1_ceo",
+            "name": "Marcus Vane",
+            "role": "PDG de Lithos Corp",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Visionnaire, impatient, obsédé par le 'progrès global'. Pour lui, quelques arbres ne valent pas le sauvetage climatique de la planète."
+          },
+          {
+            "id": "char_l1_elder",
+            "name": "Elara",
+            "role": "Gardienne du Bois",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Sage et inflexible. Cette forêt abrite l'âme de ses ancêtres. Sa destruction serait un génocide culturel."
+          },
+          {
+            "id": "char_l1_gov",
+            "name": "Préfet Morel",
+            "role": "Représentant de l'État",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Coincé entre l'économie nationale et la paix sociale. Il a peur des émeutes mais a besoin de l'argent du lithium."
+          }
+        ],
+        "steps": [
+          "INTRO: Le joueur arrive par hélicoptère. Vane et Elara l'attendent sur le tarmac, déjà en train de se disputer.",
+          "PHASE 1 (Enquête): Le joueur doit interroger Vane et Elara pour comprendre l'urgence (Vane) et le sacré (Elara).",
+          "PHASE 2 (Conflit): Le Préfet Morel intervient pour signaler que les bulldozers sont prêts, mais que des manifestants bloquent le site.",
+          "CLIMAX (Dilemme): Le joueur doit décider : Autoriser l'extraction (force) ou Sanctuariser la forêt (abandon du lithium)."
+        ]
+      }
     },
     "level_2": {
       "id": "level_2",

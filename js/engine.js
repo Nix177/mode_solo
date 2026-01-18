@@ -77,29 +77,44 @@ async function loadScene(sceneId) {
     const chatContainer = document.getElementById('chat-scroll');
     if (chatContainer) chatContainer.innerHTML = '';
 
-    // Default GM persona
-    const gmPersonaId = "A-1";
-    CURRENT_CHAT_TARGET = gmPersonaId;
+    // --- DETECT ACTIVE CHARACTERS ---
+    // If scene has specific characters, use them. Otherwise default to generic personas.
+    if (scene.narrative && scene.narrative.characters) {
+        GAME_DATA.currentPersonas = {}; // Temporary override
+        scene.narrative.characters.forEach(c => {
+            GAME_DATA.currentPersonas[c.id] = { ...c, displayName: c.name + " (" + c.role + ")" };
+        });
 
+        // Define default speaker (first in list)
+        var narratorId = scene.narrative.characters[0].id;
+    } else {
+        // Fallback to global personas
+        GAME_DATA.currentPersonas = GAME_DATA.personas;
+        var narratorId = "A-1";
+    }
+
+    CURRENT_CHAT_TARGET = narratorId;
+    renderRoster(); // Re-render roster with new characters
     renderInterface(scene);
 
-    // Dynamic Intro Generation based on Profile
+    // Narrative Intro
     const introPrompt = `
-    RÔLE : LE "DIRECTEUR" (A-1).
-    CONTEXTE : Le joueur arrive dans le scénario : "${scene.theme}".
-    PROFIL JOUEUR : "${PLAYER_PROFILE.summary}".
+    RÔLE : ${GAME_DATA.currentPersonas[narratorId].name} (${GAME_DATA.currentPersonas[narratorId].role}).
     
-    TA MISSION :
-    1. PLANTE LE DÉCOR IMMÉDIATEMENT : Décris la situation concrète qui pose problème.
-    2. METS LE JOUEUR AU PIED DU MUR : Il DOIT trancher.
-    3. NE DEMANDE PAS "Quelle est votre position ?" -> DEMANDE UNE ACTION (ex: "Validez-vous le protocole ?", "Ordonnez-vous l'arrêt ?").
+    SCÉNARIO : "${scene.narrative ? scene.narrative.context : scene.theme}".
+    PLAN NARRATIF : ${scene.narrative ? JSON.stringify(scene.narrative.steps) : "Improvise based on theme"}.
     
-    TON : Sérieux, urgent, impliquant.
-    FORMAT : 2 phrases courtes maximum. Pas de blabla.
+    MISSION DE DÉPART :
+    1. Souhaite la bienvenue au "Médiateur" (le Joueur).
+    2. Plante le décor (Lieu, Ambiance, Tension).
+    3. Présente les autres protagonistes présents.
+    4. Invite le joueur à poser des questions avant de trancher.
+    
+    TON : Immersif, cinématique, mais interactif.
     `;
 
-    CHAT_SESSIONS[gmPersonaId] = [];
-    await callBot(introPrompt, gmPersonaId, true);
+    CHAT_SESSIONS[narratorId] = [];
+    await callBot(introPrompt, narratorId, true);
 }
 
 // --- AJOUT : FONCTION ADMIN POUR SAUTER DE NIVEAU ---
@@ -124,7 +139,10 @@ function renderInterface(scene) {
     const stepCount = PLAYED_SCENES.length;
 
     // Récupération Avatar pour le Header
-    const p = GAME_DATA.personas[CURRENT_CHAT_TARGET];
+    // Récupération Personas (Global ou Local)
+    const activePersonas = GAME_DATA.currentPersonas || GAME_DATA.personas;
+    const p = activePersonas[CURRENT_CHAT_TARGET];
+
     const avatarUrl = (p && p.avatar) ? p.avatar : 'assets/avatar_architecte.png';
     const name = p ? p.displayName : 'Système';
 
@@ -170,11 +188,14 @@ window.sendPlayerAction = async function (text) {
 
     const turnCount = CHAT_SESSIONS[CURRENT_CHAT_TARGET].filter(m => m.role === 'user').length;
 
+    const activePersonas = GAME_DATA.currentPersonas || GAME_DATA.personas;
+
     // --- CHECK FOR END OF LEVEL ---
+    // Pass the narrative steps to the checker to see if we are deep enough
     const decisionCheck = await checkDecisionMade(text, CURRENT_SCENE.theme, turnCount);
 
     if (decisionCheck.status === "DECIDED") {
-        addMessageToUI('bot', `[SYSTÈME] : Choix enregistré.`, CURRENT_CHAT_TARGET);
+        addMessageToUI('bot', `[SYSTÈME] : Choix enregistré. Fin de séquence.`, CURRENT_CHAT_TARGET);
 
         await updatePlayerProfile(text, CURRENT_SCENE.theme);
         const nextSceneId = await pickNextScene();
@@ -189,22 +210,18 @@ window.sendPlayerAction = async function (text) {
         return;
     }
 
-    const isLateGame = turnCount >= 4;
+    const isLateGame = turnCount >= 5;
     const debatePrompt = `
     CONTEXTE : Le joueur a dit : "${text}".
     SCÉNARIO : "${CURRENT_SCENE.theme}".
+    RÔLE ACTUEL : ${activePersonas[CURRENT_CHAT_TARGET].displayName} (${activePersonas[CURRENT_CHAT_TARGET].bio}).
+    AUTRES PERSOS PRÉSENTS : ${Object.values(activePersonas).map(p => p.name).join(', ')}.
     
-    RÔLE : ${GAME_DATA.personas[CURRENT_CHAT_TARGET].displayName} (${GAME_DATA.personas[CURRENT_CHAT_TARGET].bio}).
-    
-    OBJECTIF :
-    - INTERAGIS DE MANIÈRE ORGANIQUE : Rebondis sur son argument précis. Ne change pas de sujet.
-    - SI LE JOUEUR EST FLOU : Pousse-le dans ses retranchements ("Mais concrètement, acceptez-vous que... ?").
-    - SI LE DÉBAT DURE (${turnCount} échanges) : Exige une décision finale binaire (OUI/NON, ACTIVER/STOPPER).
-    
-    TON :
-    - Naturel, conversationnel, mais orienté vers la résolution du dilemme.
-    - PAS DE QUESTIONS OUVERTES GÉNÉRALES. Des questions qui forcent un choix.
-    - MAXIMUM 2 PHRASES.
+    INSTRUCTIONS DYNAMIQUES :
+    - Tu es ce personnage. Réagis avec TON caractère (Archetype).
+    - Si le joueur s'adresse à un autre personnage (ex: "Je demande à Elara"), mentionne-le brièvement (ex: "[Elara s'avance...]"), mais reste dans ton rôle pour l'instant ou suggère au joueur de cliquer sur l'autre avatar.
+    - Si le débat s'enlise, rappelle l'urgence.
+    ${isLateGame ? "- C'est la fin du temps imparti. Exige une décision." : "- Continue de fournir des arguments ou des contre-arguments."}
     `;
 
     await callBot(debatePrompt, CURRENT_CHAT_TARGET);
@@ -402,7 +419,9 @@ function buildMsgHTML(role, text, personaId) {
     let avatarImg = '';
 
     if (!isUser && personaId) {
-        const p = GAME_DATA.personas[personaId];
+        // Use local or global personas
+        const activePersonas = GAME_DATA.currentPersonas || GAME_DATA.personas;
+        const p = activePersonas[personaId];
         const url = (p && p.avatar) ? p.avatar : 'assets/avatar_architecte.png';
         avatarImg = `<img src="${url}" style="width:40px; height:40px; border-radius:50%; margin-right:10px; border:2px solid #ff8800; object-fit:cover; flex-shrink:0;">`;
     }
@@ -417,7 +436,8 @@ function buildMsgHTML(role, text, personaId) {
 function renderRoster() {
     if (!ui.roster) return;
     ui.roster.innerHTML = '';
-    Object.values(GAME_DATA.personas).forEach(p => {
+    const activePersonas = GAME_DATA.currentPersonas || GAME_DATA.personas;
+    Object.values(activePersonas).forEach(p => {
         const div = document.createElement('div');
         div.className = 'roster-btn';
         div.style.backgroundImage = `url('${p.avatar}')`;
@@ -429,8 +449,13 @@ function renderRoster() {
 
 // MODIFICATION : Avatar dans le titre de la modale
 window.openSideChat = function (personaId) {
-    const p = GAME_DATA.personas[personaId];
+    const activePersonas = GAME_DATA.currentPersonas || GAME_DATA.personas;
+    const p = activePersonas[personaId];
     CURRENT_CHAT_TARGET = personaId;
+
+    // Update main header too to show who we are talking to now
+    renderInterface(CURRENT_SCENE);
+
     if (ui.modal) {
         const avatarUrl = (p && p.avatar) ? p.avatar : 'assets/avatar_architecte.png';
         ui.modalTitle.innerHTML = `
