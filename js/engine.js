@@ -8,6 +8,7 @@ let CURRENT_CHAT_TARGET = null;
 
 // New non-linear state
 let PLAYED_SCENES = [];
+let GLOBAL_HISTORY = []; // Stores { sceneId, role, speakerName, content }
 let PLAYER_PROFILE = {
     summary: "Nouveau venu curieux.",
     traits: {}
@@ -111,6 +112,11 @@ async function loadScene(sceneId) {
     4. Invite le joueur à poser des questions avant de trancher.
     
     TON : Immersif, cinématique, mais interactif.
+    FORMAT : 
+    - COUPE tes réponses en petits blocs (max 60 mots).
+    - Sépare chaque bloc/bulle par le symbole "###".
+    - Pour les actions/descriptions, entoure le texte d'étoiles *comme ceci* (ce sera affiché hors bulle).
+    - Exemple: *Il soupire.* ### "Je ne peux pas faire ça." ### *Il regarde ailleurs.*
     `;
 
     CHAT_SESSIONS[narratorId] = [];
@@ -186,6 +192,14 @@ window.sendPlayerAction = async function (text) {
     if (!CHAT_SESSIONS[CURRENT_CHAT_TARGET]) CHAT_SESSIONS[CURRENT_CHAT_TARGET] = [];
     CHAT_SESSIONS[CURRENT_CHAT_TARGET].push({ role: "user", content: text });
 
+    // --- RECORD HISTORY ---
+    GLOBAL_HISTORY.push({
+        sceneId: CURRENT_SCENE.id,
+        role: "user",
+        speakerName: "Joueur",
+        content: text
+    });
+
     const turnCount = CHAT_SESSIONS[CURRENT_CHAT_TARGET].filter(m => m.role === 'user').length;
 
     const activePersonas = GAME_DATA.currentPersonas || GAME_DATA.personas;
@@ -197,7 +211,7 @@ window.sendPlayerAction = async function (text) {
     if (decisionCheck.status === "DECIDED") {
         addMessageToUI('bot', `[SYSTÈME] : Choix enregistré. Fin de séquence.`, CURRENT_CHAT_TARGET);
 
-        await updatePlayerProfile(text, CURRENT_SCENE.theme);
+        await updatePlayerProfile(CURRENT_SCENE.theme);
         const nextSceneId = await pickNextScene();
 
         setTimeout(() => {
@@ -219,9 +233,13 @@ window.sendPlayerAction = async function (text) {
     
     INSTRUCTIONS DYNAMIQUES :
     - Tu es ce personnage. Réagis avec TON caractère (Archetype).
-    - Si le joueur s'adresse à un autre personnage (ex: "Je demande à Elara"), mentionne-le brièvement (ex: "[Elara s'avance...]"), mais reste dans ton rôle pour l'instant ou suggère au joueur de cliquer sur l'autre avatar.
+    - Si le joueur s'adresse à un autre personnage (ex: "Je demande à Elara"), mentionne-le brièvement (ex: "*Elara s'avance...*") ###.
     - Si le débat s'enlise, rappelle l'urgence.
     ${isLateGame ? "- C'est la fin du temps imparti. Exige une décision." : "- Continue de fournir des arguments ou des contre-arguments."}
+    
+    FORMAT :
+    - Sépare tes idées en blocs courts (max 80 mots) avec "###".
+    - Utilise *italique* pour les descriptions (hors bulle).
     `;
 
     await callBot(debatePrompt, CURRENT_CHAT_TARGET);
@@ -238,14 +256,13 @@ async function showGameSummary() {
 
     const prompt = `
     RÔLE : OBSERVATEUR ANALYTIQUE DE DONNÉES.
-    DONNÉES DE SESSION :
-    - Profil des choix enregistrés : "${PLAYER_PROFILE.summary}".
-    - Nombre de scénarios joués : ${PLAYED_SCENES.length}.
+    DONNÉES DE SESSION COMPLÈTES (TRANSCRIPTION) :
+    ${JSON.stringify(GLOBAL_HISTORY)}
     
-    TÂCHE : Rédige une synthèse interprétative de la partie (150 mots max) pour le joueur.
-    1. Résume les grandes tendances de ses réponses (ex: "préférence pour le collectif", "pragmatisme inflexible", etc.).
-    2. Mentionne comment ses choix ont évolué au fil des scénarios.
-    3. Utilise un ton neutre, factuel et légèrement ludique. Ce n'est PAS un diagnostic psychologique, mais un bilan de jeu.
+    TÂCHE : Rédige une synthèse interprétative de la partie (200 mots max) pour le joueur.
+    1. Analyse la cohérence de ses choix à travers les différents scénarios.
+    2. Détecte ses contradictions ou ses évolutions morales.
+    3. Cite des moments précis ("Dans la vallée de Kymal, vous avez dit...").
     
     Format : HTML simple (sans balises <html>, juste <p>, <h2>, etc).
     `;
@@ -290,17 +307,20 @@ async function checkDecisionMade(lastUserAction, theme, turnCount) {
     }
 }
 
-async function updatePlayerProfile(lastArgument, theme) {
+async function updatePlayerProfile(theme) {
+    // Get transcript for THIS scene only
+    const sceneTranscript = GLOBAL_HISTORY.filter(h => h.sceneId === CURRENT_SCENE.id);
+
     const prompt = `
     SUIVI DES CHOIX DU JOUEUR.
-    Historique des choix : "${PLAYER_PROFILE.summary}"
-    Thème du scénario : "${theme}"
-    Décision/Position du joueur : "${lastArgument}"
+    ANCIEN PROFIL : "${PLAYER_PROFILE.summary}"
+    TRANSCRIPTION SCÉNARIO "${theme}" :
+    ${JSON.stringify(sceneTranscript)}
     
-    Tâche : Mets à jour le résumé narratif des choix du joueur.
-    Sois factuel. Décris la tendance qui se dégage (ex: "Tend à privilégier la sécurité sur la liberté").
+    Tâche : Mets à jour le résumé narratif du joueur en intégrant ses décisions récentes.
+    Sois précis sur ses valeurs (ex: "A sacrifié la forêt pour l'économie").
     
-    Réponds UNIQUEMENT le nouveau résumé texte (max 1 phrase).
+    Réponds UNIQUEMENT le nouveau résumé texte (max 2 phrases).
     `;
 
     try {
@@ -396,10 +416,26 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
         if (loader) loader.remove();
 
         const reply = data.reply;
-        addMessageToUI('bot', reply, targetId);
 
-        if (!CHAT_SESSIONS[targetId]) CHAT_SESSIONS[targetId] = [];
-        CHAT_SESSIONS[targetId].push({ role: "assistant", content: reply });
+        // --- SPLIT MESSAGES BY DELIMITER ### ---
+        const chunks = reply.split('###').map(s => s.trim()).filter(s => s.length > 0);
+
+        for (const chunk of chunks) {
+            addMessageToUI('bot', chunk, targetId);
+            // Add to history
+            if (!CHAT_SESSIONS[targetId]) CHAT_SESSIONS[targetId] = [];
+            CHAT_SESSIONS[targetId].push({ role: "assistant", content: chunk });
+
+            // Add to GLOBAL HISTORY
+            const activePersonas = GAME_DATA.currentPersonas || GAME_DATA.personas;
+            const speakerName = activePersonas[targetId] ? activePersonas[targetId].name : "Système";
+            GLOBAL_HISTORY.push({
+                sceneId: CURRENT_SCENE.id,
+                role: "bot",
+                speakerName: speakerName,
+                content: chunk
+            });
+        }
 
     } catch (e) {
         console.error(e);
@@ -413,9 +449,22 @@ function addMessageToUI(role, text, personaId) {
     container.scrollTop = container.scrollHeight;
 }
 
-// MODIFICATION : Style CSS-in-JS pour alignement Avatar + Bulle
+// MODIFICATION : Style CSS-in-JS pour alignement Avatar + Bulle + Narratif
 function buildMsgHTML(role, text, personaId) {
     const isUser = role === 'user';
+    const isNarrative = !isUser && text.startsWith('*') && text.endsWith('*');
+
+    if (isNarrative) {
+        // STYLE NARRATIF (Hors bulle, italique, centré ou discret)
+        const cleanText = text.replace(/\*/g, '').trim();
+        return `
+        <div class="msg-row narrative" style="display:flex; justify-content:center; margin: 15px 0; opacity:0; animation:fadeIn 0.5s forwards;">
+            <div style="color: #aaa; font-style: italic; font-size: 0.95em; text-align:center; max-width:90%;">
+                ${cleanText}
+            </div>
+        </div>`;
+    }
+
     let avatarImg = '';
 
     if (!isUser && personaId) {
@@ -429,7 +478,7 @@ function buildMsgHTML(role, text, personaId) {
     return `
     <div class="msg-row ${isUser ? 'user' : 'bot'}" style="display:flex; align-items:flex-start; margin-bottom:10px; ${isUser ? 'justify-content:flex-end;' : ''}">
         ${!isUser ? avatarImg : ''} 
-        <div class="msg-bubble" style="${!isUser ? 'background:#4a3b2a; border-left:4px solid #ff8800; color:white; padding:10px; border-radius:10px; max-width:80%;' : 'background:#333; color:#ddd; padding:10px; border-radius:10px; max-width:80%;'}">${text}</div>
+        <div class="msg-bubble" style="${!isUser ? 'background:#4a3b2a; border-left:4px solid #ff8800; color:white; padding:10px; border-radius:10px; max-width:80%; box-shadow:0 2px 5px rgba(0,0,0,0.2);' : 'background:#333; color:#ddd; padding:10px; border-radius:10px; max-width:80%; box-shadow:0 2px 5px rgba(0,0,0,0.2);'}">${text}</div>
     </div>`;
 }
 

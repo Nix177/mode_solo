@@ -10,6 +10,7 @@
       "background": "assets/bg_01.png",
       "narrative": {
         "context": "Vous êtes envoyé par l'ONU en tant que Médiateur Spécial dans la vallée de Kymal. Une compagnie minière, 'Lithos Corp', a découvert le plus grand gisement de lithium du monde sous la forêt ancestrale des habitants locaux. Ce lithium est indispensable pour la transition écologique mondiale (batteries, énergies vertes). Mais pour l'extraire, il faut raser la forêt sacrée.",
+        "visual_cues": "Atmosphère tendue, brume matinale sur la forêt à gauche, bulldozers futuristes à l'arrêt à droite. Ciel gris orageux.",
         "characters": [
           {
             "id": "char_l1_ceo",
@@ -17,7 +18,8 @@
             "role": "PDG de Lithos Corp",
             "archetype": "A-1",
             "avatar": "assets/avatar_architecte.png",
-            "bio": "Visionnaire, impatient, obsédé par le 'progrès global'. Pour lui, quelques arbres ne valent pas le sauvetage climatique de la planète."
+            "bio": "Visionnaire, impatient, obsédé par le 'progrès global'. Il porte un costume impeccable mais des bottes de chantier. Il pianote sur une tablette holochart.",
+            "secret_agenda": "Il a promis ce gisement à des investisseurs chinois. Si ça échoue, sa société coule."
           },
           {
             "id": "char_l1_elder",
@@ -25,7 +27,8 @@
             "role": "Gardienne du Bois",
             "archetype": "B-2",
             "avatar": "assets/avatar_poete.png",
-            "bio": "Sage et inflexible. Cette forêt abrite l'âme de ses ancêtres. Sa destruction serait un génocide culturel."
+            "bio": "Sage et inflexible. vêtue de tissus traditionnels usés. Elle tient un bâton sculpté. Elle ne vous regarde pas dans les yeux, elle regarde la forêt.",
+            "secret_agenda": "La forêt meurt déjà d'une maladie fongique, mais elle refuse de l'admettre. C'est une question de principe."
           },
           {
             "id": "char_l1_gov",
@@ -33,15 +36,21 @@
             "role": "Représentant de l'État",
             "archetype": "C-3",
             "avatar": "assets/avatar_sceptique.png",
-            "bio": "Coincé entre l'économie nationale et la paix sociale. Il a peur des émeutes mais a besoin de l'argent du lithium."
+            "bio": "Coincé entre l'économie nationale et la paix sociale. Il transpire, défait son col.",
+            "secret_agenda": "Il veut juste éviter une ZAD (Zone à Défendre) violente avant les élections."
           }
         ],
         "steps": [
-          "INTRO: Le joueur arrive par hélicoptère. Vane et Elara l'attendent sur le tarmac, déjà en train de se disputer.",
-          "PHASE 1 (Enquête): Le joueur doit interroger Vane et Elara pour comprendre l'urgence (Vane) et le sacré (Elara).",
-          "PHASE 2 (Conflit): Le Préfet Morel intervient pour signaler que les bulldozers sont prêts, mais que des manifestants bloquent le site.",
-          "CLIMAX (Dilemme): Le joueur doit décider : Autoriser l'extraction (force) ou Sanctuariser la forêt (abandon du lithium)."
-        ]
+          "INTRO: Le joueur arrive par hélicoptère. Le bruit des pales couvre les cris. Vane et Elara l'attendent sur le tarmac, séparés par des gardes privés.",
+          "PHASE 1 (Confrontation): Vane hurle sur le retard logistique. Elara chante doucement pour couvrir sa voix. Le joueur doit calmer le jeu pour obtenir les faits.",
+          "PHASE 2 (Enquête): Découverte des enjeux cachés. Le joueur peut questionner les motivations réelles (Dette de Vane ? Maladie de la forêt ?).",
+          "PHASE 3 (Crise): Un bulldozer démarre par accident (ou sabotage ?). La foule s'agite. Morel panique.",
+          "CLIMAX (Dilemme): Le joueur doit décider DANS L'URGENCE : Autoriser l'extraction (force) ou Sanctuariser la forêt (abandon du lithium)."
+        ],
+        "endings": {
+          "extract": "La forêt est rasée. Le cours du lithium chute, rendant les VE abordables. Elara disparaît. La vallée devient une zone industrielle morte mais riche.",
+          "protect": "La forêt est sauvée. Lithos fait faillite, crise économique régionale. La forêt finit par mourir de sa maladie 10 ans plus tard, mais le symbole reste."
+        }
       }
     },
     "level_2": {
