@@ -177,19 +177,20 @@ async function showGameSummary() {
     // Show loading state
     ui.screen.innerHTML = `
         <div class="slide-content" style="text-align:center;">
-            <h1>ANALYSE FINALE EN COURS...</h1>
-            <p>L'IA compile votre profil philosophique...</p>
+            <h1>COMPILATION DES RÉSULTATS...</h1>
+            <p>L'IA interprète vos choix et les statistiques...</p>
         </div>`;
 
     const prompt = `
-    RÔLE : PSYCHOLOGUE PHILOSOPHE IA.
-    PROFIL FINAL JOUEUR : "${PLAYER_PROFILE.summary}".
-    SCÉNARIOS JOUÉS : ${PLAYED_SCENES.length}.
+    RÔLE : OBSERVATEUR ANALYTIQUE DE DONNÉES.
+    DONNÉES DE SESSION :
+    - Profil des choix enregistrés : "${PLAYER_PROFILE.summary}".
+    - Nombre de scénarios joués : ${PLAYED_SCENES.length}.
     
-    TÂCHE : Rédige une analyse finale de 150 mots s'adressant au joueur ("Vous").
-    1. Définis son archétype (ex: "L'Utilitariste Pragmatique", "Le Gardien des Traditions").
-    2. Résume ses forces morales.
-    3. Souligne ses contradictions ou points aveugles.
+    TÂCHE : Rédige une synthèse interprétative de la partie (150 mots max) pour le joueur.
+    1. Résume les grandes tendances de ses réponses (ex: "préférence pour le collectif", "pragmatisme inflexible", etc.).
+    2. Mentionne comment ses choix ont évolué au fil des scénarios.
+    3. Utilise un ton neutre, factuel et légèrement ludique. Ce n'est PAS un diagnostic psychologique, mais un bilan de jeu.
     
     Format : HTML simple (sans balises <html>, juste <p>, <h2>, etc).
     `;
@@ -198,7 +199,7 @@ async function showGameSummary() {
         const report = await callAIInternal(prompt);
         ui.screen.innerHTML = `
             <div class="slide-content" style="max-width: 800px; text-align: left; overflow-y:auto; max-height:80vh;">
-                <h1 style="color: #4cd137;">Rapport de Fin de Simulation</h1>
+                <h1 style="color: #4cd137;">Synthèse de la Session</h1>
                 <div style="background: rgba(0,0,0,0.3); padding: 25px; border-radius: 8px; margin-top:20px; line-height: 1.6; font-size: 1.1em;">
                     ${report}
                 </div>
@@ -236,15 +237,15 @@ async function checkDecisionMade(lastUserAction, theme, turnCount) {
 
 async function updatePlayerProfile(lastArgument, theme) {
     const prompt = `
-    ANALYSE PSYCHO-PHILOSOPHIQUE.
-    Ancien Profil: "${PLAYER_PROFILE.summary}"
-    Thème : "${theme}"
-    Dernière position du joueur : "${lastArgument}"
+    SUIVI DES CHOIX DU JOUEUR.
+    Historique des choix : "${PLAYER_PROFILE.summary}"
+    Thème du scénario : "${theme}"
+    Décision/Position du joueur : "${lastArgument}"
     
-    Tâche : Mets à jour le résumé du profil du joueur en 1 phrase courte.
-    Concentre-toi sur ses valeurs.
+    Tâche : Mets à jour le résumé narratif des choix du joueur.
+    Sois factuel. Décris la tendance qui se dégage (ex: "Tend à privilégier la sécurité sur la liberté").
     
-    Réponds UNIQUEMENT le nouveau résumé texte.
+    Réponds UNIQUEMENT le nouveau résumé texte (max 1 phrase).
     `;
 
     try {
