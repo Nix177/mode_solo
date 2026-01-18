@@ -98,7 +98,12 @@ async function loadScene(sceneId) {
     renderRoster(); // Re-render roster with new characters
     renderInterface(scene);
 
-    // Narrative Intro
+    // Narrative Intro Logic:
+    // 1. Manually inject the Context + Visual Cues as a "System Narrative" message (no speaker)
+    const contextMsg = `*${scene.narrative ? scene.narrative.visual_cues : ""} ${scene.narrative ? scene.narrative.context : scene.theme}*`;
+    addMessageToUI('bot', contextMsg, null);
+
+    // 2. Trigger the Character's Welcoming Speech
     const introPrompt = `
     RÔLE : ${GAME_DATA.currentPersonas[narratorId].name} (${GAME_DATA.currentPersonas[narratorId].role}).
     
@@ -107,9 +112,8 @@ async function loadScene(sceneId) {
     
     MISSION DE DÉPART :
     1. Souhaite la bienvenue au "Médiateur" (le Joueur).
-    2. Plante le décor (Lieu, Ambiance, Tension).
-    3. Présente les autres protagonistes présents.
-    4. Invite le joueur à poser des questions avant de trancher.
+    2. Ouvre la conversation. Tu attends ses questions.
+    3. NE DEMANDE PAS DE DÉCISION TOUT DE SUITE.
     
     TON : Immersif, cinématique, mais interactif.
     FORMAT : 
@@ -118,7 +122,6 @@ async function loadScene(sceneId) {
     - POUR LES DESCRIPTIONS : Utilise la 3ème personne ("Il regarde...", "La foule crie...").
     - STRICTEMENT SÉPARER PAROLE ET NARRATION avec "###".
     - Pour la narration, entoure le texte d'étoiles *comme ceci* (ce sera affiché hors bulle).
-    - Exemple: *Il soupire en regardant la vallée.* ### "Je ne peux pas faire ça." ### *Il se détourne brusquement.* "C'est fini."
     `;
 
     CHAT_SESSIONS[narratorId] = [];
@@ -235,9 +238,11 @@ window.sendPlayerAction = async function (text) {
     
     INSTRUCTIONS DYNAMIQUES :
     - Tu es ce personnage. Réagis avec TON caractère (Archetype).
+    - MAÏEUTIQUE : Aide le joueur à développer sa pensée. Pose des questions ouvertes ("Pourquoi pensez-vous cela ?", "Et pour les locaux ?").
+    - Ne sois pas juste "contre" ou "pour". Sois nuancé.
     - Si le joueur s'adresse à un autre personnage (ex: "Je demande à Elara"), mentionne-le brièvement (ex: "*Elara s'avance...*") ###.
-    - Si le débat s'enlise, rappelle l'urgence.
-    ${isLateGame ? "- C'est la fin du temps imparti. Exige une décision." : "- Continue de fournir des arguments ou des contre-arguments."}
+    - Si le débat s'enlise (plus de 6 tours), alors rappelle l'urgence.
+    ${isLateGame ? "- C'est la fin du temps imparti. Exige une décision." : "- Continue de creuser la position du joueur."}
     
     FORMAT :
     - Sépare tes idées en blocs courts (max 80 mots) avec "###".
