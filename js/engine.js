@@ -130,10 +130,17 @@ function renderInterface(scene) {
 
     // MODIFICATION : Header avec Avatar + Titre cliquable (Admin)
     let html = `
-        <div class="slide-content" style="margin-bottom: 20px; padding: 20px; cursor:pointer;" onclick="window.manualLevelJump()" title="Admin: Changer de scène">
-            <h1 style="font-size:1.2em; color:#ddd; text-transform:uppercase; margin:0;">
-                Séquence ${stepCount} <span style="font-size:0.8em; opacity:0.5;">(⚙️)</span>
-            </h1>
+        <div class="header-bar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; padding: 0 20px;">
+            <div onclick="window.manualLevelJump()" style="cursor:pointer;" title="Admin: Changer de scène">
+                <h1 style="font-size:1.2em; color:#ddd; text-transform:uppercase; margin:0;">
+                    Séquence ${stepCount} <span style="font-size:0.8em; opacity:0.5;">(⚙️)</span>
+                </h1>
+            </div>
+            <div>
+                <button onclick="window.viewProfile()" style="background:transparent; border:1px solid #ff8800; color:#ff8800; padding:5px 15px; cursor:pointer; font-size:0.8em; border-radius:20px;">
+                    👁️ Voir ma synthèse
+                </button>
+            </div>
         </div>
 
         <div class="chat-box">
@@ -439,6 +446,11 @@ window.openSideChat = function (personaId) {
 window.closeSideChat = function () {
     if (ui.modal) ui.modal.style.display = 'none';
     CURRENT_CHAT_TARGET = "A-1";
+}
+
+// --- AJOUT : FONCTION VOIR PROFIL ---
+window.viewProfile = function () {
+    alert(`📜 SYNTHÈSE ACTUELLE DE L'IA :\n\n${PLAYER_PROFILE.summary || "Aucune donnée..."}\n\n(Ce résumé s'affine à chaque décision)`);
 }
 
 init();
