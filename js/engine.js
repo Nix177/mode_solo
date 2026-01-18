@@ -115,8 +115,10 @@ async function loadScene(sceneId) {
     FORMAT : 
     - COUPE tes réponses en petits blocs (max 60 mots).
     - Sépare chaque bloc/bulle par le symbole "###".
-    - Pour les actions/descriptions, entoure le texte d'étoiles *comme ceci* (ce sera affiché hors bulle).
-    - Exemple: *Il soupire.* ### "Je ne peux pas faire ça." ### *Il regarde ailleurs.*
+    - POUR LES DESCRIPTIONS : Utilise la 3ème personne ("Il regarde...", "La foule crie...").
+    - STRICTEMENT SÉPARER PAROLE ET NARRATION avec "###".
+    - Pour la narration, entoure le texte d'étoiles *comme ceci* (ce sera affiché hors bulle).
+    - Exemple: *Il soupire en regardant la vallée.* ### "Je ne peux pas faire ça." ### *Il se détourne brusquement.* "C'est fini."
     `;
 
     CHAT_SESSIONS[narratorId] = [];
@@ -239,7 +241,7 @@ window.sendPlayerAction = async function (text) {
     
     FORMAT :
     - Sépare tes idées en blocs courts (max 80 mots) avec "###".
-    - Utilise *italique* pour les descriptions (hors bulle).
+    - Utilise *italique* de la 3ème personne pour les descriptions (hors bulle), séparées des dialogues par "###".
     `;
 
     await callBot(debatePrompt, CURRENT_CHAT_TARGET);
@@ -288,7 +290,11 @@ async function showGameSummary() {
 // --- AI FUNCTIONS ---
 
 async function checkDecisionMade(lastUserAction, theme, turnCount) {
-    const leniency = turnCount > 4 ? "VERY LENIENT: If the player seems tired, repeats themselves, or gives ANY opinion, count as DECIDED." : "NORMAL";
+    // INCREASED THRESHOLD: Don't check too early. Let the conversation flow.
+    if (turnCount < 4) return { status: "DEBATING" };
+
+    // Only become lenient very late
+    const leniency = turnCount > 8 ? "VERY LENIENT" : "STRICT";
 
     try {
         const res = await callAIInternal(`
@@ -387,8 +393,9 @@ async function callAIInternal(systemPrompt) {
 async function callBot(systemPrompt, targetId, isIntro = false) {
     const container = document.getElementById('chat-scroll');
     const loadingId = 'loading-' + Date.now();
+
+    // Initial loading state (only if container exists)
     if (container) {
-        // Chargement AVEC Avatar
         const loadingHTML = buildMsgHTML('bot', '...', targetId)
             .replace('msg-bubble', 'msg-bubble loading')
             .replace('class="msg-row bot"', `id="${loadingId}" class="msg-row bot"`);
@@ -412,6 +419,7 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
         });
         const data = await res.json();
 
+        // Remove initial loader immediately as we will process chunks
         const loader = document.getElementById(loadingId);
         if (loader) loader.remove();
 
@@ -421,7 +429,34 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
         const chunks = reply.split('###').map(s => s.trim()).filter(s => s.length > 0);
 
         for (const chunk of chunks) {
+            // CALCULATE DELAY: ~200 words/min = ~3 words/sec => ~300ms per word.
+            const wordCount = chunk.split(' ').length;
+            const delayMs = Math.min(Math.max(wordCount * 300, 1500), 5000);
+
+            // Show new typing indicator for THIS chunk
+            let chunkLoadingId = null;
+            // Improved Regex to catch *Text* even with spaces like " * Text * "
+            const isNarrative = /^\s*\*.*\*\s*$/.test(chunk);
+
+            if (!isNarrative && container) {
+                chunkLoadingId = 'chunk-loading-' + Date.now() + Math.random();
+                container.innerHTML += buildMsgHTML('bot', '...', targetId)
+                    .replace('msg-bubble', 'msg-bubble loading')
+                    .replace('class="msg-row bot"', `id="${chunkLoadingId}" class="msg-row bot"`);
+                container.scrollTop = container.scrollHeight;
+            }
+
+            // Wait for reading/typing time
+            await new Promise(r => setTimeout(r, delayMs));
+
+            // Remove chunk loader
+            if (chunkLoadingId) {
+                const l = document.getElementById(chunkLoadingId);
+                if (l) l.remove();
+            }
+
             addMessageToUI('bot', chunk, targetId);
+
             // Add to history
             if (!CHAT_SESSIONS[targetId]) CHAT_SESSIONS[targetId] = [];
             CHAT_SESSIONS[targetId].push({ role: "assistant", content: chunk });
@@ -452,7 +487,7 @@ function addMessageToUI(role, text, personaId) {
 // MODIFICATION : Style CSS-in-JS pour alignement Avatar + Bulle + Narratif
 function buildMsgHTML(role, text, personaId) {
     const isUser = role === 'user';
-    const isNarrative = !isUser && text.startsWith('*') && text.endsWith('*');
+    const isNarrative = !isUser && /^\s*\*.*\*\s*$/.test(text);
 
     if (isNarrative) {
         // STYLE NARRATIF (Hors bulle, italique, centré ou discret)
