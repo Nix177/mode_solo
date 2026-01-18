@@ -73,6 +73,10 @@ async function loadScene(sceneId) {
 
     updateBackground(scene.background);
 
+    // --- CLEANUP CHAT ---
+    const chatContainer = document.getElementById('chat-scroll');
+    if (chatContainer) chatContainer.innerHTML = '';
+
     // Default GM persona
     const gmPersonaId = "A-1";
     CURRENT_CHAT_TARGET = gmPersonaId;
@@ -81,18 +85,17 @@ async function loadScene(sceneId) {
 
     // Dynamic Intro Generation based on Profile
     const introPrompt = `
-    TU ES LE "DIRECTEUR" (A-1).
+    RÔLE : LE "DIRECTEUR" (A-1).
     CONTEXTE : Le joueur arrive dans le scénario : "${scene.theme}".
-    PROFIL JOUEUR ACTUEL : "${PLAYER_PROFILE.summary}".
+    PROFIL JOUEUR : "${PLAYER_PROFILE.summary}".
     
     TA MISSION :
-    1. Présente le dilemme en 2 phrases max.
-    2. Adapte ton ton au profil du joueur.
-    3. Termine par : "Quelle est votre position ?"
+    1. PLANTE LE DÉCOR IMMÉDIATEMENT : Décris la situation concrète qui pose problème.
+    2. METS LE JOUEUR AU PIED DU MUR : Il DOIT trancher.
+    3. NE DEMANDE PAS "Quelle est votre position ?" -> DEMANDE UNE ACTION (ex: "Validez-vous le protocole ?", "Ordonnez-vous l'arrêt ?").
     
-    CONTRAINTES :
-    - Format court (Chat).
-    - Pas de long monologue.
+    TON : Sérieux, urgent, impliquant.
+    FORMAT : 2 phrases courtes maximum. Pas de blabla.
     `;
 
     CHAT_SESSIONS[gmPersonaId] = [];
@@ -100,7 +103,7 @@ async function loadScene(sceneId) {
 }
 
 // --- AJOUT : FONCTION ADMIN POUR SAUTER DE NIVEAU ---
-window.manualLevelJump = function() {
+window.manualLevelJump = function () {
     const target = prompt("ADMIN - Aller à la scène ID (ex: level_2) :");
     if (target) loadScene(target);
 }
@@ -119,7 +122,7 @@ function updateBackground(bgUrl) {
 
 function renderInterface(scene) {
     const stepCount = PLAYED_SCENES.length;
-    
+
     // Récupération Avatar pour le Header
     const p = GAME_DATA.personas[CURRENT_CHAT_TARGET];
     const avatarUrl = (p && p.avatar) ? p.avatar : 'assets/avatar_architecte.png';
@@ -179,16 +182,22 @@ window.sendPlayerAction = async function (text) {
         return;
     }
 
-    const isLateGame = turnCount >= 3;
+    const isLateGame = turnCount >= 4;
     const debatePrompt = `
-    JOUEUR : "${text}".
-    SCENARIO : "${CURRENT_SCENE.theme}".
-    PERSONA : ${GAME_DATA.personas[CURRENT_CHAT_TARGET].bio}
-    PROFIL JOUEUR : "${PLAYER_PROFILE.summary}"
+    CONTEXTE : Le joueur a dit : "${text}".
+    SCÉNARIO : "${CURRENT_SCENE.theme}".
+    
+    RÔLE : ${GAME_DATA.personas[CURRENT_CHAT_TARGET].displayName} (${GAME_DATA.personas[CURRENT_CHAT_TARGET].bio}).
     
     OBJECTIF :
-    ${isLateGame ? "- Le débat s'éternise. Sois plus tranchant : demande une décision finale." : "- Challenge la position du joueur. Cherche la faille."}
-    - Sois court (1-2 phrases). Style naturel.
+    - INTERAGIS DE MANIÈRE ORGANIQUE : Rebondis sur son argument précis. Ne change pas de sujet.
+    - SI LE JOUEUR EST FLOU : Pousse-le dans ses retranchements ("Mais concrètement, acceptez-vous que... ?").
+    - SI LE DÉBAT DURE (${turnCount} échanges) : Exige une décision finale binaire (OUI/NON, ACTIVER/STOPPER).
+    
+    TON :
+    - Naturel, conversationnel, mais orienté vers la résolution du dilemme.
+    - PAS DE QUESTIONS OUVERTES GÉNÉRALES. Des questions qui forcent un choix.
+    - MAXIMUM 2 PHRASES.
     `;
 
     await callBot(debatePrompt, CURRENT_CHAT_TARGET);
@@ -384,13 +393,13 @@ function addMessageToUI(role, text, personaId) {
 function buildMsgHTML(role, text, personaId) {
     const isUser = role === 'user';
     let avatarImg = '';
-    
+
     if (!isUser && personaId) {
         const p = GAME_DATA.personas[personaId];
         const url = (p && p.avatar) ? p.avatar : 'assets/avatar_architecte.png';
         avatarImg = `<img src="${url}" style="width:40px; height:40px; border-radius:50%; margin-right:10px; border:2px solid #ff8800; object-fit:cover; flex-shrink:0;">`;
     }
-    
+
     return `
     <div class="msg-row ${isUser ? 'user' : 'bot'}" style="display:flex; align-items:flex-start; margin-bottom:10px; ${isUser ? 'justify-content:flex-end;' : ''}">
         ${!isUser ? avatarImg : ''} 
