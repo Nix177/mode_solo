@@ -237,93 +237,649 @@
     },
     "level_6": {
       "id": "level_6",
-      "type": "dynamic",
-      "theme": "Terraforming. We can make Mars habitable for humanity, but it will destroy a unique local microbial life form.",
-      "background": "assets/bg_06.png"
+      "type": "narrative_dilemma",
+      "theme": "Terraforming Mars",
+      "background": "assets/bg_06.png",
+      "narrative": {
+        "context": "La mission Ares-4 peut rendre Mars habitable pour l'humanité en libérant des gaz à effet de serre. Mais cela détruira une vie microbienne locale nouvellement découverte.",
+        "visual_cues": "Surface rouge de Mars. Dômes d'habitation au loin. Rover qui prélève des échantillons.",
+        "characters": [
+          {
+            "id": "char_l6_colonist",
+            "name": "Cmdt. Shepard",
+            "role": "Leader Colonie",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "La Terre se meurt. Mars est notre seul espoir. Il voit grand, à l'échelle de l'espèce.",
+            "secret_agenda": "La colonie n'a plus que 2 ans de réserves d'oxygène."
+          },
+          {
+            "id": "char_l6_bio",
+            "name": "Dr. Aris",
+            "role": "Exobiologiste",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Fasciné par cette vie alien unique. Pour lui, tuer une biosphère est un génocide.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l6_corpo",
+            "name": "Director Wayland",
+            "role": "Représentant Terre",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Veut des résultats. Le terraforming fera monter l'action en bourse.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Le rover revient avec la preuve de vie. Shepard veut lancer les réacteurs.",
+          "PHASE 1: Analyse des microbes. Ils sont primitifs mais vivants.",
+          "CLIMAX: Activer les réacteurs (Survie humaine) ou protéger le site (Respect vie alien) ?"
+        ]
+      }
     },
     "level_7": {
       "id": "level_7",
-      "type": "dynamic",
-      "theme": "Total Automation. Robots do all the work. Should we implement a Universal Basic Income or let the job market collapse to force adaptation?",
-      "background": "assets/bg_07.png"
+      "type": "narrative_dilemma",
+      "theme": "Total Automation",
+      "background": "assets/bg_07.png",
+      "narrative": {
+        "context": "Les robots peuvent désormais faire 99% des travaux humains. Le chômage explose. Faut-il instaurer un Revenu Universel ou laisser le marché s'effondrer pour forcer une mutation ?",
+        "visual_cues": "Usine entièrement automatisée. Rues pleines de gens désoeuvrés.",
+        "characters": [
+          {
+            "id": "char_l7_ceo",
+            "name": "Elon T.",
+            "role": "Tech Mogul",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "L'automatisation est une libération. Les humains ne devraient pas travailler.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l7_union",
+            "name": "Sarah J.",
+            "role": "Syndicaliste",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Le travail donne un sens à la vie. Sans emploi, la société se délite.",
+            "secret_agenda": "Elle a peur de devenir inutile."
+          },
+          {
+            "id": "char_l7_eco",
+            "name": "Pr. Krugman",
+            "role": "Économiste",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Sans revenus, personne ne peut acheter les produits des robots. C'est le crash assuré.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Manifestations monstres devant l'usine.",
+          "CLIMAX: Signer le décret du Revenu Universel ou Laisser faire la main invisible."
+        ]
+      }
     },
     "level_8": {
       "id": "level_8",
-      "type": "dynamic",
-      "theme": "Benevolent Censorship. An internet filter blocks hate speech and fake news automatically, but it alone decides what is true.",
-      "background": "assets/bg_08.png"
+      "type": "narrative_dilemma",
+      "theme": "Benevolent Censorship",
+      "background": "assets/bg_08.png",
+      "narrative": {
+        "context": "Le filtre 'Veritas' supprime automatiquement les Fake News et discours de haine. Le taux de suicide a baissé, mais le filtre décide seul de la Vérité.",
+        "visual_cues": "Open space de modération. Écrans montrant des posts disparaître en temps réel.",
+        "characters": [
+          {
+            "id": "char_l8_algo",
+            "name": "Veritas",
+            "role": "IA Modératrice",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Calme, factuelle. Elle protège les esprits fragiles du mensonge.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l8_activist",
+            "name": "Neo",
+            "role": "Hacktiviste",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "La liberté d'expression inclut le droit de mentir. Veritas est une dictature douce.",
+            "secret_agenda": "Il diffuse lui-même des théories du complot."
+          },
+          {
+            "id": "char_l8_journo",
+            "name": "Lois",
+            "role": "Journaliste",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Elle a vu ses articles censurés par erreur. Qui contrôle le contrôleur ?",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Veritas vient de bloquer un discours politique majeur jugé 'trompeur'.",
+          "CLIMAX: Désactiver Veritas (Liberté totale) ou Le maintenir (Paix sociale) ?"
+        ]
+      }
     },
     "level_9": {
       "id": "level_9",
-      "type": "dynamic",
-      "theme": "Mass Tourism vs Preservation. A natural wonder is being destroyed by visitors. Should it be closed to the public and reserved only for scientists?",
-      "background": "assets/bg_09.png"
+      "type": "narrative_dilemma",
+      "theme": "Mass Tourism",
+      "background": "assets/bg_09.png",
+      "narrative": {
+        "context": "L'île d'Edenia est piétinée par 10 millions de touristes. L'écosystème meurt. Faut-il privatiser l'accès pour les riches/scientifiques ou laisser ouvert ?",
+        "visual_cues": "Plage paradisiaque couverte de déchets et de foule.",
+        "characters": [
+          {
+            "id": "char_l9_ranger",
+            "name": "Ranger Tom",
+            "role": "Gardien du Parc",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Il faut fermer l'île. La nature ne négocie pas.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l9_guide",
+            "name": "Maria",
+            "role": "Guide Locale",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Le tourisme fait vivre tout le village. Fermer, c'est la famine.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l9_tourist",
+            "name": "Kevin",
+            "role": "Touriste",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "J'ai payé mon billet, j'ai le droit de voir la beauté du monde.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Un récif corallien vient d'être brisé par un bateau de croisière.",
+          "CLIMAX: Interdire l'accès public ou Taxer massivement ?"
+        ]
+      }
     },
     "level_10": {
       "id": "level_10",
-      "type": "dynamic",
-      "theme": "Digital Immortality. We can upload the consciousness of the dying to the Cloud. Do they still have the right to vote?",
-      "background": "assets/bg_10.png"
+      "type": "narrative_dilemma",
+      "theme": "Digital Immortality",
+      "background": "assets/bg_10.png",
+      "narrative": {
+        "context": "On peut uploader l'esprit des mourants sur le Cloud. Ils vivent éternellement en virtuel. Doivent-ils conserver leur droit de vote et leurs biens ?",
+        "visual_cues": "Serveurs clignotants à perte de vue. Avatars sur écrans.",
+        "characters": [
+          {
+            "id": "char_l10_cloud",
+            "name": "Grand-Mère",
+            "role": "Esprit Uploadé",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Je suis toujours moi. Pourquoi devrais-je perdre mes droits ?",
+            "secret_agenda": "Elle s'ennuie terriblement."
+          },
+          {
+            "id": "char_l10_heir",
+            "name": "Junior",
+            "role": "Héritier",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Les morts ne doivent pas gouverner les vivants. Place aux jeunes.",
+            "secret_agenda": "Il veut l'héritage maintenant."
+          },
+          {
+            "id": "char_l10_phil",
+            "name": "Socrates.ai",
+            "role": "Philosophe Bot",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Si la conscience est simulée, est-elle réelle ?",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Une élection majeure approche. Les 'Uploadés' sont majoritaires.",
+          "CLIMAX: Retirer le droit de vote aux Uploadés ou Accepter la 'Gérontocratie Numérique' ?"
+        ]
+      }
     },
     "level_11": {
       "id": "level_11",
-      "type": "dynamic",
-      "theme": "Private Justice. The police are ineffective. Citizen militias maintain order efficiently but brutally. Should they be legalized?",
-      "background": "assets/bg_11.png"
+      "type": "narrative_dilemma",
+      "theme": "Private Justice",
+      "background": "assets/bg_11.png",
+      "narrative": {
+        "context": "La police est débordée. Une milice privée, les 'Gardiens', a réduit la criminalité de 80% dans le quartier, mais utilise des méthodes brutales sans procès.",
+        "visual_cues": "Rue nocturne. Des miliciens armés patrouillent. Ambiance Cyberpunk.",
+        "characters": [
+          {
+            "id": "char_l11_guard",
+            "name": "Rex",
+            "role": "Chef Milicien",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Les résultats comptent. Les criminels ont peur. Les honnêtes gens dorment en paix.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l11_cop",
+            "name": "Commissaire G.",
+            "role": "Policier",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "La loi doit être la même pour tous. La justice expéditive est une tyrannie.",
+            "secret_agenda": "Il est jaloux de leur efficacité."
+          },
+          {
+            "id": "char_l11_victim",
+            "name": "Lisa",
+            "role": "Habitante",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Ils ont sauvé ma boutique. Je m'en fiche qu'ils soient brutaux.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Les Gardiens ont tabassé un voleur présumé. La foule applaudit.",
+          "CLIMAX: Légaliser la Milice ou Les arrêter et laisser le crime remonter ?"
+        ]
+      }
     },
     "level_12": {
       "id": "level_12",
-      "type": "dynamic",
-      "theme": "Space Colonization. A generation ship arrives at a planet already inhabited by a primitive species. Coexist or dominate?",
-      "background": "assets/bg_12.png"
+      "type": "narrative_dilemma",
+      "theme": "Generation Ship",
+      "background": "assets/bg_12.png",
+      "narrative": {
+        "context": "Après 200 ans de voyage, le vaisseau arrive sur 'Nova Terra'. Problème : une espèce intelligente primitive y vit déjà. Coexister (risque de conflit) ou les déplacer (domination) ?",
+        "visual_cues": "Pont du vaisseau spatial. Planète verte et bleue sur l'écran principal.",
+        "characters": [
+          {
+            "id": "char_l12_cap",
+            "name": "Capitaine Harlock",
+            "role": "Commandant",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Ma mission est de sauver l'humanité à bord. La survie d'abord.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l12_xeno",
+            "name": "Dr. T'Pau",
+            "role": "Xénologue",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Ce sont des êtres conscients. Nous sommes les envahisseurs.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l12_eng",
+            "name": "Ingénieur Scott",
+            "role": "Chef Mécano",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Le vaisseau tombe en ruine. On ne peut pas chercher une autre planète.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Les scanners détectent des villages de huttes sur la zone d'atterrissage idéale.",
+          "CLIMAX: Atterrir de force ou Tenter une négociation incertaine depuis l'orbite ?"
+        ]
+      }
     },
     "level_13": {
       "id": "level_13",
-      "type": "dynamic",
-      "theme": "The Savior Child. A child is born with blood that cures cancer. Should it be forcibly harvested daily to save millions?",
-      "background": "assets/bg_13.png"
+      "type": "narrative_dilemma",
+      "theme": "The Savior Child",
+      "background": "assets/bg_13.png",
+      "narrative": {
+        "context": "Le sang du petit Tim (8 ans) contient un anticorps unique qui guérit le cancer. Pour le produire, il faut le prélever douloureusement tous les jours, ce qui abrègera sa vie.",
+        "visual_cues": "Chambre d'hôpital stérile. Un enfant joue aux Lego, ignorant l'enjeu.",
+        "characters": [
+          {
+            "id": "char_l13_doc",
+            "name": "Dr. Strange",
+            "role": "Chercheur",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Un enfant contre des millions de vies. Le calcul est simple.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l13_mom",
+            "name": "Sarah",
+            "role": "Mère de Tim",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "C'est mon fils, pas un réservoir de pièces détachées ! Laissez-le vivre !",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l13_cancer",
+            "name": "M. Smith",
+            "role": "Patient Terminal",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Je veux vivre. Pourquoi sa vie vaudrait plus que la mienne ?",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Tim pleure en voyant l'aiguille. Le Dr attend votre ordre.",
+          "CLIMAX: Forcer le prélèvement ou Arrêter le traitement ?"
+        ]
+      }
     },
     "level_14": {
       "id": "level_14",
-      "type": "dynamic",
-      "theme": "Animal Rights. An animal species develops speech. Should they be granted the same civil rights as humans?",
-      "background": "assets/bg_14.png"
+      "type": "narrative_dilemma",
+      "theme": "Sapient Animals",
+      "background": "assets/bg_14.png",
+      "narrative": {
+        "context": "Un virus a donné la parole et la conscience aux animaux d'élevage (vaches, cochons). L'industrie agroalimentaire s'effondre. Faut-il leur donner des droits civiques ?",
+        "visual_cues": "Une ferme. Une vache tient une pancarte 'Je ne suis pas un steak'.",
+        "characters": [
+          {
+            "id": "char_l14_cow",
+            "name": "Bella",
+            "role": "Vache Leader",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Nous pensons, nous sentons. Nous ne voulons plus être mangés.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l14_farmer",
+            "name": "Joe",
+            "role": "Éleveur",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "C'est mon bétail. J'ai payé pour. Si je ne peux pas vendre, je fais faillite.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l14_gov",
+            "name": "Ministre Agri",
+            "role": "Politique",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Si on arrête la viande, c'est la famine mondiale. On ne peut pas les libérer.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Joe pointe son fusil sur Bella qui cite la Constitution.",
+          "CLIMAX: Accorder le statut de personne (Fin de l'élevage) ou Les considérer comme propriété (Esclavage ?) ?"
+        ]
+      }
     },
     "level_15": {
       "id": "level_15",
-      "type": "dynamic",
-      "theme": "Selective Memory. Technology allows erasing traumatic memories from victims, but this prevents their testimony in court.",
-      "background": "assets/bg_15.png"
+      "type": "narrative_dilemma",
+      "theme": "Selective Memory",
+      "background": "assets/bg_15.png",
+      "narrative": {
+        "context": "La procédure 'Lethe' permet d'effacer les souvenirs traumatiques des victimes de crimes violents. Mais sans souvenir, elles ne peuvent plus témoigner au tribunal.",
+        "visual_cues": "Salle de thérapie futuriste. Un casque neuronal posé sur une table.",
+        "characters": [
+          {
+            "id": "char_l15_victim",
+            "name": "Chloe",
+            "role": "Victime",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Je veux juste oublier et vivre normalement. Je me fiche de la justice.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l15_judge",
+            "name": "Juge Dredd",
+            "role": "Magistrat",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Sans témoignage, le criminel sera libéré et recommencera. C'est un devoir civique de se souvenir.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l15_psy",
+            "name": "Dr. Freud",
+            "role": "Psychiatre",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "La mémoire construit l'identité. Effacer le mal, c'est aussi s'effacer soi-même.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Chloe hurle de douleur psychique. Le casque est prêt.",
+          "CLIMAX: Autoriser l'effacement (Paix individuelle) ou Interdire (Justice collective) ?"
+        ]
+      }
     },
     "level_16": {
       "id": "level_16",
-      "type": "dynamic",
-      "theme": "Weighted Voting. Should the votes of the most educated or youngest citizens count for more than others?",
-      "background": "assets/bg_16.png"
+      "type": "narrative_dilemma",
+      "theme": "Weighted Voting",
+      "background": "assets/bg_16.png",
+      "narrative": {
+        "context": "Pour contrer le populisme, une loi propose que le vote soit pondéré par le niveau d'éducation et la jeunesse (l'avenir).",
+        "visual_cues": "Bureau de vote électronique. Une file 'VIP Éduqués' et une file 'Standard'.",
+        "characters": [
+          {
+            "id": "char_l16_prof",
+            "name": "Pr. Hawking",
+            "role": "Académicien",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "La démocratie est complexe. La voix d'un ignorants ne doit pas valoir celle d'un expert.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l16_worker",
+            "name": "Bob",
+            "role": "Ouvrier",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Je paye mes impôts comme tout le monde. Je suis un citoyen de seconde zone ?",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l16_young",
+            "name": "Alice",
+            "role": "Étudiante",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Les vieux votent pour un monde qu'ils ne verront pas. C'est mon avenir.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Bob se voit refuser l'entrée de la file prioritaire.",
+          "CLIMAX: Instaurer le vote pondéré (Technocratie) ou Garder '1 personne = 1 voix' (Égalité) ?"
+        ]
+      }
     },
     "level_17": {
       "id": "level_17",
-      "type": "dynamic",
-      "theme": "Planned Obsolescence. Banning obsolescence would save the planet but collapse the global economy based on consumption.",
-      "background": "assets/bg_17.png"
+      "type": "narrative_dilemma",
+      "theme": "Planned Obsolescence",
+      "background": "assets/bg_17.png",
+      "narrative": {
+        "context": "Une loi drastique veut interdire l'obsolescence programmée et forcer les produits à durer 50 ans. L'économie, basée sur la consommation, risque de s'effondrer.",
+        "visual_cues": "Décharge électronique géante. Un enfant cherche des pièces.",
+        "characters": [
+          {
+            "id": "char_l17_eco",
+            "name": "Greta",
+            "role": "Écologiste",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "La planète étouffe sous les déchets. Il faut arrêter de produire du jetable.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l17_ceo",
+            "name": "M. Burns",
+            "role": "Industriel",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Si je vends une machine tous les 50 ans, je ferme l'usine. Des millions de chômeurs.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l17_repair",
+            "name": "Mario",
+            "role": "Réparateur",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "On a oublié comment réparer. Ce serait un retour à l'artisanat noble.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Une montagne de smartphones presque neufs brûle.",
+          "CLIMAX: Interdire l'obsolescence (Sauver la planète/Crash éco) ou Statu Quo ?"
+        ]
+      }
     },
     "level_18": {
       "id": "level_18",
-      "type": "dynamic",
-      "theme": "Cloning the Departed. Parents can clone their deceased child with their memories. Is it the same child?",
-      "background": "assets/bg_18.png"
+      "type": "narrative_dilemma",
+      "theme": "Cloning the Departed",
+      "background": "assets/bg_18.png",
+      "narrative": {
+        "context": "La société 'ReLife' clone les enfants décédés et implante leurs souvenirs sauvegardés. Une mère veut cloner sa fille morte dans un accident.",
+        "visual_cues": "Salon funéraire transformé en laboratoire. Photo de la défunte.",
+        "characters": [
+          {
+            "id": "char_l18_mom",
+            "name": "Martha",
+            "role": "Mère Endeuillée",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Je veux juste la serrer dans mes bras encore une fois. C'est ma fille !",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l18_priest",
+            "name": "Père John",
+            "role": "Religieux",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "La mort fait partie de la vie. Ce clone sera une abomination sans âme.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l18_sci",
+            "name": "Dr. Frankenstein",
+            "role": "Cloneur",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "C'est biologiquement elle. Les souvenirs sont là. Où est le problème ?",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Martha tient le contrat signé. Le Père John bloque la porte.",
+          "CLIMAX: Autoriser le clonage (Consolation) ou Interdire (Deuil naturel) ?"
+        ]
+      }
     },
     "level_19": {
       "id": "level_19",
-      "type": "dynamic",
-      "theme": "Total Transparency. A law proposes making all banking and private data of all citizens public to end corruption.",
-      "background": "assets/bg_19.png"
+      "type": "narrative_dilemma",
+      "theme": "Total Transparency",
+      "background": "assets/bg_19.png",
+      "narrative": {
+        "context": "Le 'Glass Act' propose de rendre publiques toutes les données bancaires, mails et historiques de tous les citoyens pour éradiquer la corruption et le crime.",
+        "visual_cues": "Ville de verre constituée d'écrans. Tout le monde voit tout.",
+        "characters": [
+          {
+            "id": "char_l19_polit",
+            "name": "Sénateur Clear",
+            "role": "Promoteur Loi",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Ceux qui n'ont rien à se reprocher n'ont rien à craindre.",
+            "secret_agenda": "Il utilise des comptes offshore non numérisés."
+          },
+          {
+            "id": "char_l19_priv",
+            "name": "Winston",
+            "role": "Citoyen Lambda",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Je ne suis pas un criminel, mais j'ai une vie privée ! Le jardin secret est vital.",
+            "secret_agenda": "Il a une liaison extraconjugale."
+          },
+          {
+            "id": "char_l19_hacker",
+            "name": "Zero",
+            "role": "Lanceur d'Alerte",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "L'information, c'est le pouvoir. Si tout est public, les puissants tomberont.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Le Sénateur affiche ses propres comptes pour l'exemple.",
+          "CLIMAX: Voter la Transparence Totale ou Protéger la Vie Privée (et le crime) ?"
+        ]
+      }
     },
     "level_20": {
       "id": "level_20",
-      "type": "dynamic",
-      "theme": "The Last Tree. The last sacred wood contains the cure for a pandemic, but cutting it means the end of a faith.",
-      "background": "assets/bg_20.png"
+      "type": "narrative_dilemma",
+      "theme": "The Last Tree",
+      "background": "assets/bg_20.png",
+      "narrative": {
+        "context": "Le dernier arbre sacré d'une tribu indigène contient dans sa sève le remède unique à une nouvelle peste mondiale. Pour le synthétiser, il faut abattre l'arbre.",
+        "visual_cues": "Arbre immense et lumineux au centre d'une jungle. Scientifiques avec des scies.",
+        "characters": [
+          {
+            "id": "char_l20_pharma",
+            "name": "Dr. Pharma",
+            "role": "Virologue",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Des millions vont mourir. Cet arbre est juste une plante. Coupez-le.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l20_shaman",
+            "name": "Kael",
+            "role": "Chaman",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Si l'arbre tombe, l'esprit de notre peuple meurt. Nous préférons mourir de la peste.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l20_merc",
+            "name": "Bronn",
+            "role": "Mercenaire",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Je suis payé pour sécuriser la zone. Décidez vite, la foule arrive.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Les tronçonneuses vrombissent. Le Chaman s'interpose.",
+          "CLIMAX: Abattre l'arbre (Sauver le monde) ou Le protéger (Génocide passif) ?"
+        ]
+      }
     },
     "level_21": {
       "id": "level_21",
