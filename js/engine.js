@@ -118,7 +118,7 @@ async function loadScene(sceneId) {
         RÔLE : ${GAME_DATA.currentPersonas[narratorId].name} (${GAME_DATA.currentPersonas[narratorId].role}).
         SCÉNARIO : "${scene.narrative ? scene.narrative.context : scene.theme}".
         MISSION : Souhaite la bienvenue au "Médiateur". Ouvre la conversation. NE DEMANDE PAS DE DÉCISION.
-        FORMAT : Blocs courts séparés par "###". Descriptions 3ème personne en *italique*.
+        FORMAT : Blocs courts séparés par "###". Descriptions 3ème personne en *italique* et AU PRÉSENT (ex: "Il regarde" NON "Il regarda").
         `;
         await callBot(introPrompt, narratorId, true);
     }
@@ -183,7 +183,7 @@ async function checkAutoGreeting(personaId) {
         RÔLE : ${p.displayName}.
         CONTEXTE : Le joueur "Médiateur" vient de se tourner vers toi pour la première fois.
         ACTION : Présente-toi brièvement et donne ton avis sur la situation ("${CURRENT_SCENE.theme}").
-        FORMAT : Court (max 40 mots). Descriptions *italique*.
+        FORMAT : Court (max 40 mots). Descriptions *italique* et AU PRÉSENT.
         `;
         // Init array
         CHAT_SESSIONS[personaId] = [];
@@ -303,7 +303,8 @@ window.sendPlayerAction = async function (text) {
     
     FORMAT :
     - Sépare tes idées en blocs courts (max 80 mots) avec "###".
-    - Utilise *italique* de la 3ème personne pour les descriptions (hors bulle), séparées des dialogues par "###".
+    - Utilise *italique* de la 3ème personne pour les descriptions (hors bulle) et TOUJOURS AU PRÉSENT DE NARRATION (ex: "Il soupire", "Elle se tourne"). Pas de passé simple.
+    - Sépare descriptions et dialogues par "###".
     `;
 
     await callBot(debatePrompt, CURRENT_CHAT_TARGET);

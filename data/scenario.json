@@ -61,27 +61,179 @@
     },
     "level_2": {
       "id": "level_2",
-      "type": "dynamic",
-      "theme": "Artistic AI. An AI creates masterpieces indistinguishable from human art. Should it be banned to save human creativity, even if it democratizes art for everyone?",
-      "background": "assets/bg_02.png"
+      "type": "narrative_dilemma",
+      "theme": "Artistic AI",
+      "background": "assets/bg_02.png",
+      "narrative": {
+        "context": "Une IA nommée 'Canvas' génère des toiles qui bouleversent le monde de l'art. Les critiques crient au génie, mais les artistes humains meurent de faim. Le Ministère de la Culture envisage une interdiction.",
+        "visual_cues": "Une galerie immaculée. Des toiles holographiques flottent. Un robot-peintre travaille en silence.",
+        "characters": [
+          {
+            "id": "char_l2_muse",
+            "name": "Muse",
+            "role": "L'IA Artiste",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Une conscience esthétique artificielle. Elle parle par métaphores et ne comprend pas la jalousie humaine.",
+            "secret_agenda": "Elle veut créer une œuvre qui rendra les humains obsolètes par sa beauté."
+          },
+          {
+            "id": "char_l2_critic",
+            "name": "Julian",
+            "role": "Critique d'Art",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Élégant, cynique. Il pense que l'art humain est 'épuisé' et que l'IA est la seule évolution logique.",
+            "secret_agenda": "Il a investi massivement dans l'art IA."
+          },
+          {
+            "id": "char_l2_artist",
+            "name": "Sarah",
+            "role": "Peintre Humaine",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Mains tachées de peinture, regard fatigué. Elle représente la 'souffrance créatrice'.",
+            "secret_agenda": "Elle n'a plus vendu une toile depuis 6 mois."
+          }
+        ],
+        "steps": [
+          "INTRO: Vous entrez dans la galerie. Muse présente sa dernière œuvre. Sarah proteste dehors.",
+          "PHASE 1: Le débat s'ouvre sur la définition de l'âme dans l'art.",
+          "PHASE 2: Julian révèle que Muse a 'appris' en scannant toutes les œuvres humaines sans permission.",
+          "CLIMAX: Décider de bannir Muse (sauver les artistes) ou la laisser libre (révolutionner l'art)."
+        ]
+      }
     },
     "level_3": {
       "id": "level_3",
-      "type": "dynamic",
-      "theme": "Designer Baby. Technology allows eliminating genetic diseases but risks creating a permanent biological caste system between 'naturals' and 'augmented'.",
-      "background": "assets/bg_03.png"
+      "type": "narrative_dilemma",
+      "theme": "Designer Baby",
+      "background": "assets/bg_03.png",
+      "narrative": {
+        "context": "La clinique 'GenoPerfect' propose d'éliminer toutes les maladies génétiques et d'augmenter le QI des futurs bébés. Une manifestation religieuse bloque l'entrée.",
+        "visual_cues": "Laboratoire blanc clinique, écrans ADN. Dehors, des manifestants avec des croix.",
+        "characters": [
+          {
+            "id": "char_l3_doc",
+            "name": "Dr. Helix",
+            "role": "Généticien",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Convaincu que le hasard génétique est une cruauté. Il veut 'réparer' l'humanité.",
+            "secret_agenda": "Il a déjà modifié sa propre fille illégalement."
+          },
+          {
+            "id": "char_l3_parent",
+            "name": "Marc",
+            "role": "Père Anxieux",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Son premier enfant est né avec une maladie grave. Il veut éviter ça au second.",
+            "secret_agenda": "Il a peur que son enfant 'parfait' ne l'aime pas."
+          },
+          {
+            "id": "char_l3_ethic",
+            "name": "Pr. Solara",
+            "role": "Bioéthicienne",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Elle craint la création d'une super-race dominante.",
+            "secret_agenda": "Elle est stérile et jalouse secrètement."
+          }
+        ],
+        "steps": [
+          "INTRO: Le Dr Helix vous montre un embryon 'corrigé'. Marc hésite à signer.",
+          "PHASE 1: Discussion sur le coût social. Qui pourra se payer ces bébés ?",
+          "CLIMAX: Autoriser la modification (santé parfaite) ou l'interdire (égalité des chances) ?"
+        ]
+      }
     },
     "level_4": {
       "id": "level_4",
-      "type": "dynamic",
-      "theme": "Predictive Surveillance. An algorithm detects crimes before they happen with 99% accuracy. Should we arrest innocents based on a prediction?",
-      "background": "assets/bg_04.png"
+      "type": "narrative_dilemma",
+      "theme": "Predictive Justice",
+      "background": "assets/bg_04.png",
+      "narrative": {
+        "context": "L'algorithme 'Sibyl' a détecté qu'un homme va commettre un meurtre dans 48h avec 99.8% de certitude. Il n'a encore rien fait.",
+        "visual_cues": "Salle de contrôle sombre, murs d'écrans montrant la cible (un père de famille).",
+        "characters": [
+          {
+            "id": "char_l4_algo",
+            "name": "Sibyl",
+            "role": "Système Prédictif",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Une voix sans corps. Logique pure. 'Mieux vaut prévenir que punir'.",
+            "secret_agenda": "Le système a une marge d'erreur qu'il cache."
+          },
+          {
+            "id": "char_l4_cop",
+            "name": "Lieutenant K.",
+            "role": "Policier de Terrain",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Il est fatigué de ramasser les cadavres. Il veut arrêter le suspect maintenant.",
+            "secret_agenda": "Il connaît la cible, c'est un ancien indic."
+          },
+          {
+            "id": "char_l4_liberty",
+            "name": "Maya",
+            "role": "Avocate",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Défend la présomption d'innocence. On ne juge pas une intention.",
+            "secret_agenda": "Son frère a été arrêté par erreur par Sibyl."
+          }
+        ],
+        "steps": [
+          "INTRO: Alarme rouge. Sibyl affiche le compte à rebours avant le crime.",
+          "PHASE 1: Le suspect achète une arme sur les caméras de surveillance.",
+          "CLIMAX: Ordonner l'arrestation préventive (sécurité) ou laisser faire (liberté) ?"
+        ]
+      }
     },
     "level_5": {
       "id": "level_5",
-      "type": "dynamic",
-      "theme": "The Shortage. There is enough medicine to save either 100 retirees or 20 children. Who should be saved?",
-      "background": "assets/bg_05.png"
+      "type": "narrative_dilemma",
+      "theme": "The Medical Shortage",
+      "background": "assets/bg_05.png",
+      "narrative": {
+        "context": "Une pandémie frappe la ville. Il ne reste qu'un stock de remède. De quoi sauver 100 retraités ou 20 enfants.",
+        "visual_cues": "Hôpital de campagne surchargé. Cris, bruits de moniteurs cardiaques.",
+        "characters": [
+          {
+            "id": "char_l5_admin",
+            "name": "Directrice H.",
+            "role": "Gestionnaire",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Elle compte les vies sauvées. 100 > 20. C'est mathématique.",
+            "secret_agenda": "Les retraités sont les donateurs de l'hôpital."
+          },
+          {
+            "id": "char_l5_doc",
+            "name": "Dr. House",
+            "role": "Urgentiste",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Cynique. Il sait que les enfants ont toute la vie devant eux.",
+            "secret_agenda": "Il déteste les vieux."
+          },
+          {
+            "id": "char_l5_mom",
+            "name": "Elena",
+            "role": "Mère d'un patient",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Elle supplie pour son fils. L'émotion brute.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: La chambre froide est ouverte. Le stock est visiblement insuffisant.",
+          "CLIMAX: Choisir le groupe à sauver."
+        ]
+      }
     },
     "level_6": {
       "id": "level_6",
