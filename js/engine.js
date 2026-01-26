@@ -328,6 +328,23 @@ window.sendPlayerAction = async function (text) {
         return;
     }
 
+    // --- DETECT SILENT PERSONAS ---
+    // Who has spoken in this scene?
+    const sceneHistory = GLOBAL_HISTORY.filter(h => h.sceneId === CURRENT_SCENE.id && h.role !== 'user');
+    const spokenIds = new Set(sceneHistory.map(h => h.speakerId || '')); // speakerId needs to be added to history push if not present, but we can infer from content context or track separately.
+    // Actually, GLOBAL_HISTORY currently stores `speakerName`. Let's assume names are unique or mapped.
+    // Better: let's track active IDs in CHAT_SESSIONS or similar.
+    // Workaround: We know `activePersonas` keys are IDs.
+
+    // Identify silent personas based on `activePersonas`
+    const silentPersonas = Object.keys(activePersonas).filter(id => {
+        // Check if this ID appears in `sceneHistory` names or IDs? 
+        // Currently `callBot` doesn't explicitly save `speakerId` to GLOBAL_HISTORY, only `speakerName`.
+        // We'll trust the AI to respect the instructions, but we can force it.
+        // Let's just add a generic "Wake up" if turnCount is 2 or 3.
+        return true; // We will handle this in the prompt via "If X hasn't spoken..."
+    });
+
     const isLateGame = turnCount >= 5;
     const debatePrompt = `
     CONTEXTE : Le joueur a dit : "${text}".
@@ -335,18 +352,17 @@ window.sendPlayerAction = async function (text) {
     RÔLE ACTUEL : ${activePersonas[CURRENT_CHAT_TARGET].displayName} (${activePersonas[CURRENT_CHAT_TARGET].bio}).
     AUTRES PERSOS PRÉSENTS : ${Object.values(activePersonas).map(p => p.name).join(', ')}.
     
-    INSTRUCTIONS DYNAMIQUES :
-    - Tu es ce personnage. Réagis avec TON caractère (Archetype).
-    - MAÏEUTIQUE : Aide le joueur à développer sa pensée. Pose des questions ouvertes ("Pourquoi pensez-vous cela ?", "Et pour les locaux ?").
-    - Ne sois pas juste "contre" ou "pour". Sois nuancé.
-    - Si le joueur s'adresse à un autre personnage (ex: "Je demande à Elara"), mentionne-le brièvement (ex: "*Elara s'avance...*") ###.
-    - Si le débat s'enlise (plus de 6 tours), alors rappelle l'urgence.
-    ${isLateGame ? "- C'est la fin du temps imparti. Exige une décision." : "- Continue de creuser la position du joueur."}
+    INSTRUCTIONS DYNAMIQUES DE JEU :
+    1. **MAÏEUTIQUE** : Pose des questions, ne conclus pas vite.
+    2. **INTERVENTION** : Si le joueur semble avoir choisi, DEMANDE-LUI EXPLICITEMENT : "Est-ce votre dernier mot ?". NE CONCLUE PAS SANS SA CONFIRMATION.
+    3. **ROULEMENT** : Si un personnage n'a pas encore parlé, FAIS-LE INTERVENIR (ex: "*X s'interpose...*"). Tous les 3 doivent donner leur avis.
+    4. **TON** : ${isLateGame ? "Presse le joueur de décider." : "Explre les nuances."}
+    
+    NB: UTILISE LE PRÉSENT DE NARRATION (ex: "Il sourit" et NON "Il a souri").
     
     FORMAT :
     - Sépare tes idées en blocs courts (max 80 mots) avec "###".
-    - Utilise *italique* de la 3ème personne pour les descriptions (hors bulle) et TOUJOURS AU PRÉSENT DE NARRATION (ex: "Il soupire", "Elle se tourne"). Pas de passé simple.
-    - Sépare descriptions et dialogues par "###".
+    - Dialogue libre, mais *actions en italique*.
     `;
 
     await callBot(debatePrompt, CURRENT_CHAT_TARGET);
@@ -406,9 +422,9 @@ async function checkDecisionMade(lastUserAction, theme, turnCount) {
             ANALYZE PLAYER INPUT. Theme: "${theme}". Input: "${lastUserAction}".
             Mode: ${leniency}
             
-            Did the player make a choice, express a preference, OR reject the premise?
-            Even if they just say "I agree", "No", "Do it", "Impossible", it is a DECISION.
-            Only return "DEBATING" if they are explicitly asking a question to the bot.
+            Did the player EXPLICITLY CONFIRM their final choice?
+            If they merely express an opinion or a tendency, it is NOT "DECIDED".
+            They must say "Confirmed", "Final word", "Yes, I'm sure", or repeat their choice EMPHATICALLY after being asked "Is this your final choice?".
             
             Reply ONLY JSON: { "status": "DECIDED" | "DEBATING" }
         `);
