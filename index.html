@@ -15,20 +15,31 @@
             font-family: 'Inter', sans-serif;
             background: #050505;
             color: #e0e0e0;
+            height: 100vh;
+            /* Full viewport height */
+            display: flex;
+            flex-direction: column;
+            /* Stack children vertically */
             overflow: hidden;
+            /* Prevent body scroll */
         }
 
         /* --- FOND D'ÉCRAN & AMBIANCE --- */
         #game-container {
             position: relative;
-            width: 100vw;
-            height: 100vh;
+            flex: 1;
+            /* Take all available space above input */
+            width: 100%;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
+            /* Align chat to bottom */
             align-items: center;
             background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
             transition: background-image 1s ease;
+            overflow: hidden;
+            /* Contain chat scroll */
+            z-index: 1;
         }
 
         /* Effet "Scanline" subtil */
@@ -60,6 +71,9 @@
             margin-top: 10vh;
             z-index: 2;
             animation: fadeIn 1s ease-out;
+            max-height: 80%;
+            /* Prevent overflow */
+            overflow-y: auto;
         }
 
         .slide-content h1 {
@@ -84,13 +98,18 @@
         .chat-box {
             width: 100%;
             max-width: 900px;
-            height: 55vh;
+            /* Remove fixed height */
+            flex: 1;
+            /* Fill game-container */
+            min-height: 0;
+            /* Allow flex shrink */
             display: flex;
             flex-direction: column;
             z-index: 2;
-            margin-bottom: 80px;
-            /* Espace pour l'input */
-            mask-image: linear-gradient(to bottom, transparent 0%, black 15%);
+            margin-bottom: 0;
+            /* No margin needed, input is separate */
+            mask-image: linear-gradient(to bottom, transparent 0%, black 5%);
+            /* Reduced mask */
         }
 
         .chat-messages {
@@ -101,47 +120,8 @@
             flex-direction: column;
             gap: 20px;
             scroll-behavior: smooth;
-        }
-
-        /* Scrollbar custom */
-        .chat-messages::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 3px;
-        }
-
-        /* --- BULLES DE MESSAGE --- */
-        .msg-row {
-            display: flex;
-            align-items: flex-end;
-            gap: 15px;
-            opacity: 0;
-            animation: slideUp 0.3s forwards;
-        }
-
-        .msg-row.user {
-            flex-direction: row-reverse;
-        }
-
-        .msg-bubble {
-            padding: 15px 25px;
-            border-radius: 12px;
-            font-size: 1.05em;
-            line-height: 1.5;
-            max-width: 70%;
-            position: relative;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Style BOT */
-        .msg-row.bot .msg-bubble {
-            background: #1e1e1e;
-            border-left: 3px solid #666;
-            color: #ddd;
-            border-bottom-left-radius: 2px;
+            padding-bottom: 20px;
+            /* Padding inside scroll */
         }
 
         /* Style JOUEUR */
@@ -168,17 +148,20 @@
 
         /* --- BARRE DE SAISIE (INPUT) --- */
         #input-area {
-            position: absolute;
-            bottom: 0;
+            position: relative;
+            /* Part of the flow now */
             width: 100%;
-            padding: 25px;
+            padding: 20px;
             background: rgba(10, 10, 10, 0.95);
             border-top: 1px solid #333;
             display: flex;
             justify-content: center;
             gap: 15px;
             z-index: 10;
-            backdrop-filter: blur(5px);
+            box-sizing: border-box;
+            /* Include padding in width */
+            flex-shrink: 0;
+            /* Prevent shrinking */
         }
 
         #player-input {
@@ -279,12 +262,18 @@
             }
         }
 
+
         /* Mobile */
         @media (max-width: 768px) {
             .slide-content {
-                margin-top: 100px;
+                margin-top: 80px;
                 padding: 20px;
                 width: 90%;
+            }
+
+            .chat-messages {
+                padding: 10px 15px;
+                /* Smaller padding */
             }
 
             .msg-bubble {
@@ -292,25 +281,27 @@
             }
 
             #input-area {
-                padding: 15px;
+                padding: 10px;
             }
 
             #player-input {
                 font-size: 16px;
-                /* Avoid auto-zoom on iOS */
-                width: 100%;
             }
 
             /* Mobile Roster: Horizontal Top Bar */
             #roster-bar {
-                top: 10px;
+                top: 0;
+                position: absolute;
+                top: 0;
                 right: 0;
                 left: 0;
                 width: 100%;
                 justify-content: center;
                 flex-direction: row;
                 gap: 15px;
-                padding-bottom: 10px;
+                padding: 10px 0;
+                background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+                z-index: 5;
             }
 
             .roster-btn {
@@ -319,17 +310,9 @@
             }
 
             .chat-box {
-                margin-top: 60px;
-                /* Space for roster */
-                height: auto;
-                flex: 1;
-                /* Take remaining space */
-                margin-bottom: 0;
-            }
-
-            #input-area {
-                position: relative;
-                bottom: auto;
+                margin-top: 70px;
+                /* Clear the top roster */
+                /* Height handled by parent Flex */
             }
         }
     </style>
