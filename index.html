@@ -335,10 +335,16 @@
     <div id="teacher-controls"></div>
 
     <!-- SETTINGS BUTTON -->
-    <div onclick="window.openSettings()"
-        style="position:fixed; bottom:20px; left:20px; font-size:24px; cursor:pointer; opacity:0.7; z-index:1000;"
-        title="Paramètres IA">
-        ⚙️
+    <!-- CONTROLS (Settings + Fullscreen) -->
+    <div id="controls-container" style="position:fixed; bottom:20px; left:20px; z-index:1000; display:flex; gap:10px;">
+        <div onclick="window.toggleFullscreen()" id="fullscreen-btn"
+            style="font-size:24px; cursor:pointer; opacity:0.7;" title="Plein écran">
+            ⛶
+        </div>
+        <div onclick="window.openSettings()" id="settings-btn" style="font-size:24px; cursor:pointer; opacity:0.7;"
+            title="Paramètres IA">
+            ⚙️
+        </div>
     </div>
 
     <!-- SETTINGS MODAL -->
