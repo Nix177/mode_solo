@@ -9,11 +9,17 @@ let CURRENT_CHAT_TARGET = null;
 // New non-linear state
 let PLAYED_SCENES = [];
 let GLOBAL_HISTORY = []; // Stores { sceneId, role, speakerName, content }
+window.GLOBAL_HISTORY = GLOBAL_HISTORY;
+window.CHAT_SESSIONS = CHAT_SESSIONS;
+window.CURRENT_CHAT_TARGET = CURRENT_CHAT_TARGET;
+
 let CURRENT_MODEL = localStorage.getItem('game_model') || "gpt-4o-mini";
 let PLAYER_PROFILE = {
     summary: "Nouveau venu curieux.",
     traits: {}
 };
+
+window.GAME_DATA = {}; // Placeholder until init
 
 // --- DOM ELEMENTS ---
 const ui = {
@@ -40,6 +46,7 @@ async function init() {
         ]);
 
         GAME_DATA = { scenario, personas: mapPersonas(personas) };
+        window.GAME_DATA = GAME_DATA; // Expose for debug
         Object.keys(GAME_DATA.personas).forEach(id => CHAT_SESSIONS[id] = []);
         renderRoster();
 

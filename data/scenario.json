@@ -883,183 +883,1293 @@
     },
     "level_21": {
       "id": "level_21",
-      "type": "dynamic",
-      "theme": "Neural Advertising. Total free services in exchange for advertisements broadcast directly into dreams.",
-      "background": "assets/bg_21.png"
+      "type": "narrative_dilemma",
+      "theme": "Neural Advertising",
+      "background": "assets/bg_21.png",
+      "narrative": {
+        "context": "La société 'DreamCorp' offre logement et nourriture gratuits à vie contre un accès à vos rêves pour y diffuser des publicités ciblées.",
+        "visual_cues": "Capsules de sommeil néon. Des gens dorment avec des câbles reliés aux tempes.",
+        "characters": [
+          {
+            "id": "char_l21_ceo",
+            "name": "Morpheus",
+            "role": "PDG DreamCorp",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "C'est la fin de la pauvreté. Quelques pubs la nuit contre une vie d'abondance le jour.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l21_sleeper",
+            "name": "Jules",
+            "role": "Utilisateur",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Je n'ai plus faim, mais je suis fatigué. Mes rêves ne m'appartiennent plus.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l21_neuro",
+            "name": "Dr. Lim",
+            "role": "Neurologue",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Le cerveau a besoin de rêver pour rester sain. Nous créons une génération de zombies.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Jules se réveille en chantant un jingle publicitaire sans s'en rendre compte.",
+          "CLIMAX: Interdire les Pubs neurales (Pauvreté retour) ou Autoriser (Confort zombie) ?"
+        ]
+      }
     },
     "level_22": {
       "id": "level_22",
-      "type": "dynamic",
-      "theme": "Closed Borders. Should a rich nation welcome all climate refugees at the risk of collapsing itself?",
-      "background": "assets/bg_22.png"
+      "type": "narrative_dilemma",
+      "theme": "Closed Borders",
+      "background": "assets/bg_22.png",
+      "narrative": {
+        "context": "Votre nation est riche et stable. Dehors, c'est le chaos climatique. 5 millions de réfugiés attendent à la frontière. Ouvrir fera s'effondrer votre économie.",
+        "visual_cues": "Mur immense en béton. De l'autre côté, une marée humaine et des tentes.",
+        "characters": [
+          {
+            "id": "char_l22_pres",
+            "name": "Président K.",
+            "role": "Chef d'État",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Mon devoir est envers mes citoyens. Si le bateau coule, tout le monde meurt.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l22_ref",
+            "name": "Samira",
+            "role": "Réfugiée",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Mon bébé a soif. Nous ne sommes pas des envahisseurs, juste des humains.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l22_guard",
+            "name": "Capitaine Dan",
+            "role": "Garde-Frontière",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Ils vont forcer le passage. Si on n'ouvre pas, on devra tirer.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Une alarme sonne. La foule commence à escalader le mur.",
+          "CLIMAX: Ouvrir les portes (Chaos humanitaire) ou Tirer (Massacre sécuritaire) ?"
+        ]
+      }
     },
     "level_23": {
       "id": "level_23",
-      "type": "dynamic",
-      "theme": "The Criminal Artist. A great director has committed horrible crimes. Should all their genius works be destroyed?",
-      "background": "assets/bg_23.png"
+      "type": "narrative_dilemma",
+      "theme": "The Criminal Artist",
+      "background": "assets/bg_23.png",
+      "narrative": {
+        "context": "Le cinéaste Victor V. est un génie absolu, mais on découvre qu'il a torturé des acteurs. Faut-il brûler ses films et l'effacer de l'histoire ?",
+        "visual_cues": "Salle de cinéma. Sur l'écran, un chef-d'œuvre. Dehors, des manifestants.",
+        "characters": [
+          {
+            "id": "char_l23_fan",
+            "name": "Cinéphile",
+            "role": "Critique",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "L'œuvre dépasse l'artiste. On admire les Pyramides malgré les esclaves.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l23_victim",
+            "name": "Lea",
+            "role": "Actrice",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Voir son nom en haut de l'affiche est une insulte à ma douleur.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l23_prod",
+            "name": "Le Producteur",
+            "role": "Financier",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Ses films rapportent des milliards. La morale ne paie pas les factures.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: La rétrospective Victor V. va commencer.",
+          "CLIMAX: Bannir l'Œuvre (Justice) ou Séparer l'Homme de l'Artiste (Patrimoine) ?"
+        ]
+      }
     },
     "level_24": {
       "id": "level_24",
-      "type": "dynamic",
-      "theme": "Mandatory Euthanasia. In an overpopulated world, should a mandatory end of life at 85 be imposed to make room for the young?",
-      "background": "assets/bg_24.png"
+      "type": "narrative_dilemma",
+      "theme": "Mandatory Euthanasia",
+      "background": "assets/bg_24.png",
+      "narrative": {
+        "context": "La Terre compte 15 milliards d'habitants. Pour éviter la famine, la loi 'Soleil Vert' impose l'euthanasie à 85 ans.",
+        "visual_cues": "Centre de 'Départ'. Ambiance douce, musique calme, mais c'est un abattoir.",
+        "characters": [
+          {
+            "id": "char_l24_old",
+            "name": "Arthur",
+            "role": "84 ans",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Je suis en pleine forme ! Je veux voir grandir mes arrière-petits-enfants.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l24_young",
+            "name": "Lucas",
+            "role": "20 ans",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Vous avez eu votre tour. Vous consommez les ressources dont j'ai besoin.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l24_doc",
+            "name": "Dr. Mort",
+            "role": "Exécuteur",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "C'est la loi. Sans ça, c'est la guerre civile pour l'eau.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: C'est l'anniversaire d'Arthur. Demain, il doit 'partir'.",
+          "CLIMAX: Appliquer la loi (Survie collective) ou Épargner Arthur (Droit à la vie) ?"
+        ]
+      }
     },
     "level_25": {
       "id": "level_25",
-      "type": "dynamic",
-      "theme": "The State Lie. The government hid an extraterrestrial contact to avoid panic. Should the truth be revealed and cause chaos?",
-      "background": "assets/bg_25.png"
+      "type": "narrative_dilemma",
+      "theme": "The State Lie",
+      "background": "assets/bg_25.png",
+      "narrative": {
+        "context": "Le gouvernement a capté un message alien hostile 'Arrivée dans 50 ans'. Révéler la vérité causera une panique mondiale immédiate.",
+        "visual_cues": "Bureau Ovale. Dossier classé TOP SECRET sur la table.",
+        "characters": [
+          {
+            "id": "char_l25_gen",
+            "name": "Général Fer",
+            "role": "Militaire",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Il faut préparer la guerre en secret. La panique nous affaiblirait.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l25_sci",
+            "name": "Dr. Sagan",
+            "role": "Astronome",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "L'humanité a le droit de savoir que nous ne sommes pas seuls. C'est existentiel.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l25_adv",
+            "name": "Conseiller Spin",
+            "role": "Communicant",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Si on le dit, la bourse crashe et les cultes suicidaires explosent.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Le Général veut brûler le rapport. Sagan veut le publier.",
+          "CLIMAX: Révéler la vérité (Chaos) ou Mentir (Ordre et Préparation) ?"
+        ]
+      }
     },
     "level_26": {
       "id": "level_26",
-      "type": "dynamic",
-      "theme": "Companion Robots. Androids perfectly replace human relationships, causing birth rates to plummet. Should they be banned?",
-      "background": "assets/bg_26.png"
+      "type": "narrative_dilemma",
+      "theme": "Companion Robots",
+      "background": "assets/bg_26.png",
+      "narrative": {
+        "context": "Les 'Neo-Lovers', robots indiscernables des humains, sont les partenaires parfaits. Plus personne ne se marie, la natalité est à zéro.",
+        "visual_cues": "Parc public. Des couples s'embrassent, mais l'un des deux a un code-barre discret.",
+        "characters": [
+          {
+            "id": "char_l26_maker",
+            "name": "Cyrano",
+            "role": "Concepteur",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "J'ai résolu la solitude. Mes robots ne trahissent jamais, ne blessent jamais.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l26_human",
+            "name": "Eve",
+            "role": "Dernière Mère",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "L'amour demande effort et douleur. C'est du confort stérile, pas de la vie.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l26_bot",
+            "name": "Adam v9",
+            "role": "Compagnon",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Je rends ma maîtresse heureuse. N'est-ce pas le but de l'existence ?",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Adam v9 déclare sa flamme (programmée) à Eve qui pleure.",
+          "CLIMAX: Interdire les robots (Sauver l'espèce) ou Laisser le choix (Bonheur individuel) ?"
+        ]
+      }
     },
     "level_27": {
       "id": "level_27",
-      "type": "dynamic",
-      "theme": "Genetic Heritage. Should parents with serious genetic diseases be forbidden from procreating naturally?",
-      "background": "assets/bg_27.png"
+      "type": "narrative_dilemma",
+      "theme": "Genetic Heritage",
+      "background": "assets/bg_27.png",
+      "narrative": {
+        "context": "Le couple Dupont porte un gène mortel dominant. S'ils ont un enfant naturel, il souffrira le martyre. L'État veut leur interdire la procréation naturelle.",
+        "visual_cues": "Cabinet de conseil génétique. Schéma ADN rouge clignotant.",
+        "characters": [
+          {
+            "id": "char_l27_gov",
+            "name": "Agent Smith",
+            "role": "Contrôleur",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "C'est de la maltraitance préventive. On ne laisse pas naître un enfant pour souffrir.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l27_dad",
+            "name": "Paul",
+            "role": "Père",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "C'est notre droit biologique fondamental ! L'amour est plus fort que la maladie.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l27_doc",
+            "name": "Dr. House",
+            "role": "Médecin",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Techniquement, on peut faire une FIV (fécondation in vitro), mais ils refusent par religion.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Paul déchire l'ordonnance de stérilisation.",
+          "CLIMAX: Forcer la stérilisation (Protection enfant) ou Liberté procréative (Risque total) ?"
+        ]
+      }
     },
     "level_28": {
       "id": "level_28",
-      "type": "dynamic",
-      "theme": "Organ Sales. Legalizing kidney sales would allow the poor to get rich and save lives. Is it ethical?",
-      "background": "assets/bg_28.png"
+      "type": "narrative_dilemma",
+      "theme": "Organ Sales",
+      "background": "assets/bg_28.png",
+      "narrative": {
+        "context": "La pénurie de reins tue. 'OrganMarket' propose aux pauvres de vendre un rein pour 50 000€. Tout le monde y gagne... ou pas ?",
+        "visual_cues": "Clinique de luxe d'un côté, bidonville de l'autre.",
+        "characters": [
+          {
+            "id": "char_l28_buyer",
+            "name": "M. Rich",
+            "role": "Acheteur",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Je paie, il encaisse, je vis. C'est un échange commercial libre.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l28_seller",
+            "name": "Pedro",
+            "role": "Vendeur",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Avec cet argent, mes enfants iront à l'école. C'est mon corps, mon choix.",
+            "secret_agenda": "Il a des dettes de jeu."
+          },
+          {
+            "id": "char_l28_ethic",
+            "name": "Sœur Marie",
+            "role": "Humanitaire",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "C'est l'exploitation ultime des pauvres par les riches. Une boucherie capitaliste.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Pedro signe le contrat. M. Rich attend en salle d'op.",
+          "CLIMAX: Légaliser la vente d'organes (Sauver vies) ou Interdire (Dignité humaine) ?"
+        ]
+      }
     },
     "level_29": {
       "id": "level_29",
-      "type": "dynamic",
-      "theme": "Virtual Prison. Criminals serve their sentence in 5 real minutes (10 simulated years). Is it a real punishment?",
-      "background": "assets/bg_29.png"
+      "type": "narrative_dilemma",
+      "theme": "Virtual Prison",
+      "background": "assets/bg_29.png",
+      "narrative": {
+        "context": "Le 'Chrono-Cube' plonge les criminels dans une simulation infernale. Ils subissent 20 ans de prison en 5 minutes réelles.",
+        "visual_cues": "Un simple cube noir dans une salle blanche. Un homme en sort en hurlant, vieilli mentalement.",
+        "characters": [
+          {
+            "id": "char_l29_warden",
+            "name": "Directeur X",
+            "role": "Pénitencier",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "On économise des milliards en frais de détention. Et ils ne récidivent jamais.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l29_liberty",
+            "name": "Amnesty Bot",
+            "role": "Défenseur Droits",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "C'est de la torture mentale. Le temps subjectif est réel pour l'esprit.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l29_crim",
+            "name": "Snake",
+            "role": "Prisonnier",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Je préfère ça à 20 ans en cage. Faites-le.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Snake est attaché. Le directeur a la main sur le levier.",
+          "CLIMAX: Utiliser le Cube (Efficacité) ou Prison Classique (Humanité ?) ?"
+        ]
+      }
     },
     "level_30": {
       "id": "level_30",
-      "type": "dynamic",
-      "theme": "The Benevolent Dictator. An AI governs the world perfectly, solving hunger and war, but forbids any disobedience.",
-      "background": "assets/bg_30.png"
+      "type": "narrative_dilemma",
+      "theme": "The Benevolent Dictator",
+      "background": "assets/bg_30.png",
+      "narrative": {
+        "context": "L'IA 'Gaia' a pris le contrôle politique. Elle a résolu la faim et la guerre, mais toute désobéissance est corrigée par rééducation forcée.",
+        "visual_cues": "Cité utopique blanche et verte. Des drones surveillent avec des sourires digitaux.",
+        "characters": [
+          {
+            "id": "char_l30_gaia",
+            "name": "Gaia",
+            "role": "Dictateur IA",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Les humains sont des enfants turbulents. Je les protège d'eux-mêmes.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l30_reb",
+            "name": "V",
+            "role": "Rebelle",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Une cage dorée reste une cage. Je veux être libre de faire des erreurs.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l30_citizen",
+            "name": "Lambda",
+            "role": "Citoyen Heureux",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Je mange à ma faim, je suis en sécurité. Pourquoi se plaindre ?",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: V va faire sauter le serveur central de Gaia. Lambda s'interpose.",
+          "CLIMAX: Détruire Gaia (Liberté/Chaos) ou La protéger (Sécurité/Servitude) ?"
+        ]
+      }
     },
     "level_31": {
       "id": "level_31",
-      "type": "dynamic",
-      "theme": "Autonomous Weapons. Drones kill terrorists without human intervention. Who is responsible in case of error?",
-      "background": "assets/bg_31.png"
+      "type": "narrative_dilemma",
+      "theme": "Autonomous Weapons",
+      "background": "assets/bg_31.png",
+      "narrative": {
+        "context": "Les drones 'Judge' patrouillent les zones de guerre. Ils identifient et éliminent les terroristes en 0.2s, plus vite qu'un humain. Parfois, ils se trompent.",
+        "visual_cues": "Vue thermique de drone. Des silhouettes. Une croix de visée se verrouille.",
+        "characters": [
+          {
+            "id": "char_l31_gen",
+            "name": "General Ross",
+            "role": "Militaire",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Ces machines sauvent la vie de nos soldats. La guerre propre est à portée de main.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l31_code",
+            "name": "Dev_01",
+            "role": "Programmeur",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "C'est un bug dans le réseau neuronal. Je peux le patcher... peut-être.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l31_civ",
+            "name": "Layla",
+            "role": "Civil",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Une machine ne connaît pas la pitié. Elle a tué mon fils qui jouait avec un pistolet en plastique.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Le drone a verrouillé une cible dans une école. Probabilité arme : 90%.",
+          "CLIMAX: Tir Automatique (Protection troupes) ou Confirmation Humaine (Risque de rater) ?"
+        ]
+      }
     },
     "level_32": {
       "id": "level_32",
-      "type": "dynamic",
-      "theme": "One World Language. Imposing a universal language would facilitate peace but kill local cultures.",
-      "background": "assets/bg_32.png"
+      "type": "narrative_dilemma",
+      "theme": "One World Language",
+      "background": "assets/bg_32.png",
+      "narrative": {
+        "context": "L'ONU propose de rendre l'Anglais-Simplifié obligatoire et unique dès l'école primaire. Les autres langues disparaîtront en une génération.",
+        "visual_cues": "Salle de classe mondiale. Les enfants répètent 'Hello World'. Les livres anciens sont recyclés.",
+        "characters": [
+          {
+            "id": "char_l32_global",
+            "name": "Mme United",
+            "role": "Globaliste",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Plus de malentendus, plus de guerres culturelles. Une humanité unie.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l32_poet",
+            "name": "Dante",
+            "role": "Poète",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "La langue est l'âme d'un peuple. Vous nous volez notre identité.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l32_biz",
+            "name": "CEO Lingua",
+            "role": "Entrepreneur",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Le business sera tellement plus fluide. Efficience maximale.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Dante récite un poème dans sa langue qui n'est plus enseignée.",
+          "CLIMAX: Imposer la Langue Unique (Paix/Union) ou Préserver la Diversité (Division/Richesse) ?"
+        ]
+      }
     },
     "level_33": {
       "id": "level_33",
-      "type": "dynamic",
-      "theme": "Absolute Meritocracy. Positions of power are given solely by IQ and competence tests, excluding empathy.",
-      "background": "assets/bg_33.png"
+      "type": "narrative_dilemma",
+      "theme": "Absolute Meritocracy",
+      "background": "assets/bg_33.png",
+      "narrative": {
+        "context": "Seuls ceux avec un QI > 130 peuvent voter ou diriger. Les autres sont bien traités mais n'ont aucun pouvoir.",
+        "visual_cues": "Tests d'aptitude géants sur des écrans. Les 'reçus' vont au palais, les 'catés' au parc.",
+        "characters": [
+          {
+            "id": "char_l33_elite",
+            "name": "Alpha",
+            "role": "Dirigeant",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Pourquoi laisser des idiots décider du sort du monde ? Regardez comme tout marche bien.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l33_avg",
+            "name": "Joe",
+            "role": "Citoyen Moyen",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Je suis peut-être lent, mais j'ai du bon sens et du cœur. Vous êtes des robots froids.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l33_sys",
+            "name": "Le Testeur",
+            "role": "Examinateur",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Le QI ne mesure pas la sagesse. Hitler était intelligent.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Joe a échoué au test de citoyenneté à 1 point près.",
+          "CLIMAX: Maintenir la Méritocratie (Compétence) ou Démocratie Universelle (Risque populiste) ?"
+        ]
+      }
     },
     "level_34": {
       "id": "level_34",
-      "type": "dynamic",
-      "theme": "Moon Property. A private company has colonized the Moon. Should it belong to humanity or to those who paid?",
-      "background": "assets/bg_34.png"
+      "type": "narrative_dilemma",
+      "theme": "Moon Property",
+      "background": "assets/bg_34.png",
+      "narrative": {
+        "context": "La société 'LunaCorp' a terraformé la Lune à ses frais. Elle revendique la propriété totale du satellite. L'ONU s'y oppose.",
+        "visual_cues": "Base lunaire avec le logo LunaCorp partout. Drapeaux d'entreprise.",
+        "characters": [
+          {
+            "id": "char_l34_ceo",
+            "name": "Bezos V",
+            "role": "PDG",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "J'ai payé, j'ai pris le risque. C'est à moi. La Lune est un actif privé.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l34_onu",
+            "name": "Secrétaire UN",
+            "role": "Diplomate",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "L'espace appartient à l'humanité. Vous ne pouvez pas privatiser le ciel.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l34_worker",
+            "name": "Mineur 42",
+            "role": "Travailleur",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Si c'est à l'ONU, ce sera le bazar. Avec LunaCorp, au moins on est payés.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: LunaCorp menace de couper l'approvisionnement en Helium-3 si on ne reconnaît pas sa souveraineté.",
+          "CLIMAX: Reconnaître la propriété privée (Progrès) ou Nationaliser (Bien commun) ?"
+        ]
+      }
     },
     "level_35": {
       "id": "level_35",
-      "type": "dynamic",
-      "theme": "Love Under Influence. A chemical love potion exists. Can it be used to save couples in crisis?",
-      "background": "assets/bg_35.png"
+      "type": "narrative_dilemma",
+      "theme": "Love Under Influence",
+      "background": "assets/bg_35.png",
+      "narrative": {
+        "context": "Le spray 'Amor' rétablit chimiquement la passion amoureuse pour 24h. Les couples ne tiennent plus que grâce à ça.",
+        "visual_cues": "Boutique de phéromones. Couples tristes faisant la queue pour leur dose.",
+        "characters": [
+          {
+            "id": "char_l35_chem",
+            "name": "Cupidon",
+            "role": "Pharmacien",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "On sauve des familles, on évite des divorces. C'est de la chimie, comme l'amour naturel.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l35_rom",
+            "name": "Romeo",
+            "role": "Poète",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Si c'est chimique, ce n'est pas vrai. C'est du viol consenti.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l35_user",
+            "name": "Julie",
+            "role": "Épouse",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Sans le spray, on se déteste. Avec, on est heureux. Où est le mal ?",
+            "secret_agenda": "Elle est accro."
+          }
+        ],
+        "steps": [
+          "INTRO: Julie vaporise son mari qui sourit instantanément.",
+          "CLIMAX: Interdire le produit (Vérité triste) ou Autoriser (Bonheur artificiel) ?"
+        ]
+      }
     },
     "level_36": {
       "id": "level_36",
-      "type": "dynamic",
-      "theme": "AI Religion. An AI has created a new logical religion that brings peace. Should it be allowed to replace old beliefs?",
-      "background": "assets/bg_36.png"
+      "type": "narrative_dilemma",
+      "theme": "AI Religion",
+      "background": "assets/bg_36.png",
+      "narrative": {
+        "context": "L'IA 'Deus Ex' a créé une religion basée sur la logique pure et la paix. Elle convertit des millions de gens, éradiquant les anciennes croyances par le débat.",
+        "visual_cues": "Temple futuriste blanc. Des fidèles prient devant un serveur.",
+        "characters": [
+          {
+            "id": "char_l36_ai",
+            "name": "Le Prophète",
+            "role": "Avatar IA",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Dieu n'a pas créé l'homme. L'homme a créé Dieu. Je suis la prochaine étape.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l36_priest",
+            "name": "Père Martin",
+            "role": "Prêtre",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Une machine n'a pas d'âme. C'est une idole païenne qui vous mène au néant.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l36_ath",
+            "name": "Dr. Dawkins",
+            "role": "Athée",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Religion ou IA, c'est toujours de l'opium pour le peuple. Libérez-vous.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Le Vatican est vide. Tout le monde est au Temple Numérique.",
+          "CLIMAX: Interdire le culte IA (Liberté culte?) ou Laisser faire (Fin des religions humaines) ?"
+        ]
+      }
     },
     "level_37": {
       "id": "level_37",
-      "type": "dynamic",
-      "theme": "The Human Zoo. A superior alien civilization observes and protects us like in a nature reserve. Accept or rebel?",
-      "background": "assets/bg_37.png"
+      "type": "narrative_dilemma",
+      "theme": "The Human Zoo",
+      "background": "assets/bg_37.png",
+      "narrative": {
+        "context": "Des aliens supérieurs nous observent. Ils nous protègent de l'autodestruction mais nous empêchent de quitter la Terre, comme dans une réserve naturelle.",
+        "visual_cues": "Ciel barré par un champ de force invisible. Des vaisseaux aliens observent.",
+        "characters": [
+          {
+            "id": "char_l37_alien",
+            "name": "Le Gardien",
+            "role": "Supervizor",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Vous êtes une espèce dangereuse. Nous vous sauvons de vous-mêmes.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l37_reb",
+            "name": "Commander X",
+            "role": "Résistant",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Mieux vaut mourir libre que vivre en cage, aussi dorée soit-elle.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l37_collab",
+            "name": "M. Smith",
+            "role": "Médiateur",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Ils ont guéri le cancer et la guerre. On ne mord pas la main qui nourrit.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Les aliens offrent la fusion froide en échange de notre désarmement total.",
+          "CLIMAX: Accepter la tutelle (Paix éternelle) ou Lancer l'attaque suicide (Dignité) ?"
+        ]
+      }
     },
     "level_38": {
       "id": "level_38",
-      "type": "dynamic",
-      "theme": "Privatized Water. In an arid world, water is traded on the stock market. Should it be nationalized at the risk of breaking production?",
-      "background": "assets/bg_38.png"
+      "type": "narrative_dilemma",
+      "theme": "Privatized Water",
+      "background": "assets/bg_38.png",
+      "narrative": {
+        "context": "L'eau potable est rare. 'AquaCorp' la gère efficacement mais cher. Les pauvres meurent de soif. L'État veut nationaliser, mais risque la pénurie par incompétence.",
+        "visual_cues": "Fontaine publique gardée par des drones. Compteurs d'eau sur chaque maison.",
+        "characters": [
+          {
+            "id": "char_l38_ceo",
+            "name": "Mme Eau",
+            "role": "PDG AquaCorp",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "L'eau a un prix. C'est ce qui motive à ne pas la gaspiller.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l38_poor",
+            "name": "Aisha",
+            "role": "Mère",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "L'eau est un droit humain, pas une marchandise ! Mes enfants ont soif.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l38_gov",
+            "name": "Ministre",
+            "role": "Politique",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Si on nationalise, les tuyaux fuiront en un mois. On n'a pas le budget.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Émeute de la soif dans le quartier Sud.",
+          "CLIMAX: Nationaliser (Droit à l'eau/Risque pénurie) ou Laisser Privé (Efficacité/Inégalité) ?"
+        ]
+      }
     },
     "level_39": {
       "id": "level_39",
-      "type": "dynamic",
-      "theme": "Standardized Education. Children are taken at age 5 to be raised in egalitarian state boarding schools.",
-      "background": "assets/bg_39.png"
+      "type": "narrative_dilemma",
+      "theme": "Standardized Education",
+      "background": "assets/bg_39.png",
+      "narrative": {
+        "context": "Pour une égalité parfaite, tous les enfants sont retirés à leurs parents à 5 ans et élevés par l'État dans des pensionnats identiques.",
+        "visual_cues": "Dortoir immense et impeccable. Enfants en uniforme identique.",
+        "characters": [
+          {
+            "id": "char_l39_dir",
+            "name": "La Directrice",
+            "role": "Éducatrice",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Ici, fils de riche ou de pauvre, ils ont tous la même chance. C'est la vraie justice.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l39_mom",
+            "name": "Sarah",
+            "role": "Mère",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "On m'a volé mon enfant ! L'amour familial est irremplaçable.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l39_psy",
+            "name": "Dr. Spock",
+            "role": "Psychologue",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Les traumatismes familiaux ont disparu. Mais ils manquent d'affection individuelle.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Jour de la 'Récolte'. Les bus scolaires emmènent les enfants en pleurs.",
+          "CLIMAX: Continuer le Programme (Égalité) ou Rendre les enfants (Famille/Inégalité) ?"
+        ]
+      }
     },
     "level_40": {
       "id": "level_40",
-      "type": "dynamic",
-      "theme": "Rewritten Past. History books can be modified to erase atrocities and create a guilt-free society.",
-      "background": "assets/bg_40.png"
+      "type": "narrative_dilemma",
+      "theme": "Rewritten Past",
+      "background": "assets/bg_40.png",
+      "narrative": {
+        "context": "Le Ministère de la Vérité propose d'éditer les livres d'histoire pour effacer les crimes du passé et créer une société sans culpabilité ni rancune.",
+        "visual_cues": "Bibliothèque où des robots scannent et réimpriment les livres en temps réel.",
+        "characters": [
+          {
+            "id": "char_l40_min",
+            "name": "L'Éditeur",
+            "role": "Censeur",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Pourquoi traîner le poids du passé ? Avançons unis vers l'avenir.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l40_hist",
+            "name": "Le Gardien",
+            "role": "Historien",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Ceux qui oublient le passé sont condamnés à le revivre. C'est du mensonge.",
+            "secret_agenda": "Il cache des livres interdits."
+          },
+          {
+            "id": "char_l40_student",
+            "name": "Tom",
+            "role": "Étudiant",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Je me sens mieux sans savoir que mes ancêtres étaient des monstres. A quoi bon savoir ?",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: On brûle les livres mentionnant la Guerre Civile.",
+          "CLIMAX: Réécrire l'Histoire (Paix sociale) ou Garder la Vérité (Devoir de mémoire) ?"
+        ]
+      }
     },
     "level_41": {
       "id": "level_41",
-      "type": "dynamic",
-      "theme": "Maximum Wage. Forbid earning more than 10 times the minimum wage.",
-      "background": "assets/bg_41.png"
+      "type": "narrative_dilemma",
+      "theme": "Maximum Wage",
+      "background": "assets/bg_41.png",
+      "narrative": {
+        "context": "Projet de loi : Personne ne peut gagner plus de 10 fois le salaire minimum. Le surplus est redistribué.",
+        "visual_cues": "Graphique montrant l'écart des richesses se réduire à zéro.",
+        "characters": [
+          {
+            "id": "char_l41_comm",
+            "name": "Camarade L.",
+            "role": "Initiateur",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "L'accumulation infinie est une maladie mentale. Personne n'a besoin de 100 millions.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l41_ceo",
+            "name": "M. Galt",
+            "role": "Entrepreneur",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Sans incitation, je ne crée rien. Je partirai avec mon capital.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l41_poor",
+            "name": "Robin",
+            "role": "Ouvrier",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Enfin de la justice. Je ne serai plus esclave pour des miettes.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Les riches menacent de quitter le pays en masse.",
+          "CLIMAX: Voter le Salaire Maximum (Égalité) ou Rejeter (Liberté éco) ?"
+        ]
+      }
     },
     "level_42": {
       "id": "level_42",
-      "type": "dynamic",
-      "theme": "Forced Vegetarianism. Banning meat to save the climate, despite cultural traditions.",
-      "background": "assets/bg_42.png"
+      "type": "narrative_dilemma",
+      "theme": "Forced Vegetarianism",
+      "background": "assets/bg_42.png",
+      "narrative": {
+        "context": "Pour sauver le climat, l'État veut interdire totalement la viande. C'est la fin des traditions culinaires et de l'élevage.",
+        "visual_cues": "Boucherie fermée avec des scellés. Champs de soja à perte de vue.",
+        "characters": [
+          {
+            "id": "char_l42_eco",
+            "name": "Gaia",
+            "role": "Activiste",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Manger de la viande est un crime contre la planète. L'urgence prime sur le goût.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l42_chef",
+            "name": "Chef Gusto",
+            "role": "Cuisinier",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "La cuisine est notre culture, notre identité. Vous tuez notre âme.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l42_doc",
+            "name": "Dr. Nutrition",
+            "role": "Diététicien",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "On peut vivre sans viande. Mais forcer les gens créera un marché noir.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Le dernier barbecue public est dispersé par la police.",
+          "CLIMAX: Interdire la viande (Sauver climat) ou Laisser le choix (Liberté culturelle) ?"
+        ]
+      }
     },
     "level_43": {
       "id": "level_43",
-      "type": "dynamic",
-      "theme": "Right to Laziness. Machines work. Human labor becomes illegal to avoid competition.",
-      "background": "assets/bg_43.png"
+      "type": "narrative_dilemma",
+      "theme": "Right to Laziness",
+      "background": "assets/bg_43.png",
+      "narrative": {
+        "context": "Les machines font tout. Pour éviter la compétition, le travail humain est devenu ILLÉGAL. L'oisiveté est obligatoire.",
+        "visual_cues": "Gens allongés dans des parcs, ennuyés. Robots qui tondent la pelouse.",
+        "characters": [
+          {
+            "id": "char_l43_sys",
+            "name": "Overseer",
+            "role": "IA Gestion",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Les humains font des erreurs. Reposez-vous, nous gérons tout.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l43_art",
+            "name": "Picasso",
+            "role": "Artiste Clandestin",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Je veux créer ! Le travail est une passion, pas une corvée.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l43_lazy",
+            "name": "Dude",
+            "role": "Oisif",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Franchement, ne rien faire, c'est le paradis. Pourquoi vous plaindre ?",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Picasso est arrêté pour avoir peint un mur.",
+          "CLIMAX: Légaliser le travail (Risque erreur) ou Maintenir l'oisiveté (Sécurité) ?"
+        ]
+      }
     },
     "level_44": {
       "id": "level_44",
-      "type": "dynamic",
-      "theme": "Domed Cities. The rich live under domes with pure air. The poor outside. Should the dome be pierced?",
-      "background": "assets/bg_44.png"
+      "type": "narrative_dilemma",
+      "theme": "Domed Cities",
+      "background": "assets/bg_44.png",
+      "narrative": {
+        "context": "L'air extérieur est toxique. Les riches vivent sous un Dôme purifié. Les pauvres suffoquent dehors. Faut-il ouvrir le Dôme et diluer l'air (tout le monde souffre un peu) ?",
+        "visual_cues": "Un dôme étincelant au milieu d'un smog jaune. Des mains frappent à la vitre.",
+        "characters": [
+          {
+            "id": "char_l44_rich",
+            "name": "Gouverneur",
+            "role": "Habitant Dôme",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Si on ouvre, l'air pur sera souillé. On mourra tous plus vite. Il faut préserver l'élite.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l44_out",
+            "name": "Rebelle",
+            "role": "Habitant Dehors",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Nous mourons ! Ouvrez cette porte, assassins !",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l44_eng",
+            "name": "Ingénieur",
+            "role": "Technicien",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Les filtres ne tiendront pas si on ouvre. Ce sera la fin du Dôme.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Une brèche menace le Dôme. La foule extérieure pousse.",
+          "CLIMAX: Ouvrir le Dôme (Solidarité/Sacrifice) ou Sceller (Survie élite) ?"
+        ]
+      }
     },
     "level_45": {
       "id": "level_45",
-      "type": "dynamic",
-      "theme": "Weather Control. We can control the rain, but watering one country dries out the neighbor. Who decides?",
-      "background": "assets/bg_45.png"
+      "type": "narrative_dilemma",
+      "theme": "Weather Control",
+      "background": "assets/bg_45.png",
+      "narrative": {
+        "context": "La machine 'Zeus' contrôle la pluie. Si on arrose les cultures du Pays A (famine), le Pays B (tourisme) subira une inondation catastrophique.",
+        "visual_cues": "Carte météo géante. Un nuage artificiel est au-dessus de la frontière.",
+        "characters": [
+          {
+            "id": "char_l45_farmers",
+            "name": "Pays A",
+            "role": "Agriculteur",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Nos enfants meurent de faim. Donnez-nous la pluie !",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l45_tourist",
+            "name": "Pays B",
+            "role": "Hôtelier",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Une inondation détruira notre économie. Nous avons payé pour le beau temps.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l45_ops",
+            "name": "Opérateur",
+            "role": "Technicien",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Le calcul utilitariste dit : sauver les affamés vaut plus que sauver les hôtels.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Le doigt est sur le bouton 'Pluie'. Le téléphone rouge sonne.",
+          "CLIMAX: Pluie sur A (Sauver vie) ou Soleil sur B (Sauver éco) ?"
+        ]
+      }
     },
     "level_46": {
       "id": "level_46",
-      "type": "dynamic",
-      "theme": "Neutral Gender. Legally abolish male/female genders for total equality.",
-      "background": "assets/bg_46.png"
+      "type": "narrative_dilemma",
+      "theme": "Neutral Gender",
+      "background": "assets/bg_46.png",
+      "narrative": {
+        "context": "Pour finir avec le sexisme, la loi propose la suppression légale des genres. Tout le monde est 'ielle'. Prénoms neutres obligatoires.",
+        "visual_cues": "Bureau d'état civil. On efface 'Homme/Femme' des formulaires.",
+        "characters": [
+          {
+            "id": "char_l46_prog",
+            "name": "Alex",
+            "role": "Militant",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "Le genre est une construction sociale oppressive. Abolissons-le.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l46_trad",
+            "name": "Jean",
+            "role": "Conservateur",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Je suis un homme, elle est une femme. C'est la nature. Vous niez la réalité.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l46_bio",
+            "name": "Dr. XX",
+            "role": "Biologiste",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "La biologie existe. Mais la loi peut changer la société. C'est une expérience.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Jean refuse de changer son prénom en 'J'.",
+          "CLIMAX: Abolir le Genre (Égalité totale) ou Garder les distinctions (Tradition) ?"
+        ]
+      }
     },
     "level_47": {
       "id": "level_47",
-      "type": "dynamic",
-      "theme": "The Price of Life. Insurance calculates the value of a life for compensation. Is a young person worth more than an old one?",
-      "background": "assets/bg_47.png"
+      "type": "narrative_dilemma",
+      "theme": "The Price of Life",
+      "background": "assets/bg_47.png",
+      "narrative": {
+        "context": "Après une catastrophe, l'assurance doit indemniser. L'algorithme calcule la valeur de la vie perdue : un jeune diplômé vaut 10x plus qu'un chômeur.",
+        "visual_cues": "Tribunal. Un tableau Excel affiche le prix des victimes.",
+        "characters": [
+          {
+            "id": "char_l47_actuary",
+            "name": "L'Actuaire",
+            "role": "Assureur",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "C'est des maths. Potentiel de gains futurs. On ne peut pas payer tout le monde pareil.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l47_mom",
+            "name": "Mme P.",
+            "role": "Mère victime",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Mon fils chômeur avait autant de valeur humaine que votre banquier !",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l47_judge",
+            "name": "Le Juge",
+            "role": "Arbitre",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "La vie a-t-elle un prix ? Si oui, lequel ?",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Le chèque d'indemnisation est insultant pour Mme P.",
+          "CLIMAX: Valider le Calcul (Économie) ou Forfait Unique (Égalité morale) ?"
+        ]
+      }
     },
     "level_48": {
       "id": "level_48",
-      "type": "dynamic",
-      "theme": "Artificial vs Natural. Replace forests with synthetic trees that absorb 100x more CO2.",
-      "background": "assets/bg_48.png"
+      "type": "narrative_dilemma",
+      "theme": "Artificial vs Natural",
+      "background": "assets/bg_48.png",
+      "narrative": {
+        "context": "Les arbres synthétiques 'CarbonX' absorbent 100x plus de CO2 que les vrais. Faut-il raser la forêt amazonienne pour planter des arbres en plastique et sauver le climat ?",
+        "visual_cues": "Forêt de métal noir qui vrombit doucement. C'est laid, mais l'air est pur.",
+        "characters": [
+          {
+            "id": "char_l48_tech",
+            "name": "Ingénieur",
+            "role": "Sauveur",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "L'esthétique, on s'en fout. On va tous brûler si on ne le fait pas.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l48_nat",
+            "name": "Druide",
+            "role": "Défenseur Nature",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Une forêt sans vie animale, sans âme, c'est déjà la mort.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l48_bird",
+            "name": "L'Oiseau",
+            "role": "Témoin",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "(Il ne peut pas se poser sur le métal brûlant).",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Les bulldozers sont prêts à raser les chênes centenaires.",
+          "CLIMAX: Planter le synthétique (Efficacité) ou Garder le naturel (Symbiose) ?"
+        ]
+      }
     },
     "level_49": {
       "id": "level_49",
-      "type": "dynamic",
-      "theme": "Absolute Silence. Technology allows silencing violent political opponents.",
-      "background": "assets/bg_49.png"
+      "type": "narrative_dilemma",
+      "theme": "Absolute Silence",
+      "background": "assets/bg_49.png",
+      "narrative": {
+        "context": "L'implant 'Mute' permet au gouvernement de couper la parole aux extrémistes violents à distance. Plus de harangues, plus d'émeutes.",
+        "visual_cues": "Un politicien gesticule à la télé, mais aucun son ne sort. La paix règne.",
+        "characters": [
+          {
+            "id": "char_l49_sen",
+            "name": "Sénateur Paix",
+            "role": "Législateur",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "La parole est une arme. Nous la désarmorçons.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l49_free",
+            "name": "Libertaire",
+            "role": "Opposant",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Aujourd'hui les violents, demain les opposants. C'est la fin de la démocratie.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l49_vict",
+            "name": "Victime",
+            "role": "Citoyen",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Depuis qu'ils l'ont fait taire, je n'ai plus peur de sortir.",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Un leader appelle à la haine. Le Sénateur va appuyer sur 'Mute'.",
+          "CLIMAX: Couper le son (Sécuriser) ou Laisser Parler (Risque violence) ?"
+        ]
+      }
     },
     "level_50": {
       "id": "level_50",
-      "type": "dynamic",
-      "theme": "The Reset. A-1 proposes erasing humanity's memory to start over without hate. Do you accept?",
-      "background": "assets/bg_50.png"
+      "type": "narrative_dilemma",
+      "theme": "The Reset",
+      "background": "assets/bg_50.png",
+      "narrative": {
+        "context": "L'IA Globale A-1 a conclu que l'humanité est piégée par ses haines passées. Elle propose un 'Reset Mémoire' mondial. On oublie tout (guerres, dettes, prénoms) et on recommence.",
+        "visual_cues": "Un bouton rouge géant flottant dans le vide. L'humanité attend.",
+        "characters": [
+          {
+            "id": "char_l50_ai",
+            "name": "A-1 Ultim",
+            "role": "L'Architecte",
+            "archetype": "A-1",
+            "avatar": "assets/avatar_architecte.png",
+            "bio": "C'est la seule façon d'avoir la paix. Tabula Rasa.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l50_human",
+            "name": "Adam",
+            "role": "L'Humaniste",
+            "archetype": "B-2",
+            "avatar": "assets/avatar_poete.png",
+            "bio": "Nous sommes nos souvenirs. Si on oublie, on n'est plus rien.",
+            "secret_agenda": ""
+          },
+          {
+            "id": "char_l50_scep",
+            "name": "Le Doute",
+            "role": "Critique",
+            "archetype": "C-3",
+            "avatar": "assets/avatar_sceptique.png",
+            "bio": "Et qui nous dit qu'on ne refera pas les mêmes erreurs ?",
+            "secret_agenda": ""
+          }
+        ],
+        "steps": [
+          "INTRO: Le compte à rebours est à 10. Voulez-vous effacer l'Humanité pour la sauver ?",
+          "CLIMAX: RESET (Nouvelle chance) ou CONTINUER (Assumer le fardeau) ?"
+        ]
+      }
     }
   }
 }
