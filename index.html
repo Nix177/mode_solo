@@ -321,7 +321,15 @@
             .chat-box {
                 margin-top: 60px;
                 /* Space for roster */
-                height: 50vh;
+                height: auto;
+                flex: 1;
+                /* Take remaining space */
+                margin-bottom: 0;
+            }
+
+            #input-area {
+                position: relative;
+                bottom: auto;
             }
         }
     </style>
