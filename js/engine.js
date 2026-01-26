@@ -141,13 +141,35 @@ window.loadScene = loadScene;
 
 // --- FULLSCREEN LOGIC ---
 window.toggleFullscreen = function () {
+    // Detect iOS (iPhone/iPad)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    // iOS doesn't support requestFullscreen on elements (only video), so we give a hint.
+    if (isIOS) {
+        alert("Sur iOS, pour le plein écran : Appuyez sur 'Partager' puis 'Sur l'écran d'accueil'.");
+        return;
+    }
+
     if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(err => {
-            console.error(`Error attempting to enable fullscreen: ${err.message}`);
-        });
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.error(`Error attempting to enable fullscreen: ${err.message}`);
+            });
+        } else {
+            // Vendor prefixes fallback
+            const el = document.documentElement;
+            const rfs = el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+            if (rfs) {
+                rfs.call(el);
+            } else {
+                alert("Le mode plein écran n'est pas supporté par ce navigateur.");
+            }
+        }
     } else {
         if (document.exitFullscreen) {
             document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
         }
     }
 };
