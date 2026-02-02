@@ -150,7 +150,7 @@
             "name": "Marc",
             "role": "Père Anxieux",
             "archetype": "B-2",
-            "avatar": "assets/avatar_sceptique.png",
+            "avatar": "assets/avatar_marc.png",
             "bio": "Son premier enfant est né avec une maladie grave. Il veut éviter ça au second.",
             "secret_agenda": "Il a peur que son enfant 'parfait' ne l'aime pas."
           },
@@ -159,7 +159,7 @@
             "name": "Pr. Solara",
             "role": "Bioéthicienne",
             "archetype": "C-3",
-            "avatar": "assets/avatar_poete.png",
+            "avatar": "assets/avatar_solara.png",
             "bio": "Elle craint la création d'une super-race dominante.",
             "secret_agenda": "Elle est stérile et jalouse secrètement."
           }
@@ -197,7 +197,7 @@
             "name": "Sibyl",
             "role": "Système Prédictif",
             "archetype": "A-1",
-            "avatar": "assets/avatar_architecte.png",
+            "avatar": "assets/avatar_sibyl.png",
             "bio": "Une voix sans corps. Logique pure. 'Mieux vaut prévenir que punir'.",
             "secret_agenda": "Le système a une marge d'erreur qu'il cache."
           },
@@ -206,7 +206,7 @@
             "name": "Lieutenant K.",
             "role": "Policier de Terrain",
             "archetype": "C-3",
-            "avatar": "assets/avatar_sceptique.png",
+            "avatar": "assets/avatar_lt_k.png",
             "bio": "Il est fatigué de ramasser les cadavres. Il veut arrêter le suspect maintenant.",
             "secret_agenda": "Il connaît la cible, c'est un ancien indic."
           },
@@ -215,7 +215,7 @@
             "name": "Maya",
             "role": "Avocate",
             "archetype": "B-2",
-            "avatar": "assets/avatar_poete.png",
+            "avatar": "assets/avatar_maya.png",
             "bio": "Défend la présomption d'innocence. On ne juge pas une intention.",
             "secret_agenda": "Son frère a été arrêté par erreur par Sibyl."
           }
