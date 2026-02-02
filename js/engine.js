@@ -898,32 +898,61 @@ async function checkDecisionMade(lastUserAction, theme, turnCount) {
         const hasKeyword = keywords.some(k => lowerInput.includes(k));
         console.log(`[DEBUG checkDecisionMade] keyword check: hasKeyword=${hasKeyword}, input="${lowerInput}"`);
 
-        if (hasKeyword) {
-            // Force decision mode
-            console.log(`[DEBUG checkDecisionMade] Keyword detected! Returning DECIDED`);
+        // Get full conversation for context
+        const fullTranscript = GLOBAL_HISTORY.filter(h => h.sceneId === CURRENT_SCENE.id)
+            .map(h => `${h.role}: ${h.content}`).join('\n');
+
+        if (hasKeyword || turnCount > 6) {
+            // Force decision mode but still try to infer the exit from conversation
+            console.log(`[DEBUG checkDecisionMade] Keyword/turn limit detected! Inferring exit...`);
+
+            if (CURRENT_SCENE.exits && CURRENT_SCENE.exits.length > 0) {
+                const inferRes = await callAIInternal(`
+                    ANALYSE LA CONVERSATION POUR DETERMINER LE CHOIX DU JOUEUR.
+                    
+                    TRANSCRIPTION COMPLÈTE:
+                    ${fullTranscript}
+                    
+                    ${exitPrompt}
+                    
+                    MISSION: Basé sur ce que le joueur a dit tout au long de la conversation, quel exit correspond le mieux à sa position?
+                    Si le joueur a défendu la nature/forêt/protection, choisis l'exit qui protège.
+                    Si le joueur a défendu le progrès/technologie/économie, choisis l'exit qui extrait/développe.
+                    
+                    Réponds UNIQUEMENT l'ID de l'exit (ex: "PROTECT" ou "EXTRACT"). Rien d'autre.
+                `);
+                const inferredExit = inferRes.trim().replace(/["']/g, '').toUpperCase();
+                const matchedExit = CURRENT_SCENE.exits.find(e => e.id.toUpperCase() === inferredExit);
+                console.log(`[DEBUG checkDecisionMade] Inferred exit: ${inferredExit}, matched:`, matchedExit);
+                return { status: "DECIDED", exitId: matchedExit ? matchedExit.id : CURRENT_SCENE.exits[0].id };
+            }
             return { status: "DECIDED", exitId: null };
         }
 
         const res = await callAIInternal(`
-                        ANALYZE PLAYER INPUT. Theme: "${theme}".
-                        CONTEXT (LAST AI MESSAGE): "${lastAIMessage}"
-                        PLAYER INPUT: "${lastUserAction}"
-                        Mode: FORCE_DECISION_IF_CLOSE
+            ANALYZE PLAYER INPUT. Theme: "${theme}".
+            CONTEXT (LAST AI MESSAGE): "${lastAIMessage}"
+            PLAYER INPUT: "${lastUserAction}"
+            Mode: FORCE_DECISION_IF_CLOSE
 
-                        ${exitPrompt}
+            ${exitPrompt}
 
-                        Has the player made a choice?
-                        If they say "next level", "I confirm", "let's go", "it's decided", etc., MARK AS DECIDED.
-                        If they argue for a specific side (e.g. "Kill the forest"), assume they want that exit.
+            Has the player made a choice?
+            If they say "next level", "I confirm", "let's go", "it's decided", etc., MARK AS DECIDED.
+            If they argue for a specific side (e.g. "Kill the forest"), assume they want that exit.
 
-                        Reply ONLY JSON: {"status": "DECIDED", "exitId": "ID_OF_EXIT" } OR {"status": "DEBATING" }
-                        `);
+            Reply ONLY JSON: {"status": "DECIDED", "exitId": "ID_OF_EXIT" } OR {"status": "DEBATING" }
+        `);
         console.log(`[DEBUG checkDecisionMade] AI response: ${res}`);
         const parsed = JSON.parse(res);
         console.log(`[DEBUG checkDecisionMade] Parsed result:`, parsed);
         return parsed;
     } catch (e) {
         console.log(`[DEBUG checkDecisionMade] Error parsing, fallback. turnCount=${turnCount}`, e);
+        // Fallback: if turn limit reached, use first exit
+        if (turnCount > 6 && CURRENT_SCENE.exits && CURRENT_SCENE.exits.length > 0) {
+            return { status: "DECIDED", exitId: CURRENT_SCENE.exits[0].id };
+        }
         return { status: turnCount > 6 ? "DECIDED" : "DEBATING" };
     }
 }

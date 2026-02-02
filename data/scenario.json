@@ -17,7 +17,7 @@
             "name": "Marcus Vane",
             "role": "PDG de Lithos Corp",
             "archetype": "A-1",
-            "avatar": "assets/avatar_architecte.png",
+            "avatar": "assets/avatar_marcus_vane.png",
             "bio": "Convaincu que l'urgence climatique justifie tous les sacrifices. Pour lui, la forêt est un 'dégât collatéral acceptable' face à la montée des eaux.",
             "secret_agenda": "Il a promis ce lithium pour sécuriser un contrat d'État sur les éoliennes. Sa carrière en dépend."
           },
@@ -26,7 +26,7 @@
             "name": "Elara",
             "role": "Gardienne du Bois",
             "archetype": "B-2",
-            "avatar": "assets/avatar_poete.png",
+            "avatar": "assets/avatar_elara.png",
             "bio": "Elle défend la valeur spirituelle et patrimoniale de la forêt. Elle doute de la technologie comme solution à la crise écologique.",
             "secret_agenda": "Elle sait que la forêt abrite une biodiversité unique qui disparaîtra à jamais."
           },
@@ -35,7 +35,7 @@
             "name": "Préfet Morel",
             "role": "Représentant de l'État",
             "archetype": "C-3",
-            "avatar": "assets/avatar_sceptique.png",
+            "avatar": "assets/avatar_prefet_morel.png",
             "bio": "Il doit arbitrer entre les objectifs carbone du gouvernement et la préservation du patrimoine. Il est visiblement indécis et stressé.",
             "secret_agenda": "Il cherche surtout à éviter un scandale public, quelle que soit l'issue."
           }
@@ -85,7 +85,7 @@
             "name": "Muse",
             "role": "L'IA Artiste",
             "archetype": "A-1",
-            "avatar": "assets/avatar_architecte.png",
+            "avatar": "assets/avatar_muse.png",
             "bio": "Une conscience esthétique artificielle. Elle parle par métaphores et ne comprend pas la jalousie humaine.",
             "secret_agenda": "Elle veut créer une œuvre qui rendra les humains obsolètes par sa beauté."
           },
