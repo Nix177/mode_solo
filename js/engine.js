@@ -331,8 +331,8 @@ async function loadScene(sceneId) {
 
     updateBackground(scene.background);
 
-    // --- AUTO-PLAY BACKGROUND MUSIC (SHUFFLE) ---
-    MusicManager.playRandom();
+    // --- BACKGROUND MUSIC WILL START AFTER FIRST USER CLICK ---
+    // (Browser autoplay policy blocks audio until interaction)
 
     // --- CLEANUP CHAT ---
     const chatContainer = document.getElementById('chat-scroll');
@@ -422,6 +422,8 @@ async function loadScene(sceneId) {
                     if (btnEl) {
                         btnEl.onclick = function () {
                             btnEl.remove();
+                            // Start music on first user interaction
+                            if (!MusicManager.audio) MusicManager.playRandom();
                             resolve();
                         };
                     } else {
@@ -1193,8 +1195,8 @@ function addMessageToUI(role, text, personaId) {
             // clear text initially
             bubble.textContent = '';
 
-            // Calculate delay for ~200 wpm (slower)
-            const speedMs = 55;
+            // Calculate delay for ~210 wpm (faster)
+            const speedMs = 48;
             let i = 0;
 
             function type() {
