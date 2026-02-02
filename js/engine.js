@@ -31,7 +31,6 @@ const TTSManager = {
         if ('speechSynthesis' in window) {
             const load = () => {
                 this.voices = window.speechSynthesis.getVoices();
-                // We keep ALL voices so user can see "Microsoft Online" etc.
             };
             window.speechSynthesis.onvoiceschanged = load;
             load();
@@ -53,41 +52,48 @@ const TTSManager = {
         if (!cleanText) return;
 
         const utter = new SpeechSynthesisUtterance(cleanText);
-
-        // --- VOICE SELECTION LOGIC ---
         let selectedVoice = null;
 
-        // 1. Try User Preference First
+        // --- 1. VOICE SELECTION ---
+        // Priority: User Preference
         if (this.preferredVoiceURI) {
             selectedVoice = this.voices.find(v => v.voiceURI === this.preferredVoiceURI);
         }
-
-        // 2. Fallback to any French voice if no preference or preference not found
+        // Fallback: Best French Voice
         if (!selectedVoice) {
-            // Priority: "Google" (usually better) > "Natural" > "Microsoft" > Any FR
             selectedVoice = this.voices.find(v => v.lang.startsWith('fr') && v.name.includes('Google')) ||
                 this.voices.find(v => v.lang.startsWith('fr') && v.name.includes('Natural')) ||
                 this.voices.find(v => v.lang.startsWith('fr'));
         }
+        if (selectedVoice) utter.voice = selectedVoice;
 
-        if (selectedVoice) {
-            utter.voice = selectedVoice;
-        }
-
-        // --- PITCH & RATE VARIATION ---
+        // --- 2. GENDER & PERSONA LOGIC ---
         let pitch = 1.0;
         let rate = 1.0;
 
         if (isNarrative) {
-            pitch = 0.95; // Deeper for narration
-            rate = 0.95;  // Slower
+            // NARRATOR: FIXED MALE VOICE
+            // Decrease pitch to enforce masculine tone if voice is gender-neutral
+            pitch = 0.85;
+            rate = 0.95;
         } else if (personaId) {
-            // Hash ID to get variation
+            // Retrieve Persona Gender
+            const personas = window.GAME_DATA.currentPersonas || window.GAME_DATA.personas || {};
+            const p = personas[personaId];
+            const gender = p ? p.gender : 'male'; // Default male
+
+            // Calculate a unique hash for variation
             const idSum = personaId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
 
-            // Subtle pitch shifting (0.85 to 1.15)
-            pitch = 0.9 + ((idSum % 5) * 0.05);
-            rate = 1.0 + ((idSum % 3) * 0.05);
+            if (gender === 'female') {
+                // FEMALE: Higher pitch
+                pitch = 1.2 + ((idSum % 3) * 0.05); // 1.2 to 1.3
+            } else {
+                // MALE: Lower pitch
+                pitch = 0.85 + ((idSum % 3) * 0.05); // 0.85 to 0.95
+            }
+
+            rate = 1.05;
         }
 
         utter.pitch = pitch;
