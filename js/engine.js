@@ -652,7 +652,7 @@ function renderInterface(scene) {
 
     // MODIFICATION : Header avec Avatar + Titre cliquable (Admin)
     let html = `
-                            < div class="header-bar" style = "display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; padding: 0 20px;" >
+                            <div class="header-bar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; padding: 0 20px;">
             <div onclick="window.manualLevelJump()" style="cursor:pointer;" title="Admin: Changer de scène">
                 <h1 style="font-size:1.2em; color:#ddd; text-transform:uppercase; margin:0;">
                     Séquence ${stepCount} <span style="font-size:0.8em; opacity:0.5;">(⚙️)</span>
@@ -859,8 +859,13 @@ async function showGameSummary() {
 // --- AI FUNCTIONS ---
 
 async function checkDecisionMade(lastUserAction, theme, turnCount) {
+    console.log(`[DEBUG checkDecisionMade] turnCount=${turnCount}, lastUserAction="${lastUserAction}"`);
+
     // INCREASED THRESHOLD: Don't check too early. Let the conversation flow.
-    if (turnCount < 4) return { status: "DEBATING" };
+    if (turnCount < 4) {
+        console.log(`[DEBUG checkDecisionMade] turnCount < 4, returning DEBATING`);
+        return { status: "DEBATING" };
+    }
 
     // Get the last AI message to understand the context (e.g., did the AI ask "Is this your final choice?")
     const lastAIMessage = HISTORY.length > 0 && HISTORY[HISTORY.length - 1].role === 'assistant'
@@ -878,13 +883,14 @@ async function checkDecisionMade(lastUserAction, theme, turnCount) {
 
         // KEYWORDS FORCE CHECK
         const lowerInput = lastUserAction.toLowerCase();
-        if (lowerInput.includes('niveau suivant') || lowerInput.includes('valid') || lowerInput.includes('confirm') || lowerInput.includes('choix fait')) {
+        const keywords = ['niveau suivant', 'valid', 'confirm', 'choix fait', 'décidé', 'final', 'passons'];
+        const hasKeyword = keywords.some(k => lowerInput.includes(k));
+        console.log(`[DEBUG checkDecisionMade] keyword check: hasKeyword=${hasKeyword}, input="${lowerInput}"`);
+
+        if (hasKeyword) {
             // Force decision mode
+            console.log(`[DEBUG checkDecisionMade] Keyword detected! Returning DECIDED`);
             return { status: "DECIDED", exitId: null };
-            // We let the AI decide WHICH exit in a second pass or just default if unclear, 
-            // but here we want to trigger the end.
-            // Actually, we need the EXIT ID.
-            // Let's ask the AI specifically for the exit ID in this forced mode.
         }
 
         const res = await callAIInternal(`
@@ -901,8 +907,12 @@ async function checkDecisionMade(lastUserAction, theme, turnCount) {
 
                         Reply ONLY JSON: {"status": "DECIDED", "exitId": "ID_OF_EXIT" } OR {"status": "DEBATING" }
                         `);
-        return JSON.parse(res);
+        console.log(`[DEBUG checkDecisionMade] AI response: ${res}`);
+        const parsed = JSON.parse(res);
+        console.log(`[DEBUG checkDecisionMade] Parsed result:`, parsed);
+        return parsed;
     } catch (e) {
+        console.log(`[DEBUG checkDecisionMade] Error parsing, fallback. turnCount=${turnCount}`, e);
         return { status: turnCount > 6 ? "DECIDED" : "DEBATING" };
     }
 }
@@ -1208,8 +1218,8 @@ function addMessageToUI(role, text, personaId) {
     if (useTypewriter) {
         const bubble = messageRow.querySelector('.msg-bubble');
         if (bubble) {
-            // Calculate delay for ~210 wpm (faster)
-            const speedMs = 48;
+            // Calculate delay for faster typing (~260 wpm)
+            const speedMs = 28;
             let i = 0;
 
             function type() {
