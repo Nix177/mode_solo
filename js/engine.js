@@ -316,44 +316,46 @@ window.sendPlayerAction = async function (text) {
         addMessageToUI('bot', `[SYSTÈME] : Choix enregistré. Fin de séquence.`, CURRENT_CHAT_TARGET);
 
         await updatePlayerProfile(CURRENT_SCENE.theme);
-        if (decisionCheck.exitId) {
-            const exit = CURRENT_SCENE.exits.find(e => e.id === decisionCheck.exitId);
-            if (exit && exit.target) {
-                console.log("Branching to:", exit.target);
-                loadScene(exit.target);
+
+        setTimeout(async () => {
+            if (decisionCheck.exitId) {
+                const exit = CURRENT_SCENE.exits.find(e => e.id === decisionCheck.exitId);
+                if (exit && exit.target) {
+                    console.log("Branching to:", exit.target);
+                    loadScene(exit.target);
+                } else {
+                    // Fallback if exit invalid
+                    loadScene(await pickNextScene());
+                }
             } else {
-                // Fallback if exit invalid
-                loadScene(await pickNextScene());
+                // Fallback legacy behavior
+                const nextSceneId = await pickNextScene();
+                if (nextSceneId) loadScene(nextSceneId);
+                else showGameSummary();
             }
-        } else {
-            // Fallback legacy behavior
-            const nextSceneId = await pickNextScene();
-            if (nextSceneId) loadScene(nextSceneId);
-            else showGameSummary();
-        }
-    }, 3000);
-    return;
-}
+        }, 3000);
+        return;
+    }
 
-// --- DETECT SILENT PERSONAS ---
-// Who has spoken in this scene?
-const sceneHistory = GLOBAL_HISTORY.filter(h => h.sceneId === CURRENT_SCENE.id && h.role !== 'user');
-const spokenIds = new Set(sceneHistory.map(h => h.speakerId || '')); // speakerId needs to be added to history push if not present, but we can infer from content context or track separately.
-// Actually, GLOBAL_HISTORY currently stores `speakerName`. Let's assume names are unique or mapped.
-// Better: let's track active IDs in CHAT_SESSIONS or similar.
-// Workaround: We know `activePersonas` keys are IDs.
+    // --- DETECT SILENT PERSONAS ---
+    // Who has spoken in this scene?
+    const sceneHistory = GLOBAL_HISTORY.filter(h => h.sceneId === CURRENT_SCENE.id && h.role !== 'user');
+    const spokenIds = new Set(sceneHistory.map(h => h.speakerId || '')); // speakerId needs to be added to history push if not present, but we can infer from content context or track separately.
+    // Actually, GLOBAL_HISTORY currently stores `speakerName`. Let's assume names are unique or mapped.
+    // Better: let's track active IDs in CHAT_SESSIONS or similar.
+    // Workaround: We know `activePersonas` keys are IDs.
 
-// Identify silent personas based on `activePersonas`
-const silentPersonas = Object.keys(activePersonas).filter(id => {
-    // Check if this ID appears in `sceneHistory` names or IDs? 
-    // Currently `callBot` doesn't explicitly save `speakerId` to GLOBAL_HISTORY, only `speakerName`.
-    // We'll trust the AI to respect the instructions, but we can force it.
-    // Let's just add a generic "Wake up" if turnCount is 2 or 3.
-    return true; // We will handle this in the prompt via "If X hasn't spoken..."
-});
+    // Identify silent personas based on `activePersonas`
+    const silentPersonas = Object.keys(activePersonas).filter(id => {
+        // Check if this ID appears in `sceneHistory` names or IDs? 
+        // Currently `callBot` doesn't explicitly save `speakerId` to GLOBAL_HISTORY, only `speakerName`.
+        // We'll trust the AI to respect the instructions, but we can force it.
+        // Let's just add a generic "Wake up" if turnCount is 2 or 3.
+        return true; // We will handle this in the prompt via "If X hasn't spoken..."
+    });
 
-const isLateGame = turnCount >= 5;
-const debatePrompt = `
+    const isLateGame = turnCount >= 5;
+    const debatePrompt = `
     CONTEXTE : Le joueur a dit : "${text}".
     SCÉNARIO : "${CURRENT_SCENE.theme}".
     RÔLE ACTUEL : ${activePersonas[CURRENT_CHAT_TARGET].displayName} (${activePersonas[CURRENT_CHAT_TARGET].bio}).
@@ -372,7 +374,7 @@ const debatePrompt = `
     - Dialogue libre, mais *actions en italique*.
     `;
 
-await callBot(debatePrompt, CURRENT_CHAT_TARGET);
+    await callBot(debatePrompt, CURRENT_CHAT_TARGET);
 };
 window.sendUserMessage = window.sendPlayerAction;
 
