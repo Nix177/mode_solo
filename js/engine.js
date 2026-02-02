@@ -167,6 +167,7 @@ const TTSManager = {
 };
 
 TTSManager.init();
+window.TTSManager = TTSManager;
 
 // --- MUSIC MANAGER (BACKGROUND MUSIC) ---
 const MusicManager = {
@@ -439,7 +440,7 @@ async function loadScene(sceneId) {
             }
 
             // Switch to persona and trigger greeting
-            window.setCurrentChatTarget(p.id);
+            window.openSideChat(p.id);
             await checkAutoGreeting(p.id);
         }
 
@@ -471,7 +472,7 @@ async function loadScene(sceneId) {
         }
 
         // D. Return to Narrator with final instruction
-        window.setCurrentChatTarget(narratorId);
+        window.openSideChat(narratorId);
         await callBot(`
         CONTEXTE : Les parties se sont présentées.
         ACTION : Invite le joueur à poser des questions ou approfondir avec chacun avant de trancher.
@@ -618,7 +619,8 @@ function restoreChatHistory(personaId) {
 
     const history = CHAT_SESSIONS[personaId] || [];
     history.forEach(msg => {
-        addMessageToUI(msg.role === 'assistant' ? 'bot' : 'user', msg.content, personaId);
+        // Skip typewriter for restored history - display instantly
+        addMessageToUI(msg.role === 'assistant' ? 'bot' : 'user', msg.content, personaId, true);
     });
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
@@ -1187,11 +1189,11 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
     }
 }
 
-function addMessageToUI(role, text, personaId) {
+function addMessageToUI(role, text, personaId, skipTypewriter = false) {
     const container = document.getElementById('chat-scroll');
     if (!container) return;
 
-    // TYPEWRITER EFFECT (Only for Bot & Non-Narrative)
+    // TYPEWRITER EFFECT (Only for Bot & Non-Narrative, unless skipTypewriter is true)
     const isUser = role === 'user';
     const isNarrative = !isUser && /^\s*\*.*\*\s*$/.test(text);
 
@@ -1203,7 +1205,8 @@ function addMessageToUI(role, text, personaId) {
     }
 
     // For typewriter effect, pass empty initial content to avoid flash
-    const useTypewriter = !isUser && !isNarrative;
+    // Skip typewriter if explicitly requested (e.g., restoring history)
+    const useTypewriter = !isUser && !isNarrative && !skipTypewriter;
     const initialText = useTypewriter ? '' : displayText;
 
     // Create DOM element from HTML string
