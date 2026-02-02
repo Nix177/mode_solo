@@ -317,43 +317,43 @@ window.sendPlayerAction = async function (text) {
 
         await updatePlayerProfile(CURRENT_SCENE.theme);
         if (decisionCheck.exitId) {
-             const exit = CURRENT_SCENE.exits.find(e => e.id === decisionCheck.exitId);
-             if (exit && exit.target) {
-                 console.log("Branching to:", exit.target);
-                 loadScene(exit.target);
-             } else {
-                 // Fallback if exit invalid
-                 loadScene(await pickNextScene());
-             }
+            const exit = CURRENT_SCENE.exits.find(e => e.id === decisionCheck.exitId);
+            if (exit && exit.target) {
+                console.log("Branching to:", exit.target);
+                loadScene(exit.target);
+            } else {
+                // Fallback if exit invalid
+                loadScene(await pickNextScene());
+            }
         } else {
-             // Fallback legacy behavior
-             const nextSceneId = await pickNextScene();
-             if (nextSceneId) loadScene(nextSceneId);
-             else showGameSummary();
+            // Fallback legacy behavior
+            const nextSceneId = await pickNextScene();
+            if (nextSceneId) loadScene(nextSceneId);
+            else showGameSummary();
         }
-        }, 3000);
-        return;
-    }
+    }, 3000);
+    return;
+}
 
-    // --- DETECT SILENT PERSONAS ---
-    // Who has spoken in this scene?
-    const sceneHistory = GLOBAL_HISTORY.filter(h => h.sceneId === CURRENT_SCENE.id && h.role !== 'user');
-    const spokenIds = new Set(sceneHistory.map(h => h.speakerId || '')); // speakerId needs to be added to history push if not present, but we can infer from content context or track separately.
-    // Actually, GLOBAL_HISTORY currently stores `speakerName`. Let's assume names are unique or mapped.
-    // Better: let's track active IDs in CHAT_SESSIONS or similar.
-    // Workaround: We know `activePersonas` keys are IDs.
+// --- DETECT SILENT PERSONAS ---
+// Who has spoken in this scene?
+const sceneHistory = GLOBAL_HISTORY.filter(h => h.sceneId === CURRENT_SCENE.id && h.role !== 'user');
+const spokenIds = new Set(sceneHistory.map(h => h.speakerId || '')); // speakerId needs to be added to history push if not present, but we can infer from content context or track separately.
+// Actually, GLOBAL_HISTORY currently stores `speakerName`. Let's assume names are unique or mapped.
+// Better: let's track active IDs in CHAT_SESSIONS or similar.
+// Workaround: We know `activePersonas` keys are IDs.
 
-    // Identify silent personas based on `activePersonas`
-    const silentPersonas = Object.keys(activePersonas).filter(id => {
-        // Check if this ID appears in `sceneHistory` names or IDs? 
-        // Currently `callBot` doesn't explicitly save `speakerId` to GLOBAL_HISTORY, only `speakerName`.
-        // We'll trust the AI to respect the instructions, but we can force it.
-        // Let's just add a generic "Wake up" if turnCount is 2 or 3.
-        return true; // We will handle this in the prompt via "If X hasn't spoken..."
-    });
+// Identify silent personas based on `activePersonas`
+const silentPersonas = Object.keys(activePersonas).filter(id => {
+    // Check if this ID appears in `sceneHistory` names or IDs? 
+    // Currently `callBot` doesn't explicitly save `speakerId` to GLOBAL_HISTORY, only `speakerName`.
+    // We'll trust the AI to respect the instructions, but we can force it.
+    // Let's just add a generic "Wake up" if turnCount is 2 or 3.
+    return true; // We will handle this in the prompt via "If X hasn't spoken..."
+});
 
-    const isLateGame = turnCount >= 5;
-    const debatePrompt = `
+const isLateGame = turnCount >= 5;
+const debatePrompt = `
     CONTEXTE : Le joueur a dit : "${text}".
     SCÉNARIO : "${CURRENT_SCENE.theme}".
     RÔLE ACTUEL : ${activePersonas[CURRENT_CHAT_TARGET].displayName} (${activePersonas[CURRENT_CHAT_TARGET].bio}).
@@ -372,7 +372,7 @@ window.sendPlayerAction = async function (text) {
     - Dialogue libre, mais *actions en italique*.
     `;
 
-    await callBot(debatePrompt, CURRENT_CHAT_TARGET);
+await callBot(debatePrompt, CURRENT_CHAT_TARGET);
 };
 window.sendUserMessage = window.sendPlayerAction;
 
@@ -421,6 +421,11 @@ async function checkDecisionMade(lastUserAction, theme, turnCount) {
     // INCREASED THRESHOLD: Don't check too early. Let the conversation flow.
     if (turnCount < 4) return { status: "DEBATING" };
 
+    // Get the last AI message to understand the context (e.g., did the AI ask "Is this your final choice?")
+    const lastAIMessage = HISTORY.length > 0 && HISTORY[HISTORY.length - 1].role === 'assistant'
+        ? HISTORY[HISTORY.length - 1].content
+        : "No context available.";
+
     // Only become lenient very late
     const leniency = turnCount > 8 ? "VERY LENIENT" : "STRICT";
 
@@ -431,14 +436,15 @@ async function checkDecisionMade(lastUserAction, theme, turnCount) {
         }
 
         const res = await callAIInternal(`
-            ANALYZE PLAYER INPUT. Theme: "${theme}". Input: "${lastUserAction}".
+            ANALYZE PLAYER INPUT. Theme: "${theme}". 
+            CONTEXT (LAST AI MESSAGE): "${lastAIMessage}"
+            PLAYER INPUT: "${lastUserAction}"
             Mode: ${leniency}
             
             ${exitPrompt}
 
             Did the player EXPLICITLY CONFIRM their final choice matching one of these exits?
-            If they merely express an opinion or a tendency, it is NOT "DECIDED".
-            They must say "Confirmed", "Final word", "Yes, I'm sure", or repeat their choice EMPHATICALLY after being asked "Is this your final choice?".
+            Check the CONTEXT. If the AI asked "Is this your final choice?" and the player says "Yes" or "Oui", it IS "DECIDED".
             
             Reply ONLY JSON: { "status": "DECIDED", "exitId": "ID_OF_EXIT" } OR { "status": "DEBATING" }
         `);
