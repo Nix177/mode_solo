@@ -664,7 +664,6 @@ function renderInterface(scene) {
                     this.textContent = isOn ? '🎵' : '🔇';
                     this.style.borderColor = isOn ? '#ff8800' : '#666';
                     this.style.color = isOn ? '#ff8800' : '#666';
-                    if (isOn) MusicManager.play('contemplation');
                 " title="Musique" style="background:transparent; border:1px solid #ff8800; color:#ff8800; padding:5px 10px; cursor:pointer; font-size:0.9em; border-radius:20px;">
                     🎵
                 </button>
