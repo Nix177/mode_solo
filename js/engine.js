@@ -1181,8 +1181,23 @@ function addMessageToUI(role, text, personaId) {
     const container = document.getElementById('chat-scroll');
     if (!container) return;
 
+    // TYPEWRITER EFFECT (Only for Bot & Non-Narrative)
+    const isUser = role === 'user';
+    const isNarrative = !isUser && /^\s*\*.*\*\s*$/.test(text);
+
+    // Clean text: strip leading/trailing asterisks from dialogue (not narrative)
+    let displayText = text;
+    if (!isUser && !isNarrative) {
+        // Remove markdown asterisks that might appear at start/end of dialogue
+        displayText = text.replace(/^\*+\s*/, '').replace(/\s*\*+$/, '').trim();
+    }
+
+    // For typewriter effect, pass empty initial content to avoid flash
+    const useTypewriter = !isUser && !isNarrative;
+    const initialText = useTypewriter ? '' : displayText;
+
     // Create DOM element from HTML string
-    const htmlString = buildMsgHTML(role, text, personaId);
+    const htmlString = buildMsgHTML(role, initialText, personaId, isNarrative);
     const template = document.createElement('template');
     template.innerHTML = htmlString.trim();
     const messageRow = template.content.firstChild;
@@ -1190,23 +1205,16 @@ function addMessageToUI(role, text, personaId) {
     container.appendChild(messageRow);
     container.scrollTop = container.scrollHeight;
 
-    // TYPEWRITER EFFECT (Only for Bot & Non-Narrative)
-    const isUser = role === 'user';
-    const isNarrative = !isUser && /^\s*\*.*\*\s*$/.test(text);
-
-    if (!isUser && !isNarrative) {
+    if (useTypewriter) {
         const bubble = messageRow.querySelector('.msg-bubble');
         if (bubble) {
-            // clear text initially
-            bubble.textContent = '';
-
             // Calculate delay for ~210 wpm (faster)
             const speedMs = 48;
             let i = 0;
 
             function type() {
-                if (i < text.length) {
-                    bubble.textContent += text.charAt(i);
+                if (i < displayText.length) {
+                    bubble.textContent += displayText.charAt(i);
                     i++;
                     container.scrollTop = container.scrollHeight; // Keep scrolling
                     setTimeout(type, speedMs);
@@ -1219,15 +1227,16 @@ function addMessageToUI(role, text, personaId) {
     // Trigger TTS (Concurrent with typing)
     if (!isUser) {
         if (isNarrative || personaId) {
-            TTSManager.speak(text, personaId, isNarrative);
+            TTSManager.speak(displayText, personaId, isNarrative);
         }
     }
 }
 
 // MODIFICATION : Style CSS-in-JS pour alignement Avatar + Bulle + Narratif
-function buildMsgHTML(role, text, personaId) {
+function buildMsgHTML(role, text, personaId, isNarrativeParam = null) {
     const isUser = role === 'user';
-    const isNarrative = !isUser && /^\s*\*.*\*\s*$/.test(text);
+    // Use provided isNarrative or calculate if not provided
+    const isNarrative = isNarrativeParam !== null ? isNarrativeParam : (!isUser && /^\s*\*.*\*\s*$/.test(text));
 
     if (isNarrative) {
         // STYLE NARRATIF (Hors bulle, italique, centré ou discret)
