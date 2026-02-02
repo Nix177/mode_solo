@@ -25,16 +25,13 @@ window.GAME_DATA = {}; // Placeholder until init
 const TTSManager = {
     enabled: true,
     voices: [],
+    preferredVoiceURI: localStorage.getItem('game_voice_uri') || null,
 
     init: function () {
         if ('speechSynthesis' in window) {
-            // Load voices
             const load = () => {
-                // Filter for FR voices first
-                const allVoices = window.speechSynthesis.getVoices();
-                this.voices = allVoices.filter(v => v.lang.startsWith('fr'));
-                // Fallback to all if no French voice found (unlikely but possible)
-                if (this.voices.length === 0) this.voices = allVoices;
+                this.voices = window.speechSynthesis.getVoices();
+                // We keep ALL voices so user can see "Microsoft Online" etc.
             };
             window.speechSynthesis.onvoiceschanged = load;
             load();
@@ -52,41 +49,45 @@ const TTSManager = {
 
     speak: function (text, personaId, isNarrative) {
         if (!this.enabled || !('speechSynthesis' in window)) return;
-
-        // Clean text (remove markdown like *italic* and quotes)
         const cleanText = text.replace(/\*/g, '').replace(/["«»]/g, '').trim();
         if (!cleanText) return;
 
-        // Cancel previous speech to avoid queue buildup? 
-        // Better to let them queue naturally or cancel if jumping level.
-
         const utter = new SpeechSynthesisUtterance(cleanText);
 
-        // Select Voice based on Persona
-        let voiceIndex = 0;
+        // --- VOICE SELECTION LOGIC ---
+        let selectedVoice = null;
+
+        // 1. Try User Preference First
+        if (this.preferredVoiceURI) {
+            selectedVoice = this.voices.find(v => v.voiceURI === this.preferredVoiceURI);
+        }
+
+        // 2. Fallback to any French voice if no preference or preference not found
+        if (!selectedVoice) {
+            // Priority: "Google" (usually better) > "Natural" > "Microsoft" > Any FR
+            selectedVoice = this.voices.find(v => v.lang.startsWith('fr') && v.name.includes('Google')) ||
+                this.voices.find(v => v.lang.startsWith('fr') && v.name.includes('Natural')) ||
+                this.voices.find(v => v.lang.startsWith('fr'));
+        }
+
+        if (selectedVoice) {
+            utter.voice = selectedVoice;
+        }
+
+        // --- PITCH & RATE VARIATION ---
         let pitch = 1.0;
         let rate = 1.0;
 
         if (isNarrative) {
-            // Narrator: Neutral, slower
-            pitch = 1.0;
-            rate = 0.9;
+            pitch = 0.95; // Deeper for narration
+            rate = 0.95;  // Slower
         } else if (personaId) {
-            // Uniquify voice per persona
+            // Hash ID to get variation
             const idSum = personaId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
 
-            // Deterministic voice selection from available voices
-            if (this.voices.length > 0) {
-                voiceIndex = idSum % this.voices.length;
-            }
-
-            // Varies pitch: 0.8 to 1.2
-            pitch = 0.8 + ((idSum % 5) * 0.1);
-            rate = 1.05; // Chat slightly faster
-        }
-
-        if (this.voices.length > 0) {
-            utter.voice = this.voices[Math.min(voiceIndex, this.voices.length - 1)];
+            // Subtle pitch shifting (0.85 to 1.15)
+            pitch = 0.9 + ((idSum % 5) * 0.05);
+            rate = 1.0 + ((idSum % 3) * 0.05);
         }
 
         utter.pitch = pitch;
@@ -256,19 +257,55 @@ window.openSettings = function () {
     const modal = document.getElementById('settings-modal');
     if (modal) {
         modal.style.display = 'flex';
+
+        // Model Select
         const select = document.getElementById('model-select');
         if (select) select.value = CURRENT_MODEL;
+
+        // Voice Select Populate
+        const voiceSelect = document.getElementById('voice-select');
+        if (voiceSelect) {
+            voiceSelect.innerHTML = '<option value="">-- Automatique (Défaut) --</option>';
+
+            // Sort voices: French First, then Google/Microsoft, then others
+            const sortedVoices = TTSManager.voices.sort((a, b) => {
+                const aFr = a.lang.startsWith('fr');
+                const bFr = b.lang.startsWith('fr');
+                if (aFr && !bFr) return -1;
+                if (!aFr && bFr) return 1;
+                return a.name.localeCompare(b.name);
+            });
+
+            sortedVoices.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v.voiceURI;
+                opt.textContent = `${v.name} (${v.lang})`;
+                if (v.voiceURI === TTSManager.preferredVoiceURI) {
+                    opt.selected = true;
+                }
+                voiceSelect.appendChild(opt);
+            });
+        }
     }
 }
 
 window.saveSettings = function () {
     const select = document.getElementById('model-select');
+    const voiceSelect = document.getElementById('voice-select');
+
     if (select) {
         CURRENT_MODEL = select.value;
         localStorage.setItem('game_model', CURRENT_MODEL);
-        alert("Modèle IA changé pour : " + CURRENT_MODEL);
-        document.getElementById('settings-modal').style.display = 'none';
     }
+
+    if (voiceSelect) {
+        const uri = voiceSelect.value;
+        TTSManager.preferredVoiceURI = uri;
+        localStorage.setItem('game_voice_uri', uri);
+    }
+
+    alert("Paramètres enregistrés !");
+    document.getElementById('settings-modal').style.display = 'none';
 }
 
 // 3. DISPLAY
