@@ -211,6 +211,38 @@ const MusicManager = {
 
     setVolume: function (vol) {
         if (this.audio) this.audio.volume = vol;
+    },
+
+    getTrackNames: function () {
+        return Object.keys(this.tracks);
+    },
+
+    getCurrentTrackName: function () {
+        const names = this.getTrackNames();
+        for (const name of names) {
+            if (this.tracks[name] === this.currentTrack) return name;
+        }
+        return 'contemplation';
+    },
+
+    nextTrack: function () {
+        const names = this.getTrackNames();
+        const current = this.getCurrentTrackName();
+        const idx = names.indexOf(current);
+        const next = names[(idx + 1) % names.length];
+        this.play(next);
+        const label = document.getElementById('music-track-name');
+        if (label) label.textContent = next;
+    },
+
+    prevTrack: function () {
+        const names = this.getTrackNames();
+        const current = this.getCurrentTrackName();
+        const idx = names.indexOf(current);
+        const prev = names[(idx - 1 + names.length) % names.length];
+        this.play(prev);
+        const label = document.getElementById('music-track-name');
+        if (label) label.textContent = prev;
     }
 };
 
@@ -987,7 +1019,11 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
         // Also filter out noise chunks (just "*" or empty)
         const chunks = reply.split('###')
             .map(s => s.trim())
-            .filter(s => s.length > 2 || (s.length > 0 && !/^[\*]+$/.test(s)));
+            // Must have real content (not just asterisks, spaces, or very short)
+            .filter(s => {
+                const cleaned = s.replace(/[\*\s]/g, '');
+                return cleaned.length > 0;
+            });
 
         for (let i = 0; i < chunks.length; i++) {
             const chunk = chunks[i];

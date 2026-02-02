@@ -411,6 +411,22 @@
                 </p>
             </div>
 
+            <div style="margin-bottom:20px; text-align:left; border-top:1px solid #444; padding-top:15px;">
+                <label style="display:block; margin-bottom:10px; color:#ff8800;">🎵 Musique de Fond :</label>
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                    <button onclick="MusicManager.prevTrack()"
+                        style="background:#333; border:1px solid #555; color:#ff8800; padding:5px 10px; cursor:pointer; border-radius:5px;">⏮️</button>
+                    <span id="music-track-name" style="flex:1; color:#ddd; text-align:center;">contemplation</span>
+                    <button onclick="MusicManager.nextTrack()"
+                        style="background:#333; border:1px solid #555; color:#ff8800; padding:5px 10px; cursor:pointer; border-radius:5px;">⏭️</button>
+                </div>
+                <label style="display:block; margin-bottom:5px; color:#888; font-size:0.9em;">Volume :</label>
+                <input type="range" id="music-volume" min="0" max="100" value="30"
+                    oninput="MusicManager.setVolume(this.value / 100); document.getElementById('music-vol-val').textContent = this.value + '%';"
+                    style="width:100%; accent-color:#ff8800;">
+                <span id="music-vol-val" style="color:#888; font-size:0.8em;">30%</span>
+            </div>
+
             <div style="display:flex; justify-content:space-between;">
                 <button onclick="document.getElementById('settings-modal').style.display='none'"
                     style="background:transparent; border:1px solid #666; color:#aaa; padding:8px 15px; cursor:pointer; border-radius:5px;">Annuler</button>
