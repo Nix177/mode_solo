@@ -177,9 +177,26 @@ const MusicManager = {
         thought: 'assets/music/thought.mp3',
         tension: 'assets/music/tension.mp3',
         resolution: 'assets/music/resolution.mp3',
-        uplifting: 'assets/music/uplifting.mp3'
+        uplifting: 'assets/music/uplifting.mp3',
+        cosmic: 'assets/music/cosmic.mp3',
+        grove: 'assets/music/grove.mp3',
+        sunlight: 'assets/music/sunlight.mp3',
+        drift: 'assets/music/drift.mp3'
     },
     currentTrack: null,
+    shuffledOrder: [],
+    shuffleIndex: 0,
+
+    shuffle: function () {
+        const names = Object.keys(this.tracks);
+        // Fisher-Yates shuffle
+        for (let i = names.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [names[i], names[j]] = [names[j], names[i]];
+        }
+        this.shuffledOrder = names;
+        this.shuffleIndex = 0;
+    },
 
     play: function (trackName) {
         if (!this.enabled) return;
@@ -188,10 +205,21 @@ const MusicManager = {
 
         this.stop();
         this.audio = new Audio(src);
-        this.audio.loop = true;
+        this.audio.loop = false; // No loop, we use shuffle
         this.audio.volume = 0.3;
+        this.audio.onended = () => this.nextTrack();
         this.audio.play().catch(e => console.warn('Music autoplay blocked:', e));
         this.currentTrack = src;
+
+        // Update label if exists
+        const label = document.getElementById('music-track-name');
+        if (label) label.textContent = trackName;
+    },
+
+    playRandom: function () {
+        if (this.shuffledOrder.length === 0) this.shuffle();
+        const track = this.shuffledOrder[this.shuffleIndex];
+        this.play(track);
     },
 
     stop: function () {
@@ -214,11 +242,11 @@ const MusicManager = {
     },
 
     getTrackNames: function () {
-        return Object.keys(this.tracks);
+        return this.shuffledOrder.length > 0 ? this.shuffledOrder : Object.keys(this.tracks);
     },
 
     getCurrentTrackName: function () {
-        const names = this.getTrackNames();
+        const names = Object.keys(this.tracks);
         for (const name of names) {
             if (this.tracks[name] === this.currentTrack) return name;
         }
@@ -226,23 +254,17 @@ const MusicManager = {
     },
 
     nextTrack: function () {
-        const names = this.getTrackNames();
-        const current = this.getCurrentTrackName();
-        const idx = names.indexOf(current);
-        const next = names[(idx + 1) % names.length];
+        if (this.shuffledOrder.length === 0) this.shuffle();
+        this.shuffleIndex = (this.shuffleIndex + 1) % this.shuffledOrder.length;
+        const next = this.shuffledOrder[this.shuffleIndex];
         this.play(next);
-        const label = document.getElementById('music-track-name');
-        if (label) label.textContent = next;
     },
 
     prevTrack: function () {
-        const names = this.getTrackNames();
-        const current = this.getCurrentTrackName();
-        const idx = names.indexOf(current);
-        const prev = names[(idx - 1 + names.length) % names.length];
+        if (this.shuffledOrder.length === 0) this.shuffle();
+        this.shuffleIndex = (this.shuffleIndex - 1 + this.shuffledOrder.length) % this.shuffledOrder.length;
+        const prev = this.shuffledOrder[this.shuffleIndex];
         this.play(prev);
-        const label = document.getElementById('music-track-name');
-        if (label) label.textContent = prev;
     }
 };
 
@@ -309,10 +331,8 @@ async function loadScene(sceneId) {
 
     updateBackground(scene.background);
 
-    // --- AUTO-PLAY BACKGROUND MUSIC ---
-    // Choose track based on scene mood or default to contemplation
-    const musicTrack = scene.music || 'contemplation';
-    MusicManager.play(musicTrack);
+    // --- AUTO-PLAY BACKGROUND MUSIC (SHUFFLE) ---
+    MusicManager.playRandom();
 
     // --- CLEANUP CHAT ---
     const chatContainer = document.getElementById('chat-scroll');
