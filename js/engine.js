@@ -378,15 +378,9 @@ async function loadScene(sceneId) {
     // Small delay to ensure DOM is fully rendered before bot calls
     await new Promise(r => setTimeout(r, 100));
 
-    // 3. Trigger Greeting ONLY if new
-    // 3. Trigger Greeting Sequence (TOUR) ONLY if new
+    // 3. Trigger Greeting Sequence (BUTTON-CONTROLLED TOUR)
     if (CHAT_SESSIONS[narratorId].length <= 1) {
         // A. Narrator Intro
-        const otherPersonasNames = Object.values(GAME_DATA.currentPersonas)
-            .filter(p => p.id !== narratorId)
-            .map(p => p.displayName)
-            .join(' et ');
-
         const introPrompt = `
         RÔLE : ${GAME_DATA.currentPersonas[narratorId].name} (${GAME_DATA.currentPersonas[narratorId].role}).
         SCÉNARIO : "${scene.narrative ? scene.narrative.context : scene.theme}".
@@ -394,37 +388,89 @@ async function loadScene(sceneId) {
         MISSION CRITIQUE :
         1. Souhaite la bienvenue au "Médiateur".
         2. Expose brièvement le cœur du conflit de manière NEUTRE et FACTUELLE.
-        3. Annonce que tu vas laisser la parole aux deux parties prenantes pour qu'elles se présentent.
+        3. Annonce que tu vas laisser la parole aux parties prenantes.
         
         FORMAT : Blocs courts séparés par "###". Descriptions 3ème personne en *italique* et AU PRÉSENT.
         `;
         await callBot(introPrompt, narratorId, true);
 
-        // Wait for reading (approx 4s per chunk? actually callBot awaits generation but not reading)
-        await new Promise(r => setTimeout(r, 2000));
-
-        // B. Tour Loop
+        // B. Button-controlled Tour Loop
         const extras = Object.values(GAME_DATA.currentPersonas).filter(p => p.id !== narratorId);
-        for (const p of extras) {
-            // Switch View
+
+        for (let i = 0; i < extras.length; i++) {
+            const p = extras[i];
+            const isLast = (i === extras.length - 1);
+            const buttonLabel = isLast ? "Retour au Médiateur ➜" : `Écouter ${p.name} ➜`;
+
+            // Show button prompting to next persona
+            const container = document.getElementById('chat-scroll');
+            if (container) {
+                const btnId = 'tour-btn-' + Date.now();
+                const btnHTML = `
+                    <div id="${btnId}" style="display:flex; justify-content:center; margin: 20px 0; animation: fadeIn 0.5s;">
+                        <button style="background:#ff8800; border:none; color:white; padding:10px 25px; border-radius:25px; cursor:pointer; font-size:1em; font-weight:bold;">
+                            ${buttonLabel}
+                        </button>
+                    </div>
+                `;
+                container.innerHTML += btnHTML;
+                container.scrollTop = container.scrollHeight;
+
+                // Wait for click
+                await new Promise(resolve => {
+                    const btnEl = document.getElementById(btnId);
+                    if (btnEl) {
+                        btnEl.onclick = function () {
+                            btnEl.remove();
+                            resolve();
+                        };
+                    } else {
+                        resolve();
+                    }
+                });
+            }
+
+            // Switch to persona and trigger greeting
             window.setCurrentChatTarget(p.id);
-            // Trigger Greeting
             await checkAutoGreeting(p.id);
-            // Wait for user to read/hear a bit (e.g. 5s)
-            await new Promise(r => setTimeout(r, 6000));
         }
 
-        // C. Return to Narrator
-        window.setCurrentChatTarget(narratorId);
+        // C. Final button to return to narrator
+        const container = document.getElementById('chat-scroll');
+        if (container) {
+            const btnId = 'tour-final-' + Date.now();
+            const btnHTML = `
+                <div id="${btnId}" style="display:flex; justify-content:center; margin: 20px 0; animation: fadeIn 0.5s;">
+                    <button style="background:#ff8800; border:none; color:white; padding:10px 25px; border-radius:25px; cursor:pointer; font-size:1em; font-weight:bold;">
+                        Commencer le débat ➜
+                    </button>
+                </div>
+            `;
+            container.innerHTML += btnHTML;
+            container.scrollTop = container.scrollHeight;
 
-        // D. Final instruction
+            await new Promise(resolve => {
+                const btnEl = document.getElementById(btnId);
+                if (btnEl) {
+                    btnEl.onclick = function () {
+                        btnEl.remove();
+                        resolve();
+                    };
+                } else {
+                    resolve();
+                }
+            });
+        }
+
+        // D. Return to Narrator with final instruction
+        window.setCurrentChatTarget(narratorId);
         await callBot(`
         CONTEXTE : Les parties se sont présentées.
-        ACTION : Invite maintenant le joueur à poser des questions ou à approfondir avec chacun avant de trancher.
+        ACTION : Invite le joueur à poser des questions ou approfondir avec chacun avant de trancher.
         Rappelle que tu es là pour arbitrer.
         `, narratorId);
 
-        // Flash Roster to draw attention
+        // Flash Roster
         const roster = document.getElementById('roster-bar');
         if (roster) {
             roster.style.animation = 'pulse 2s infinite';
@@ -455,7 +501,7 @@ window.toggleFullscreen = function () {
     if (!document.fullscreenElement) {
         if (document.documentElement.requestFullscreen) {
             document.documentElement.requestFullscreen().catch(err => {
-                console.error(`Error attempting to enable fullscreen: ${err.message}`);
+                console.error(`Error attempting to enable fullscreen: ${err.message} `);
             });
         } else {
             // Vendor prefixes fallback
@@ -550,9 +596,9 @@ window.saveSettings = function () {
 function updateBackground(bgUrl) {
     if (ui.screen && bgUrl) {
         ui.screen.style.background = `
-            linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%),
-            url('${bgUrl}') center/cover no-repeat
-        `;
+                linear - gradient(to bottom, rgba(0, 0, 0, 0.3) 0 %, rgba(0, 0, 0, 0.8) 100 %),
+                    url('${bgUrl}') center / cover no - repeat
+                        `;
     }
 }
 
@@ -574,10 +620,10 @@ async function checkAutoGreeting(personaId) {
     if (!CHAT_SESSIONS[personaId] || CHAT_SESSIONS[personaId].length === 0) {
         const p = (GAME_DATA.currentPersonas || GAME_DATA.personas)[personaId];
         const greetingPrompt = `
-        RÔLE : ${p.displayName}.
-        CONTEXTE : Le joueur "Médiateur" vient de se tourner vers toi pour la première fois.
-        ACTION : Présente-toi brièvement et donne ton avis sur la situation ("${CURRENT_SCENE.theme}").
-        FORMAT : Court (max 40 mots). Descriptions *italique* et AU PRÉSENT.
+                RÔLE: ${p.displayName}.
+                CONTEXTE: Le joueur "Médiateur" vient de se tourner vers toi pour la première fois.
+                    ACTION : Présente - toi brièvement et donne ton avis sur la situation("${CURRENT_SCENE.theme}").
+                        FORMAT : Court(max 40 mots).Descriptions * italique * et AU PRÉSENT.
         `;
         // Init array
         CHAT_SESSIONS[personaId] = [];
@@ -598,7 +644,7 @@ function renderInterface(scene) {
 
     // MODIFICATION : Header avec Avatar + Titre cliquable (Admin)
     let html = `
-        <div class="header-bar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; padding: 0 20px;">
+                            < div class="header-bar" style = "display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; padding: 0 20px;" >
             <div onclick="window.manualLevelJump()" style="cursor:pointer;" title="Admin: Changer de scène">
                 <h1 style="font-size:1.2em; color:#ddd; text-transform:uppercase; margin:0;">
                     Séquence ${stepCount} <span style="font-size:0.8em; opacity:0.5;">(⚙️)</span>
@@ -626,16 +672,16 @@ function renderInterface(scene) {
                     👁️ Synthèse
                 </button>
             </div>
-        </div>
+        </div >
 
-        <div class="chat-box">
-            <div class="avatar-header" style="display:flex; align-items:center; gap:15px; padding:15px; border-bottom:1px solid rgba(255,255,255,0.1);">
-                <img src="${avatarUrl}" style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid #ff8800;">
-                <h3 style="margin:0; color:#ff8800; font-size:1.2em;">${name}</h3>
-            </div>
-            <div id="chat-scroll" class="chat-messages" style="padding:15px;"></div>
-        </div>
-    `;
+                    <div class="chat-box">
+                        <div class="avatar-header" style="display:flex; align-items:center; gap:15px; padding:15px; border-bottom:1px solid rgba(255,255,255,0.1);">
+                            <img src="${avatarUrl}" style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid #ff8800;">
+                                <h3 style="margin:0; color:#ff8800; font-size:1.2em;">${name}</h3>
+                        </div>
+                        <div id="chat-scroll" class="chat-messages" style="padding:15px;"></div>
+                    </div>
+                `;
     ui.screen.innerHTML = html;
 
     // IMPORTANT: Restore history for the current target after rendering container
@@ -682,7 +728,7 @@ window.sendPlayerAction = async function (text) {
     const decisionCheck = await checkDecisionMade(text, CURRENT_SCENE.theme, turnCount);
 
     if (decisionCheck.status === "DECIDED") {
-        addMessageToUI('bot', `[SYSTÈME] : Choix enregistré. Fin de séquence.`, CURRENT_CHAT_TARGET);
+        addMessageToUI('bot', `[SYSTÈME] : Choix enregistré.Fin de séquence.`, CURRENT_CHAT_TARGET);
 
         await updatePlayerProfile(CURRENT_SCENE.theme);
 
@@ -738,26 +784,26 @@ window.sendPlayerAction = async function (text) {
     // Let's rely on the Role description in the prompt.
 
     const debatePrompt = `
-    CONTEXTE : Le joueur a dit : "${text}".
-    SCÉNARIO : "${CURRENT_SCENE.theme}".
-    RÔLE ACTUEL : ${activePersonas[CURRENT_CHAT_TARGET].displayName} (${activePersonas[CURRENT_CHAT_TARGET].bio}).
-    TON SECRET AGENDA : "${activePersonas[CURRENT_CHAT_TARGET].secret_agenda || 'Aucun'}".
-    AUTRES PERSOS PRÉSENTS : ${Object.values(activePersonas).map(p => p.name).join(', ')}.
+                CONTEXTE: Le joueur a dit: "${text}".
+                    SCÉNARIO : "${CURRENT_SCENE.theme}".
+    RÔLE ACTUEL: ${activePersonas[CURRENT_CHAT_TARGET].displayName} (${activePersonas[CURRENT_CHAT_TARGET].bio}).
+    TON SECRET AGENDA: "${activePersonas[CURRENT_CHAT_TARGET].secret_agenda || 'Aucun'}".
+    AUTRES PERSOS PRÉSENTS: ${Object.values(activePersonas).map(p => p.name).join(', ')}.
     
-    INSTRUCTIONS DE COMPORTEMENT :
-    - SI TU ES LE NARRATEUR/MÉDIATEUR LOCAL (ex: Préfet, IA Neutre...) : SOIS STRICTEMENT NEUTRE. Ne pousse pas au choix. Pose des questions pour approfondir. Fais le lien avec les autres.
-    - SI TU ES UNE PARTIE PRENANTE (ex: PDG, Activiste...) : DÉFENDS TA POSITION AVEC PASSION. Utilise ton "secret agenda". Tu veux convaincre le joueur que TU as raison.
+    INSTRUCTIONS DE COMPORTEMENT:
+                - SI TU ES LE NARRATEUR / MÉDIATEUR LOCAL(ex: Préfet, IA Neutre...) : SOIS STRICTEMENT NEUTRE.Ne pousse pas au choix.Pose des questions pour approfondir.Fais le lien avec les autres.
+    - SI TU ES UNE PARTIE PRENANTE(ex: PDG, Activiste...) : DÉFENDS TA POSITION AVEC PASSION.Utilise ton "secret agenda".Tu veux convaincre le joueur que TU as raison.
     
-    INSTRUCTIONS DYNAMIQUES :
-    1. **MAÏEUTIQUE** : Si le joueur est vague, creuse.
-    2. **INTERVENTION** : Si le joueur semble avoir choisi, DEMANDE-LUI EXPLICITEMENT : "Est-ce votre dernier mot ?".
-    3. **ROULEMENT** : Si un autre personnage n'a pas parlé, suggère au joueur de l'interroger.
-    
-    NB: UTILISE LE PRÉSENT DE NARRATION (ex: "Il sourit").
-    
-    FORMAT :
-    - Sépare tes idées en blocs courts (max 80 mots) avec "###".
-    - Dialogue libre, mais *actions en italique*.
+    INSTRUCTIONS DYNAMIQUES:
+                1. ** MAÏEUTIQUE ** : Si le joueur est vague, creuse.
+    2. ** INTERVENTION ** : Si le joueur semble avoir choisi, DEMANDE - LUI EXPLICITEMENT: "Est-ce votre dernier mot ?".
+    3. ** ROULEMENT ** : Si un autre personnage n'a pas parlé, suggère au joueur de l'interroger.
+
+                    NB: UTILISE LE PRÉSENT DE NARRATION(ex: "Il sourit").
+
+                        FORMAT :
+                - Sépare tes idées en blocs courts(max 80 mots) avec "###".
+    - Dialogue libre, mais * actions en italique *.
     `;
 
     await callBot(debatePrompt, CURRENT_CHAT_TARGET);
@@ -767,37 +813,37 @@ window.sendUserMessage = window.sendPlayerAction;
 // --- END GAME SUMMARY ---
 async function showGameSummary() {
     ui.screen.innerHTML = `
-        <div class="slide-content" style="text-align:center;">
+                    < div class="slide-content" style = "text-align:center;" >
             <h1>COMPILATION DES RÉSULTATS...</h1>
             <p>L'IA interprète vos choix et les statistiques...</p>
-        </div>`;
+        </div > `;
 
     const prompt = `
-    RÔLE : OBSERVATEUR ANALYTIQUE DE DONNÉES.
-    DONNÉES DE SESSION COMPLÈTES (TRANSCRIPTION) :
+                RÔLE: OBSERVATEUR ANALYTIQUE DE DONNÉES.
+    DONNÉES DE SESSION COMPLÈTES(TRANSCRIPTION) :
     ${JSON.stringify(GLOBAL_HISTORY)}
-    
-    TÂCHE : Rédige une synthèse interprétative de la partie (200 mots max) pour le joueur.
+
+                TÂCHE: Rédige une synthèse interprétative de la partie(200 mots max) pour le joueur.
     1. Analyse la cohérence de ses choix à travers les différents scénarios.
     2. Détecte ses contradictions ou ses évolutions morales.
-    3. Cite des moments précis ("Dans la vallée de Kymal, vous avez dit...").
-    
-    Format : HTML simple (sans balises <html>, juste <p>, <h2>, etc).
-    `;
+    3. Cite des moments précis("Dans la vallée de Kymal, vous avez dit...").
+
+                    Format : HTML simple(sans balises < html >, juste < p >, <h2>, etc).
+                        `;
 
     try {
         const report = await callAIInternal(prompt);
         ui.screen.innerHTML = `
-            <div class="slide-content" style="max-width: 800px; text-align: left; overflow-y:auto; max-height:80vh;">
-                <h1 style="color: #4cd137;">Synthèse de la Session</h1>
-                <div style="background: rgba(0,0,0,0.3); padding: 25px; border-radius: 8px; margin-top:20px; line-height: 1.6; font-size: 1.1em;">
-                    ${report}
-                </div>
-                <div style="text-align:center; margin-top:30px;">
-                    <button onclick="location.reload()" style="padding: 15px 30px; cursor:pointer; background:#ddd; color:#000; border:none; border-radius:4px; font-weight:bold;">Recommencer</button>
-                </div>
-            </div>
-        `;
+                        <div class="slide-content" style="max-width: 800px; text-align: left; overflow-y:auto; max-height:80vh;">
+                            <h1 style="color: #4cd137;">Synthèse de la Session</h1>
+                            <div style="background: rgba(0,0,0,0.3); padding: 25px; border-radius: 8px; margin-top:20px; line-height: 1.6; font-size: 1.1em;">
+                                ${report}
+                            </div>
+                            <div style="text-align:center; margin-top:30px;">
+                                <button onclick="location.reload()" style="padding: 15px 30px; cursor:pointer; background:#ddd; color:#000; border:none; border-radius:4px; font-weight:bold;">Recommencer</button>
+                            </div>
+                        </div>
+                        `;
     } catch (e) {
         ui.screen.innerHTML = "<div class='slide-content'><h1>Erreur de génération du rapport.</h1></div>";
     }
@@ -835,19 +881,19 @@ async function checkDecisionMade(lastUserAction, theme, turnCount) {
         }
 
         const res = await callAIInternal(`
-            ANALYZE PLAYER INPUT. Theme: "${theme}". 
-            CONTEXT (LAST AI MESSAGE): "${lastAIMessage}"
-            PLAYER INPUT: "${lastUserAction}"
-            Mode: FORCE_DECISION_IF_CLOSE
-            
-            ${exitPrompt}
+                        ANALYZE PLAYER INPUT. Theme: "${theme}".
+                        CONTEXT (LAST AI MESSAGE): "${lastAIMessage}"
+                        PLAYER INPUT: "${lastUserAction}"
+                        Mode: FORCE_DECISION_IF_CLOSE
 
-            Has the player made a choice?
-            If they say "next level", "I confirm", "let's go", "it's decided", etc., MARK AS DECIDED.
-            If they argue for a specific side (e.g. "Kill the forest"), assume they want that exit.
+                        ${exitPrompt}
 
-            Reply ONLY JSON: { "status": "DECIDED", "exitId": "ID_OF_EXIT" } OR { "status": "DEBATING" }
-        `);
+                        Has the player made a choice?
+                        If they say "next level", "I confirm", "let's go", "it's decided", etc., MARK AS DECIDED.
+                        If they argue for a specific side (e.g. "Kill the forest"), assume they want that exit.
+
+                        Reply ONLY JSON: {"status": "DECIDED", "exitId": "ID_OF_EXIT" } OR {"status": "DEBATING" }
+                        `);
         return JSON.parse(res);
     } catch (e) {
         return { status: turnCount > 6 ? "DECIDED" : "DEBATING" };
@@ -857,17 +903,17 @@ async function checkDecisionMade(lastUserAction, theme, turnCount) {
 function showLoadingTransition(targetId) {
     const overlay = document.createElement('div');
     overlay.style.cssText = `
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: black; color: white; display: flex; flex-direction: column;
-        justify-content: center; align-items: center; z-index: 9999;
-        animation: fadeIn 0.5s;
-    `;
+                        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                        background: black; color: white; display: flex; flex-direction: column;
+                        justify-content: center; align-items: center; z-index: 9999;
+                        animation: fadeIn 0.5s;
+                        `;
     overlay.innerHTML = `
-        <h1 style="font-family:'Playfair Display'; font-size: 2em; margin-bottom: 20px;">Choix Enregistré</h1>
-        <div style="width: 50px; height: 50px; border: 5px solid #333; border-top-color: #ff8800; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-        <p style="margin-top: 20px; color: #888;">Chargement de la séquence...</p>
-        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
-    `;
+                        <h1 style="font-family:'Playfair Display'; font-size: 2em; margin-bottom: 20px;">Choix Enregistré</h1>
+                        <div style="width: 50px; height: 50px; border: 5px solid #333; border-top-color: #ff8800; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                        <p style="margin-top: 20px; color: #888;">Chargement de la séquence...</p>
+                        <style>@keyframes spin {0 % { transform: rotate(0deg); } 100% {transform: rotate(360deg); } }</style>
+                        `;
     document.body.appendChild(overlay);
 
     // Fallback remove after 5s if stuck
@@ -879,16 +925,16 @@ async function updatePlayerProfile(theme) {
     const sceneTranscript = GLOBAL_HISTORY.filter(h => h.sceneId === CURRENT_SCENE.id);
 
     const prompt = `
-    SUIVI DES CHOIX DU JOUEUR.
-    ANCIEN PROFIL : "${PLAYER_PROFILE.summary}"
-    TRANSCRIPTION SCÉNARIO "${theme}" :
-    ${JSON.stringify(sceneTranscript)}
-    
-    Tâche : Mets à jour le résumé narratif du joueur en intégrant ses décisions récentes.
-    Sois précis sur ses valeurs (ex: "A sacrifié la forêt pour l'économie").
-    
-    Réponds UNIQUEMENT le nouveau résumé texte (max 2 phrases).
-    `;
+                        SUIVI DES CHOIX DU JOUEUR.
+                        ANCIEN PROFIL : "${PLAYER_PROFILE.summary}"
+                        TRANSCRIPTION SCÉNARIO "${theme}" :
+                        ${JSON.stringify(sceneTranscript)}
+
+                        Tâche : Mets à jour le résumé narratif du joueur en intégrant ses décisions récentes.
+                        Sois précis sur ses valeurs (ex: "A sacrifié la forêt pour l'économie").
+
+                        Réponds UNIQUEMENT le nouveau résumé texte (max 2 phrases).
+                        `;
 
     try {
         const newSummary = await callAIInternal(prompt);
@@ -908,18 +954,18 @@ async function pickNextScene() {
     }).slice(0, 15);
 
     const prompt = `
-    MAÎTRE DU JEU.
-    Profil Joueur : "${PLAYER_PROFILE.summary}".
-    Scénarios Déjà Joués : ${PLAYED_SCENES.length}.
-    
-    Options disponibles :
-    ${JSON.stringify(options)}
-    
-    MISSION : Choisis le prochain scénario pour CHALLENGER ce joueur.
-    - Cherche la variété thématique.
-    
-    Réponds UNIQUEMENT l'ID du scénario (ex: "level_12").
-    `;
+                        MAÎTRE DU JEU.
+                        Profil Joueur : "${PLAYER_PROFILE.summary}".
+                        Scénarios Déjà Joués : ${PLAYED_SCENES.length}.
+
+                        Options disponibles :
+                        ${JSON.stringify(options)}
+
+                        MISSION : Choisis le prochain scénario pour CHALLENGER ce joueur.
+                        - Cherche la variété thématique.
+
+                        Réponds UNIQUEMENT l'ID du scénario (ex: "level_12").
+                        `;
 
     try {
         let bestId = await callAIInternal(prompt);
@@ -970,7 +1016,7 @@ async function callAIInternal(systemPrompt) {
         data = await res.json();
     }
 
-    if (!data.reply) return '{ "status": "DEBATING" }'; // Fail-safe default
+    if (!data.reply) return '{"status": "DEBATING" }'; // Fail-safe default
 
     return data.reply.replace(/```json/g, '').replace(/```/g, '').trim();
 }
@@ -1095,12 +1141,12 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
             if (!isLast && container) {
                 const btnId = 'next-btn-' + Date.now();
                 const btnHTML = `
-                    <div id="${btnId}" style="display:flex; justify-content:flex-start; margin: 10px 0 20px 0; animation: fadeIn 0.5s;">
-                        <button style="background:transparent; border:1px solid #ff8800; color:#ff8800; padding:5px 15px; border-radius:20px; cursor:pointer; font-size:0.9em;">
-                            Suite ➜
-                        </button>
-                    </div>
-                `;
+                        <div id="${btnId}" style="display:flex; justify-content:flex-start; margin: 10px 0 20px 0; animation: fadeIn 0.5s;">
+                            <button style="background:transparent; border:1px solid #ff8800; color:#ff8800; padding:5px 15px; border-radius:20px; cursor:pointer; font-size:0.9em;">
+                                Suite ➜
+                            </button>
+                        </div>
+                        `;
                 container.innerHTML += btnHTML;
                 container.scrollTop = container.scrollHeight;
 
@@ -1180,11 +1226,11 @@ function buildMsgHTML(role, text, personaId) {
         // STYLE NARRATIF (Hors bulle, italique, centré ou discret)
         const cleanText = text.replace(/\*/g, '').trim();
         return `
-        <div class="msg-row narrative" style="display:flex; justify-content:center; margin: 15px 0; opacity:0; animation:fadeIn 0.5s forwards;">
-            <div style="color: #aaa; font-style: italic; font-size: 0.95em; text-align:justify; max-width:90%;">
-                ${cleanText}
-            </div>
-        </div>`;
+                        <div class="msg-row narrative" style="display:flex; justify-content:center; margin: 15px 0; opacity:0; animation:fadeIn 0.5s forwards;">
+                            <div style="color: #aaa; font-style: italic; font-size: 0.95em; text-align:justify; max-width:90%;">
+                                ${cleanText}
+                            </div>
+                        </div>`;
     }
 
     let avatarImg = '';
@@ -1199,10 +1245,10 @@ function buildMsgHTML(role, text, personaId) {
 
     // Return HTML string, but note that for Typewriter we will clear the bubble content in addMessageToUI
     return `
-    <div class="msg-row ${isUser ? 'user' : 'bot'}" style="display:flex; align-items:flex-start; margin-bottom:10px; ${isUser ? 'justify-content:flex-end;' : ''}">
-        ${!isUser ? avatarImg : ''} 
-        <div class="msg-bubble" style="${!isUser ? 'background:#4a3b2a; border-left:4px solid #ff8800; color:white; padding:10px; border-radius:10px; max-width:80%; box-shadow:0 2px 5px rgba(0,0,0,0.2); text-align:justify;' : 'background:#333; color:#ddd; padding:10px; border-radius:10px; max-width:80%; box-shadow:0 2px 5px rgba(0,0,0,0.2); text-align:justify;'}">${text}</div>
-    </div>`;
+                            <div class="msg-row ${isUser ? 'user' : 'bot'}" style="display:flex; align-items:flex-start; margin-bottom:10px; ${isUser ? 'justify-content:flex-end;' : ''}">
+                                ${!isUser ? avatarImg : ''}
+                                <div class="msg-bubble" style="${!isUser ? 'background:#4a3b2a; border-left:4px solid #ff8800; color:white; padding:10px; border-radius:10px; max-width:80%; box-shadow:0 2px 5px rgba(0,0,0,0.2); text-align:justify;' : 'background:#333; color:#ddd; padding:10px; border-radius:10px; max-width:80%; box-shadow:0 2px 5px rgba(0,0,0,0.2); text-align:justify;'}">${text}</div>
+                            </div>`;
 }
 
 function renderRoster() {
