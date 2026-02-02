@@ -337,6 +337,7 @@ async function loadScene(sceneId) {
     if (!PLAYED_SCENES.includes(targetId)) PLAYED_SCENES.push(targetId);
 
     updateBackground(scene.background);
+    TTSManager.stop(); // Stop previous TTS
 
     // --- BACKGROUND MUSIC WILL START AFTER FIRST USER CLICK ---
     // (Browser autoplay policy blocks audio until interaction)
@@ -382,8 +383,8 @@ async function loadScene(sceneId) {
     // 2. Load History for the Narrator
     restoreChatHistory(narratorId);
 
-    // Small delay to ensure DOM is fully rendered before bot calls
-    await new Promise(r => setTimeout(r, 100));
+    // Extended delay to ensure DOM is ready and avoid race conditions
+    await new Promise(r => setTimeout(r, 800));
 
     // 3. Trigger Greeting Sequence (BUTTON-CONTROLLED TOUR)
     if (CHAT_SESSIONS[narratorId].length <= 1) {
@@ -1236,7 +1237,10 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
 
 function addMessageToUI(role, text, personaId, skipTypewriter = false) {
     const container = document.getElementById('chat-scroll');
-    if (!container) return;
+    if (!container) {
+        console.warn("[addMessageToUI] Container #chat-scroll not found!");
+        return;
+    }
 
     // TYPEWRITER EFFECT (Only for Bot & Non-Narrative, unless skipTypewriter is true)
     const isUser = role === 'user';
@@ -1249,10 +1253,15 @@ function addMessageToUI(role, text, personaId, skipTypewriter = false) {
         displayText = text.replace(/^\*+\s*/, '').replace(/\s*\*+$/, '').trim();
     }
 
+    // DEBUG LOG
+    console.log(`[addMessageToUI] Role:${role}, Skip:${skipTypewriter}, IsNarrative:${isNarrative}, Text:${displayText.substring(0, 20)}...`);
+
     // For typewriter effect, pass empty initial content to avoid flash
     // Skip typewriter if explicitly requested (e.g., restoring history)
     const useTypewriter = !isUser && !isNarrative && !skipTypewriter;
     const initialText = useTypewriter ? '' : displayText;
+
+    if (useTypewriter) console.log("[addMessageToUI] Using Typewriter effect.");
 
     // Create DOM element from HTML string
     const htmlString = buildMsgHTML(role, initialText, personaId, isNarrative);
@@ -1261,6 +1270,9 @@ function addMessageToUI(role, text, personaId, skipTypewriter = false) {
     const messageRow = template.content.firstChild;
 
     container.appendChild(messageRow);
+
+    // Force scroll and layout calc
+    // void messageRow.offsetWidth; 
     container.scrollTop = container.scrollHeight;
 
     if (useTypewriter) {
@@ -1278,12 +1290,15 @@ function addMessageToUI(role, text, personaId, skipTypewriter = false) {
                     setTimeout(type, speedMs);
                 }
             }
-            type();
+            // Start typing with a tiny delay to ensure render
+            setTimeout(type, 10);
+        } else {
+            console.warn("[addMessageToUI] Bubble element not found for typewriter!");
         }
     }
 
     // Trigger TTS (Concurrent with typing)
-    if (!isUser) {
+    if (!isUser && !skipTypewriter) {
         if (isNarrative || personaId) {
             TTSManager.speak(displayText, personaId, isNarrative);
         }
