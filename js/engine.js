@@ -387,6 +387,7 @@ async function loadScene(sceneId) {
     await new Promise(r => setTimeout(r, 800));
 
     // 3. Trigger Greeting Sequence (BUTTON-CONTROLLED TOUR)
+    console.log(`[loadScene] Intro check: History len = ${CHAT_SESSIONS[narratorId] ? CHAT_SESSIONS[narratorId].length : 0}`);
     if (CHAT_SESSIONS[narratorId].length <= 1) {
         // A. Narrator Intro
         const introPrompt = `
@@ -1249,8 +1250,8 @@ function addMessageToUI(role, text, personaId, skipTypewriter = false) {
     // Clean text: strip leading/trailing asterisks from dialogue (not narrative)
     let displayText = text;
     if (!isUser && !isNarrative) {
-        // Remove markdown asterisks that might appear at start/end of dialogue
-        displayText = text.replace(/^\*+\s*/, '').replace(/\s*\*+$/, '').trim();
+        // Remove ALL markdown asterisks to prevent artifacts in bubbles
+        displayText = text.replace(/\*/g, '').trim();
     }
 
     // DEBUG LOG
@@ -1292,6 +1293,15 @@ function addMessageToUI(role, text, personaId, skipTypewriter = false) {
             }
             // Start typing with a tiny delay to ensure render
             setTimeout(type, 10);
+
+            // FAILSAFE: Force text appearance if animation stalls
+            setTimeout(() => {
+                if (bubble.textContent.length < displayText.length) {
+                    console.warn("[addMessageToUI] Typewriter stalled. Forcing text.");
+                    bubble.textContent = displayText;
+                    container.scrollTop = container.scrollHeight;
+                }
+            }, displayText.length * speedMs + 2000);
         } else {
             console.warn("[addMessageToUI] Bubble element not found for typewriter!");
         }
