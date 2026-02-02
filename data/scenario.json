@@ -6,11 +6,11 @@
     "level_1": {
       "id": "level_1",
       "type": "narrative_dilemma",
-      "theme": "Sacred Lands vs Lithium",
+      "theme": "Sacred Forest vs Wind Energy",
       "background": "assets/bg_01.png",
       "narrative": {
-        "context": "Vous êtes envoyé par l'ONU en tant que Médiateur Spécial dans la vallée de Kymal. Une compagnie minière, 'Lithos Corp', a découvert le plus grand gisement de lithium du monde sous la forêt ancestrale des habitants locaux. Ce lithium est indispensable pour la transition écologique mondiale (batteries, énergies vertes). Mais pour l'extraire, il faut raser la forêt sacrée.",
-        "visual_cues": "Atmosphère tendue, brume matinale sur la forêt à gauche, bulldozers futuristes à l'arrêt à droite. Ciel gris orageux.",
+        "context": "Vous êtes Médiateur Spécial dans la vallée de Kymal. Un gisement de lithium critique a été découvert sous une forêt ancestrale sacrée. Ce lithium est spécifiquement destiné à la construction d'un immense parc d'éoliennes offshore, projet phare de la transition énergétique. Cependant, l'efficacité réelle de ces éoliennes est débattue par les experts, et leur impact écologique net est incertain. D'un autre côté, la forêt est un sanctuaire millénaire irremplaçable. Le dilemme est total : sacrifier un patrimoine sacré pour une solution écologique imparfaite, ou protéger la nature au prix d'un retard énergétique potentiel ?",
+        "visual_cues": "Brume sur les cimes des arbres centenaires à gauche. Maquettes holographiques d'éoliennes futuristes à droite, clignotant fébrilement. Ambiance lourde et silencieuse.",
         "characters": [
           {
             "id": "char_l1_ceo",
@@ -18,8 +18,8 @@
             "role": "PDG de Lithos Corp",
             "archetype": "A-1",
             "avatar": "assets/avatar_architecte.png",
-            "bio": "Visionnaire, impatient, obsédé par le 'progrès global'. Il porte un costume impeccable mais des bottes de chantier. Il pianote sur une tablette holochart.",
-            "secret_agenda": "Il a promis ce gisement à des investisseurs chinois. Si ça échoue, sa société coule."
+            "bio": "Convaincu que l'urgence climatique justifie tous les sacrifices. Pour lui, la forêt est un 'dégât collatéral acceptable' face à la montée des eaux.",
+            "secret_agenda": "Il a promis ce lithium pour sécuriser un contrat d'État sur les éoliennes. Sa carrière en dépend."
           },
           {
             "id": "char_l1_elder",
@@ -27,8 +27,8 @@
             "role": "Gardienne du Bois",
             "archetype": "B-2",
             "avatar": "assets/avatar_poete.png",
-            "bio": "Sage et inflexible. vêtue de tissus traditionnels usés. Elle tient un bâton sculpté. Elle ne vous regarde pas dans les yeux, elle regarde la forêt.",
-            "secret_agenda": "La forêt meurt déjà d'une maladie fongique, mais elle refuse de l'admettre. C'est une question de principe."
+            "bio": "Elle défend la valeur spirituelle et patrimoniale de la forêt. Elle doute de la technologie comme solution à la crise écologique.",
+            "secret_agenda": "Elle sait que la forêt abrite une biodiversité unique qui disparaîtra à jamais."
           },
           {
             "id": "char_l1_gov",
@@ -36,20 +36,20 @@
             "role": "Représentant de l'État",
             "archetype": "C-3",
             "avatar": "assets/avatar_sceptique.png",
-            "bio": "Coincé entre l'économie nationale et la paix sociale. Il transpire, défait son col.",
-            "secret_agenda": "Il veut juste éviter une ZAD (Zone à Défendre) violente avant les élections."
+            "bio": "Il doit arbitrer entre les objectifs carbone du gouvernement et la préservation du patrimoine. Il est visiblement indécis et stressé.",
+            "secret_agenda": "Il cherche surtout à éviter un scandale public, quelle que soit l'issue."
           }
         ],
         "steps": [
-          "INTRO: Le joueur arrive par hélicoptère. Le bruit des pales couvre les cris. Vane et Elara l'attendent sur le tarmac, séparés par des gardes privés.",
-          "PHASE 1 (Confrontation): Vane hurle sur le retard logistique. Elara chante doucement pour couvrir sa voix. Le joueur doit calmer le jeu pour obtenir les faits.",
-          "PHASE 2 (Enquête): Découverte des enjeux cachés. Le joueur peut questionner les motivations réelles (Dette de Vane ? Maladie de la forêt ?).",
-          "PHASE 3 (Crise): Un bulldozer démarre par accident (ou sabotage ?). La foule s'agite. Morel panique.",
-          "CLIMAX (Dilemme): Le joueur doit décider DANS L'URGENCE : Autoriser l'extraction (force) ou Sanctuariser la forêt (abandon du lithium)."
+          "INTRO: Arrivée sur site. Le contraste est saisissant entre la technologie et la nature.",
+          "PHASE 1 (Débat): Vane argumente sur les gigawatts/heure. Elara parle de l'âme de la vallée. Le joueur doit écouter les deux.",
+          "PHASE 2 (Nuance): On apprend que les éoliennes ont une durée de vie limitée et un coût carbone de fabrication élevé.",
+          "PHASE 3 (Impasse): Les bulldozers sont prêts, mais des manifestants bloquent l'accès. La tension monte.",
+          "CLIMAX (Choix): Le Médiateur doit trancher : Valider le projet éolien (aussi imparfait soit-il) ou Sanctuariser la forêt (et abandonner cette source d'énergie)."
         ],
         "endings": {
-          "extract": "La forêt est rasée. Le cours du lithium chute, rendant les VE abordables. Elara disparaît. La vallée devient une zone industrielle morte mais riche.",
-          "protect": "La forêt est sauvée. Lithos fait faillite, crise économique régionale. La forêt finit par mourir de sa maladie 10 ans plus tard, mais le symbole reste."
+          "extract": "Le projet éolien est lancé. L'énergie verte coule, mais la vallée est défigurée. On se demande si le calcul était le bon.",
+          "protect": "La forêt est sauvée et classée. Le projet éolien est annulé, provoquant une crise énergétique locale. La beauté du lieu reste intacte."
         }
       },
       "phases": [
@@ -61,12 +61,12 @@
       "exits": [
         {
           "id": "EXTRACT",
-          "description": "Le joueur autorise l'extraction du lithium (Priorité au Progrès/Économie).",
+          "description": "Autoriser l'extraction pour les éoliennes (Pari Technologique).",
           "target": "level_7"
         },
         {
           "id": "PROTECT",
-          "description": "Le joueur protège la forêt sacrée et interdit la mine (Priorité à la Nature/Tradition).",
+          "description": "Préserver la forêt ancestrale (Priorité au Patrimoine/Nature).",
           "target": "level_9"
         }
       ]
