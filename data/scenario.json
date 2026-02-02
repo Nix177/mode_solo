@@ -364,7 +364,7 @@
             "name": "Elon T.",
             "role": "Tech Mogul",
             "archetype": "A-1",
-            "avatar": "assets/avatar_architecte.png",
+            "avatar": "assets/avatar_elon_t.png",
             "bio": "L'automatisation est une libération. Les humains ne devraient pas travailler.",
             "secret_agenda": ""
           },
@@ -373,7 +373,7 @@
             "name": "Sarah J.",
             "role": "Syndicaliste",
             "archetype": "B-2",
-            "avatar": "assets/avatar_poete.png",
+            "avatar": "assets/avatar_sarah_j.png",
             "bio": "Le travail donne un sens à la vie. Sans emploi, la société se délite.",
             "secret_agenda": "Elle a peur de devenir inutile."
           },
@@ -382,7 +382,7 @@
             "name": "Pr. Krugman",
             "role": "Économiste",
             "archetype": "C-3",
-            "avatar": "assets/avatar_sceptique.png",
+            "avatar": "assets/avatar_pr_krugman.png",
             "bio": "Sans revenus, personne ne peut acheter les produits des robots. C'est le crash assuré.",
             "secret_agenda": ""
           }
