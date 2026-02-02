@@ -53,6 +53,9 @@ const TTSManager = {
 
     speak: function (text, personaId, isNarrative) {
         if (!this.enabled) return;
+
+        console.log(`TTS Speak: "${text.substring(0, 20)}..." | Persona: ${personaId} | Narrative: ${isNarrative}`);
+
         const cleanText = text.replace(/\*/g, '').replace(/["«»]/g, '').trim();
         if (!cleanText) return;
 
@@ -264,7 +267,9 @@ async function loadScene(sceneId) {
     restoreChatHistory(narratorId);
 
     // 3. Trigger Greeting ONLY if new
-    if (CHAT_SESSIONS[narratorId].length <= 1) { // <= 1 because we just added the contextMsg
+    // 3. Trigger Greeting Sequence (TOUR) ONLY if new
+    if (CHAT_SESSIONS[narratorId].length <= 1) {
+        // A. Narrator Intro
         const otherPersonasNames = Object.values(GAME_DATA.currentPersonas)
             .filter(p => p.id !== narratorId)
             .map(p => p.displayName)
@@ -277,12 +282,35 @@ async function loadScene(sceneId) {
         MISSION CRITIQUE :
         1. Souhaite la bienvenue au "Médiateur".
         2. Expose brièvement le cœur du conflit de manière NEUTRE et FACTUELLE.
-        3. DEMANDE AU JOUEUR de consulter les autres parties prenantes (${otherPersonasNames}) en cliquant sur leurs portraits avant de prendre une décision.
-        4. NE DONNE PAS TON AVIS PERSONNEL. TU ES L'ARBITRE NEUTRE.
+        3. Annonce que tu vas laisser la parole aux deux parties prenantes pour qu'elles se présentent.
         
         FORMAT : Blocs courts séparés par "###". Descriptions 3ème personne en *italique* et AU PRÉSENT.
         `;
         await callBot(introPrompt, narratorId, true);
+
+        // Wait for reading (approx 4s per chunk? actually callBot awaits generation but not reading)
+        await new Promise(r => setTimeout(r, 2000));
+
+        // B. Tour Loop
+        const extras = Object.values(GAME_DATA.currentPersonas).filter(p => p.id !== narratorId);
+        for (const p of extras) {
+            // Switch View
+            window.setCurrentChatTarget(p.id);
+            // Trigger Greeting
+            await checkAutoGreeting(p.id);
+            // Wait for user to read/hear a bit (e.g. 5s)
+            await new Promise(r => setTimeout(r, 6000));
+        }
+
+        // C. Return to Narrator
+        window.setCurrentChatTarget(narratorId);
+
+        // D. Final instruction
+        await callBot(`
+        CONTEXTE : Les parties se sont présentées.
+        ACTION : Invite maintenant le joueur à poser des questions ou à approfondir avec chacun avant de trancher.
+        Rappelle que tu es là pour arbitrer.
+        `, narratorId);
 
         // Flash Roster to draw attention
         const roster = document.getElementById('roster-bar');
@@ -887,7 +915,10 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
         const reply = data.reply || ""; // Safety check
 
         // --- SPLIT MESSAGES BY DELIMITER ### ---
-        const chunks = reply.split('###').map(s => s.trim()).filter(s => s.length > 0);
+        // Also filter out noise chunks (just "*" or empty)
+        const chunks = reply.split('###')
+            .map(s => s.trim())
+            .filter(s => s.length > 2 || (s.length > 0 && !/^[\*]+$/.test(s)));
 
         for (let i = 0; i < chunks.length; i++) {
             const chunk = chunks[i];
@@ -991,8 +1022,8 @@ function addMessageToUI(role, text, personaId) {
             // clear text initially
             bubble.textContent = '';
 
-            // Calculate delay for 250 wpm (~21 chars/sec => ~48ms/char)
-            const speedMs = 40;
+            // Calculate delay for ~200 wpm (slower)
+            const speedMs = 55;
             let i = 0;
 
             function type() {
