@@ -21,6 +21,83 @@ let PLAYER_PROFILE = {
 
 window.GAME_DATA = {}; // Placeholder until init
 
+// --- TTS MANAGER (TEXT-TO-SPEECH) ---
+const TTSManager = {
+    enabled: true,
+    voices: [],
+
+    init: function () {
+        if ('speechSynthesis' in window) {
+            // Load voices
+            const load = () => {
+                // Filter for FR voices first
+                const allVoices = window.speechSynthesis.getVoices();
+                this.voices = allVoices.filter(v => v.lang.startsWith('fr'));
+                // Fallback to all if no French voice found (unlikely but possible)
+                if (this.voices.length === 0) this.voices = allVoices;
+            };
+            window.speechSynthesis.onvoiceschanged = load;
+            load();
+        } else {
+            console.warn("Web Speech API not supported.");
+            this.enabled = false;
+        }
+    },
+
+    toggle: function () {
+        this.enabled = !this.enabled;
+        if (!this.enabled) window.speechSynthesis.cancel();
+        return this.enabled;
+    },
+
+    speak: function (text, personaId, isNarrative) {
+        if (!this.enabled || !('speechSynthesis' in window)) return;
+
+        // Clean text (remove markdown like *italic* and quotes)
+        const cleanText = text.replace(/\*/g, '').replace(/["«»]/g, '').trim();
+        if (!cleanText) return;
+
+        // Cancel previous speech to avoid queue buildup? 
+        // Better to let them queue naturally or cancel if jumping level.
+
+        const utter = new SpeechSynthesisUtterance(cleanText);
+
+        // Select Voice based on Persona
+        let voiceIndex = 0;
+        let pitch = 1.0;
+        let rate = 1.0;
+
+        if (isNarrative) {
+            // Narrator: Neutral, slower
+            pitch = 1.0;
+            rate = 0.9;
+        } else if (personaId) {
+            // Uniquify voice per persona
+            const idSum = personaId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
+            // Deterministic voice selection from available voices
+            if (this.voices.length > 0) {
+                voiceIndex = idSum % this.voices.length;
+            }
+
+            // Varies pitch: 0.8 to 1.2
+            pitch = 0.8 + ((idSum % 5) * 0.1);
+            rate = 1.05; // Chat slightly faster
+        }
+
+        if (this.voices.length > 0) {
+            utter.voice = this.voices[Math.min(voiceIndex, this.voices.length - 1)];
+        }
+
+        utter.pitch = pitch;
+        utter.rate = rate;
+
+        window.speechSynthesis.speak(utter);
+    }
+};
+
+TTSManager.init();
+
 // --- DOM ELEMENTS ---
 const ui = {
     screen: document.getElementById('game-container'),
@@ -252,7 +329,15 @@ function renderInterface(scene) {
                     Séquence ${stepCount} <span style="font-size:0.8em; opacity:0.5;">(⚙️)</span>
                 </h1>
             </div>
-            <div>
+            <div style="display:flex; gap:10px;">
+                <button onclick="
+                    const isMuted = !TTSManager.toggle(); 
+                    this.textContent = isMuted ? '🔇' : '🔊'; 
+                    this.style.borderColor = isMuted ? '#666' : '#ff8800';
+                    this.style.color = isMuted ? '#666' : '#ff8800';
+                " style="background:transparent; border:1px solid #ff8800; color:#ff8800; padding:5px 10px; cursor:pointer; font-size:0.9em; border-radius:20px;">
+                    🔊
+                </button>
                 <button onclick="window.viewProfile()" style="background:transparent; border:1px solid #ff8800; color:#ff8800; padding:5px 15px; cursor:pointer; font-size:0.8em; border-radius:20px;">
                     👁️ Voir ma synthèse
                 </button>
@@ -704,6 +789,15 @@ function addMessageToUI(role, text, personaId) {
     if (!container) return;
     container.innerHTML += buildMsgHTML(role, text, personaId);
     container.scrollTop = container.scrollHeight;
+
+    // Trigger TTS
+    const isUser = role === 'user';
+    if (!isUser) {
+        const isNarrative = /^\s*\*.*\*\s*$/.test(text);
+        if (isNarrative || personaId) {
+            TTSManager.speak(text, personaId, isNarrative);
+        }
+    }
 }
 
 // MODIFICATION : Style CSS-in-JS pour alignement Avatar + Bulle + Narratif
