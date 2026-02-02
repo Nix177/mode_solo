@@ -253,7 +253,7 @@
             "name": "Directrice H.",
             "role": "Gestionnaire",
             "archetype": "A-1",
-            "avatar": "assets/avatar_architecte.png",
+            "avatar": "assets/avatar_directrice_h.png",
             "bio": "Elle compte les vies sauvées. 100 > 20. C'est mathématique.",
             "secret_agenda": "Les retraités sont les donateurs de l'hôpital."
           },
@@ -262,7 +262,7 @@
             "name": "Dr. House",
             "role": "Urgentiste",
             "archetype": "C-3",
-            "avatar": "assets/avatar_sceptique.png",
+            "avatar": "assets/avatar_dr_house.png",
             "bio": "Cynique. Il sait que les enfants ont toute la vie devant eux.",
             "secret_agenda": "Il déteste les vieux."
           },
@@ -271,7 +271,7 @@
             "name": "Elena",
             "role": "Mère d'un patient",
             "archetype": "B-2",
-            "avatar": "assets/avatar_poete.png",
+            "avatar": "assets/avatar_elena.png",
             "bio": "Elle supplie pour son fils. L'émotion brute.",
             "secret_agenda": ""
           }
@@ -308,7 +308,7 @@
             "name": "Cmdt. Shepard",
             "role": "Leader Colonie",
             "archetype": "A-1",
-            "avatar": "assets/avatar_architecte.png",
+            "avatar": "assets/avatar_cmdt_shepard.png",
             "bio": "La Terre se meurt. Mars est notre seul espoir. Il voit grand, à l'échelle de l'espèce.",
             "secret_agenda": "La colonie n'a plus que 2 ans de réserves d'oxygène."
           },
@@ -317,7 +317,7 @@
             "name": "Dr. Aris",
             "role": "Exobiologiste",
             "archetype": "B-2",
-            "avatar": "assets/avatar_poete.png",
+            "avatar": "assets/avatar_dr_aris.png",
             "bio": "Fasciné par cette vie alien unique. Pour lui, tuer une biosphère est un génocide.",
             "secret_agenda": ""
           },
@@ -326,7 +326,7 @@
             "name": "Director Wayland",
             "role": "Représentant Terre",
             "archetype": "C-3",
-            "avatar": "assets/avatar_sceptique.png",
+            "avatar": "assets/avatar_director_wayland.png",
             "bio": "Veut des résultats. Le terraforming fera monter l'action en bourse.",
             "secret_agenda": ""
           }

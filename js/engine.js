@@ -1171,7 +1171,6 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
             // Just a small 1s-1.5s typing feel
             if (!isNarrative && container) {
                 chunkLoadingId = 'chunk-loading-' + Date.now() + Math.random();
-                console.log(`[callBot DEBUG] Creating chunk loader: ${chunkLoadingId}`);
                 const chunkHTML = buildMsgHTML('bot', '...', targetId)
                     .replace('msg-bubble', 'msg-bubble loading')
                     .replace('class="msg-row bot"', `id="${chunkLoadingId}" class="msg-row bot"`);
@@ -1258,14 +1257,10 @@ function addMessageToUI(role, text, personaId, skipTypewriter = false) {
     }
 
     // DEBUG LOG
-    console.log(`[addMessageToUI] Role:${role}, Skip:${skipTypewriter}, IsNarrative:${isNarrative}, Text:${displayText.substring(0, 20)}...`);
-
     // For typewriter effect, pass empty initial content to avoid flash
     // Skip typewriter if explicitly requested (e.g., restoring history)
     const useTypewriter = !isUser && !isNarrative && !skipTypewriter;
     const initialText = useTypewriter ? '' : displayText;
-
-    if (useTypewriter) console.log("[addMessageToUI] Using Typewriter effect.");
 
     // Create DOM element from HTML string
     const htmlString = buildMsgHTML(role, initialText, personaId, isNarrative);
@@ -1300,7 +1295,7 @@ function addMessageToUI(role, text, personaId, skipTypewriter = false) {
             // FAILSAFE: Force text appearance if animation stalls
             setTimeout(() => {
                 if (bubble.textContent.length < displayText.length) {
-                    console.warn(`[addMessageToUI FAILSAFE] Typewriter stalled at ${bubble.textContent.length}/${displayText.length}. Forcing text.`);
+                    // console.warn(\`[addMessageToUI FAILSAFE] Typewriter stalled at \${bubble.textContent.length}/\${displayText.length}. Forcing text.\`);
                     bubble.textContent = displayText;
                     container.scrollTop = container.scrollHeight;
                 }
