@@ -265,6 +265,26 @@
             }
         }
 
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 136, 0, 0.7);
+                border-color: #ff8800;
+                transform: scale(1);
+            }
+
+            50% {
+                box-shadow: 0 0 0 10px rgba(255, 136, 0, 0);
+                border-color: #fff;
+                transform: scale(1.1);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 136, 0, 0);
+                border-color: #ff8800;
+                transform: scale(1);
+            }
+        }
+
 
         /* Mobile */
         @media (max-width: 768px) {

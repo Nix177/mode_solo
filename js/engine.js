@@ -205,13 +205,31 @@ async function loadScene(sceneId) {
 
     // 3. Trigger Greeting ONLY if new
     if (CHAT_SESSIONS[narratorId].length <= 1) { // <= 1 because we just added the contextMsg
+        const otherPersonasNames = Object.values(GAME_DATA.currentPersonas)
+            .filter(p => p.id !== narratorId)
+            .map(p => p.displayName)
+            .join(' et ');
+
         const introPrompt = `
         RÔLE : ${GAME_DATA.currentPersonas[narratorId].name} (${GAME_DATA.currentPersonas[narratorId].role}).
         SCÉNARIO : "${scene.narrative ? scene.narrative.context : scene.theme}".
-        MISSION : Souhaite la bienvenue au "Médiateur". Ouvre la conversation. NE DEMANDE PAS DE DÉCISION.
-        FORMAT : Blocs courts séparés par "###". Descriptions 3ème personne en *italique* et AU PRÉSENT (ex: "Il regarde" NON "Il regarda").
+        
+        MISSION CRITIQUE :
+        1. Souhaite la bienvenue au "Médiateur".
+        2. Expose brièvement le cœur du conflit de manière NEUTRE et FACTUELLE.
+        3. DEMANDE AU JOUEUR de consulter les autres parties prenantes (${otherPersonasNames}) en cliquant sur leurs portraits avant de prendre une décision.
+        4. NE DONNE PAS TON AVIS PERSONNEL. TU ES L'ARBITRE NEUTRE.
+        
+        FORMAT : Blocs courts séparés par "###". Descriptions 3ème personne en *italique* et AU PRÉSENT.
         `;
         await callBot(introPrompt, narratorId, true);
+
+        // Flash Roster to draw attention
+        const roster = document.getElementById('roster-bar');
+        if (roster) {
+            roster.style.animation = 'pulse 2s infinite';
+            setTimeout(() => roster.style.animation = '', 6000);
+        }
     }
 }
 
@@ -483,19 +501,28 @@ window.sendPlayerAction = async function (text) {
     });
 
     const isLateGame = turnCount >= 5;
+    const isNarrator = CURRENT_CHAT_TARGET.startsWith('char_l') && GAME_DATA.currentPersonas[CURRENT_CHAT_TARGET].role.includes('Médiateur') === false;
+    // Actually typically the narrator IS 'char_lX_something'. But we define neutrality by ID or role.
+    // Simpler: The narrator is defined in loadScene as the first char usually.
+    // Let's rely on the Role description in the prompt.
+
     const debatePrompt = `
     CONTEXTE : Le joueur a dit : "${text}".
     SCÉNARIO : "${CURRENT_SCENE.theme}".
     RÔLE ACTUEL : ${activePersonas[CURRENT_CHAT_TARGET].displayName} (${activePersonas[CURRENT_CHAT_TARGET].bio}).
+    TON SECRET AGENDA : "${activePersonas[CURRENT_CHAT_TARGET].secret_agenda || 'Aucun'}".
     AUTRES PERSOS PRÉSENTS : ${Object.values(activePersonas).map(p => p.name).join(', ')}.
     
-    INSTRUCTIONS DYNAMIQUES DE JEU :
-    1. **MAÏEUTIQUE** : Pose des questions, ne conclus pas vite.
-    2. **INTERVENTION** : Si le joueur semble avoir choisi, DEMANDE-LUI EXPLICITEMENT : "Est-ce votre dernier mot ?". NE CONCLUE PAS SANS SA CONFIRMATION.
-    3. **ROULEMENT** : Si un personnage n'a pas encore parlé, FAIS-LE INTERVENIR (ex: "*X s'interpose...*"). Tous les 3 doivent donner leur avis.
-    4. **TON** : ${isLateGame ? "Presse le joueur de décider." : "Explre les nuances."}
+    INSTRUCTIONS DE COMPORTEMENT :
+    - SI TU ES LE NARRATEUR/MÉDIATEUR LOCAL (ex: Préfet, IA Neutre...) : SOIS STRICTEMENT NEUTRE. Ne pousse pas au choix. Pose des questions pour approfondir. Fais le lien avec les autres.
+    - SI TU ES UNE PARTIE PRENANTE (ex: PDG, Activiste...) : DÉFENDS TA POSITION AVEC PASSION. Utilise ton "secret agenda". Tu veux convaincre le joueur que TU as raison.
     
-    NB: UTILISE LE PRÉSENT DE NARRATION (ex: "Il sourit" et NON "Il a souri").
+    INSTRUCTIONS DYNAMIQUES :
+    1. **MAÏEUTIQUE** : Si le joueur est vague, creuse.
+    2. **INTERVENTION** : Si le joueur semble avoir choisi, DEMANDE-LUI EXPLICITEMENT : "Est-ce votre dernier mot ?".
+    3. **ROULEMENT** : Si un autre personnage n'a pas parlé, suggère au joueur de l'interroger.
+    
+    NB: UTILISE LE PRÉSENT DE NARRATION (ex: "Il sourit").
     
     FORMAT :
     - Sépare tes idées en blocs courts (max 80 mots) avec "###".
