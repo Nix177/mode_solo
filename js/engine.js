@@ -207,7 +207,7 @@ const MusicManager = {
         this.stop();
         this.audio = new Audio(src);
         this.audio.loop = false; // No loop, we use shuffle
-        this.audio.volume = 0.3;
+        this.audio.volume = 0.05;
         this.audio.onended = () => this.nextTrack();
         this.audio.play().catch(e => console.warn('Music autoplay blocked:', e));
         this.currentTrack = src;
@@ -756,9 +756,14 @@ window.sendPlayerAction = async function (text) {
                     loadScene(await pickNextScene());
                 }
             } else {
-                const nextSceneId = await pickNextScene();
-                if (nextSceneId) loadScene(nextSceneId);
-                else showGameSummary();
+                // Only show summary every 5 levels, otherwise pick next scene
+                if (PLAYED_SCENES.length > 0 && PLAYED_SCENES.length % 5 === 0) {
+                    showGameSummary(true); // true = intermediate summary, not end
+                } else {
+                    const nextSceneId = await pickNextScene();
+                    if (nextSceneId) loadScene(nextSceneId);
+                    else showGameSummary(false); // false = final summary
+                }
             }
 
             // Clean up overlays
@@ -820,12 +825,12 @@ window.sendPlayerAction = async function (text) {
 window.sendUserMessage = window.sendPlayerAction;
 
 // --- END GAME SUMMARY ---
-async function showGameSummary() {
+async function showGameSummary(isIntermediate = false) {
     ui.screen.innerHTML = `
-                    < div class="slide-content" style = "text-align:center;" >
+        <div class="slide-content" style="text-align:center;">
             <h1>COMPILATION DES RÉSULTATS...</h1>
             <p>L'IA interprète vos choix et les statistiques...</p>
-        </div > `;
+        </div>`;
 
     const prompt = `
                 RÔLE: OBSERVATEUR ANALYTIQUE DE DONNÉES.
@@ -843,16 +848,19 @@ async function showGameSummary() {
     try {
         const report = await callAIInternal(prompt);
         ui.screen.innerHTML = `
-                        <div class="slide-content" style="max-width: 800px; text-align: left; overflow-y:auto; max-height:80vh;">
-                            <h1 style="color: #4cd137;">Synthèse de la Session</h1>
-                            <div style="background: rgba(0,0,0,0.3); padding: 25px; border-radius: 8px; margin-top:20px; line-height: 1.6; font-size: 1.1em;">
-                                ${report}
-                            </div>
-                            <div style="text-align:center; margin-top:30px;">
-                                <button onclick="location.reload()" style="padding: 15px 30px; cursor:pointer; background:#ddd; color:#000; border:none; border-radius:4px; font-weight:bold;">Recommencer</button>
-                            </div>
-                        </div>
-                        `;
+            <div class="slide-content" style="max-width: 800px; text-align: left; overflow-y:auto; max-height:80vh;">
+                <h1 style="color: #4cd137;">${isIntermediate ? 'Synthèse Intermédiaire' : 'Synthèse Finale'}</h1>
+                <div style="background: rgba(0,0,0,0.3); padding: 25px; border-radius: 8px; margin-top:20px; line-height: 1.6; font-size: 1.1em;">
+                    ${report}
+                </div>
+                <div style="text-align:center; margin-top:30px;">
+                    ${isIntermediate
+                ? `<button onclick="(async () => { const next = await pickNextScene(); if(next) loadScene(next); })()" style="padding: 15px 30px; cursor:pointer; background:#ff8800; color:#fff; border:none; border-radius:4px; font-weight:bold;">Continuer l'Aventure</button>`
+                : `<button onclick="location.reload()" style="padding: 15px 30px; cursor:pointer; background:#ddd; color:#000; border:none; border-radius:4px; font-weight:bold;">Recommencer</button>`
+            }
+                </div>
+            </div>
+        `;
     } catch (e) {
         ui.screen.innerHTML = "<div class='slide-content'><h1>Erreur de génération du rapport.</h1></div>";
     }
@@ -870,8 +878,9 @@ async function checkDecisionMade(lastUserAction, theme, turnCount) {
     }
 
     // Get the last AI message to understand the context (e.g., did the AI ask "Is this your final choice?")
-    const lastAIMessage = HISTORY.length > 0 && HISTORY[HISTORY.length - 1].role === 'assistant'
-        ? HISTORY[HISTORY.length - 1].content
+    const chatHistory = CHAT_SESSIONS[CURRENT_CHAT_TARGET] || [];
+    const lastAIMessage = chatHistory.length > 0 && chatHistory[chatHistory.length - 1].role === 'assistant'
+        ? chatHistory[chatHistory.length - 1].content
         : "No context available.";
 
     // Only become lenient very late
@@ -968,34 +977,41 @@ async function pickNextScene() {
 
     if (available.length === 0) return null;
 
-    const options = available.map(id => {
+    // Build options with theme info for AI selection
+    const options = available.slice(0, 15).map(id => {
         return { id: id, theme: GAME_DATA.scenario.scenes[id].theme };
-    }).slice(0, 15);
+    });
 
     const prompt = `
-                        MAÎTRE DU JEU.
-                        Profil Joueur : "${PLAYER_PROFILE.summary}".
-                        Scénarios Déjà Joués : ${PLAYED_SCENES.length}.
+        MAÎTRE DU JEU.
+        Profil Joueur : "${PLAYER_PROFILE.summary}".
+        Scénarios Déjà Joués : ${PLAYED_SCENES.length}.
 
-                        Options disponibles :
-                        ${JSON.stringify(options)}
+        Options disponibles :
+        ${JSON.stringify(options)}
 
-                        MISSION : Choisis le prochain scénario pour CHALLENGER ce joueur.
-                        - Cherche la variété thématique.
+        MISSION : Choisis le prochain scénario pour CHALLENGER ce joueur.
+        - Cherche la variété thématique.
 
-                        Réponds UNIQUEMENT l'ID du scénario (ex: "level_12").
-                        `;
+        Réponds UNIQUEMENT l'ID du scénario (ex: "level_12").
+    `;
 
     try {
         let bestId = await callAIInternal(prompt);
         bestId = bestId.trim().replace(/['"]/g, '');
-        if (!APP_EXISTS(bestId, available)) return available[0].id;
+        // Check if bestId is in available array (which is strings)
+        if (!available.includes(bestId)) {
+            console.log(`[pickNextScene] AI returned invalid ID "${bestId}", using first available: ${available[0]}`);
+            return available[0];
+        }
         return bestId;
     } catch (e) {
         console.error(e);
-        return available[0].id;
+        return available[0];
     }
 }
+
+window.pickNextScene = pickNextScene;
 
 function APP_EXISTS(id, list) {
     return list.find(x => x.id === id);
