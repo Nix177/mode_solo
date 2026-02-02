@@ -422,7 +422,7 @@ async function loadScene(sceneId) {
                         </button>
                     </div>
                 `;
-                container.innerHTML += btnHTML;
+                container.insertAdjacentHTML('beforeend', btnHTML);
                 container.scrollTop = container.scrollHeight;
 
                 // Wait for click
@@ -457,7 +457,7 @@ async function loadScene(sceneId) {
                     </button>
                 </div>
             `;
-            container.innerHTML += btnHTML;
+            container.insertAdjacentHTML('beforeend', btnHTML);
             container.scrollTop = container.scrollHeight;
 
             await new Promise(resolve => {
@@ -1095,8 +1095,9 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
     if (container) {
         const loadingHTML = buildMsgHTML('bot', '...', targetId)
             .replace('msg-bubble', 'msg-bubble loading')
+            .replace('msg-bubble', 'msg-bubble loading')
             .replace('class="msg-row bot"', `id="${loadingId}" class="msg-row bot"`);
-        container.innerHTML += loadingHTML;
+        container.insertAdjacentHTML('beforeend', loadingHTML);
         container.scrollTop = container.scrollHeight;
     }
 
@@ -1171,9 +1172,10 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
             if (!isNarrative && container) {
                 chunkLoadingId = 'chunk-loading-' + Date.now() + Math.random();
                 console.log(`[callBot DEBUG] Creating chunk loader: ${chunkLoadingId}`);
-                container.innerHTML += buildMsgHTML('bot', '...', targetId)
+                const chunkHTML = buildMsgHTML('bot', '...', targetId)
                     .replace('msg-bubble', 'msg-bubble loading')
                     .replace('class="msg-row bot"', `id="${chunkLoadingId}" class="msg-row bot"`);
+                container.insertAdjacentHTML('beforeend', chunkHTML);
                 container.scrollTop = container.scrollHeight;
                 await new Promise(r => setTimeout(r, 800 + Math.random() * 500));
             } else {
@@ -1280,7 +1282,6 @@ function addMessageToUI(role, text, personaId, skipTypewriter = false) {
     if (useTypewriter) {
         const bubble = messageRow.querySelector('.msg-bubble');
         if (bubble) {
-            console.log(`[addMessageToUI DEBUG] Bubble found. Ready to type.`);
             // Calculate delay for faster typing (~260 wpm)
             const speedMs = 28;
             let i = 0;
@@ -1294,7 +1295,6 @@ function addMessageToUI(role, text, personaId, skipTypewriter = false) {
                 }
             }
             // Start typing with a tiny delay to ensure render
-            console.log(`[addMessageToUI DEBUG] Starting typewriter timeout for text len ${displayText.length}...`);
             setTimeout(type, 10);
 
             // FAILSAFE: Force text appearance if animation stalls
