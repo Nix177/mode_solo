@@ -328,6 +328,14 @@ window.saveSettings = function () {
         localStorage.setItem('game_voice_uri', uri);
     }
 
+    const elInput = document.getElementById('eleven-key');
+    if (elInput) {
+        const key = elInput.value.trim();
+        TTSManager.elevenLabsKey = key;
+        if (key) localStorage.setItem('game_eleven_key', key);
+        else localStorage.removeItem('game_eleven_key');
+    }
+
     alert("Paramètres enregistrés !");
     document.getElementById('settings-modal').style.display = 'none';
 }

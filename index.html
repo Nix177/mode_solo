@@ -391,13 +391,23 @@
             </div>
 
             <div style="margin-bottom:20px; text-align:left;">
-                <label style="display:block; margin-bottom:10px; color:#ddd;">Voix Synthèse :</label>
+                <label style="display:block; margin-bottom:10px; color:#ddd;">Voix Synthèse (Nav.) :</label>
                 <select id="voice-select"
                     style="width:100%; padding:8px; background:#333; color:white; border:1px solid #555; border-radius:5px;">
                     <option value="">Automatique</option>
                 </select>
                 <p style="font-size:0.75em; color:#888; margin-top:5px;">
-                    Astuce: Choisissez une voix "Google", "Microsoft Online" ou "Natural" si disponible.
+                    Gratuit. "Google" ou "Microsoft Online" recommandés.
+                </p>
+            </div>
+
+            <div style="margin-bottom:20px; text-align:left; border-top:1px solid #444; padding-top:15px;">
+                <label style="display:block; margin-bottom:10px; color:#ff8800;">Option ElevenLabs (Haute Qualité)
+                    :</label>
+                <input type="password" id="eleven-key" placeholder="API Key (sk_...)"
+                    style="width:100%; padding:8px; background:#333; color:white; border:1px solid #555; border-radius:5px; box-sizing: border-box;">
+                <p style="font-size:0.75em; color:#888; margin-top:5px;">
+                    Si rempli, utilise l'API ElevenLabs (Compte gratuit = 10k caractères/mois).
                 </p>
             </div>
 
