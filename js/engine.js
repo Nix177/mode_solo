@@ -233,7 +233,13 @@ const MusicManager = {
 
     toggle: function () {
         this.enabled = !this.enabled;
-        if (!this.enabled) this.stop();
+        if (this.audio) {
+            if (!this.enabled) {
+                this.audio.pause();
+            } else {
+                this.audio.play().catch(e => console.warn('Music resume blocked:', e));
+            }
+        }
         return this.enabled;
     },
 
