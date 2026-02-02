@@ -606,8 +606,8 @@ window.saveSettings = function () {
 function updateBackground(bgUrl) {
     if (ui.screen && bgUrl) {
         ui.screen.style.background = `
-                linear - gradient(to bottom, rgba(0, 0, 0, 0.3) 0 %, rgba(0, 0, 0, 0.8) 100 %),
-                    url('${bgUrl}') center / cover no - repeat
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.8) 100%),
+                    url('${bgUrl}') center / cover no-repeat
                         `;
     }
 }
@@ -895,7 +895,7 @@ async function checkDecisionMade(lastUserAction, theme, turnCount) {
 
         // KEYWORDS FORCE CHECK
         const lowerInput = lastUserAction.toLowerCase();
-        const keywords = ['niveau suivant', 'valid', 'confirm', 'choix fait', 'décidé', 'final', 'passons'];
+        const keywords = ['niveau suivant', 'valid', 'confirm', 'choix fait', 'décidé', 'final', 'passons', 'oui', 'ok', 'd\'accord', 'go', 'je choisis', 'c\'est bon', 'allez', 'refuse', 'accepte'];
         const hasKeyword = keywords.some(k => lowerInput.includes(k));
         console.log(`[DEBUG checkDecisionMade] keyword check: hasKeyword=${hasKeyword}, input="${lowerInput}"`);
 
