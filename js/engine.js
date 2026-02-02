@@ -316,14 +316,21 @@ window.sendPlayerAction = async function (text) {
         addMessageToUI('bot', `[SYSTÈME] : Choix enregistré. Fin de séquence.`, CURRENT_CHAT_TARGET);
 
         await updatePlayerProfile(CURRENT_SCENE.theme);
-        const nextSceneId = await pickNextScene();
-
-        setTimeout(() => {
-            if (nextSceneId) {
-                loadScene(nextSceneId);
-            } else {
-                showGameSummary();
-            }
+        if (decisionCheck.exitId) {
+             const exit = CURRENT_SCENE.exits.find(e => e.id === decisionCheck.exitId);
+             if (exit && exit.target) {
+                 console.log("Branching to:", exit.target);
+                 loadScene(exit.target);
+             } else {
+                 // Fallback if exit invalid
+                 loadScene(await pickNextScene());
+             }
+        } else {
+             // Fallback legacy behavior
+             const nextSceneId = await pickNextScene();
+             if (nextSceneId) loadScene(nextSceneId);
+             else showGameSummary();
+        }
         }, 3000);
         return;
     }
@@ -418,15 +425,22 @@ async function checkDecisionMade(lastUserAction, theme, turnCount) {
     const leniency = turnCount > 8 ? "VERY LENIENT" : "STRICT";
 
     try {
+        let exitPrompt = "";
+        if (CURRENT_SCENE.exits) {
+            exitPrompt = "POSSIBLE EXITS:\n" + CURRENT_SCENE.exits.map(e => `- ID: "${e.id}" -> ${e.description}`).join('\n');
+        }
+
         const res = await callAIInternal(`
             ANALYZE PLAYER INPUT. Theme: "${theme}". Input: "${lastUserAction}".
             Mode: ${leniency}
             
-            Did the player EXPLICITLY CONFIRM their final choice?
+            ${exitPrompt}
+
+            Did the player EXPLICITLY CONFIRM their final choice matching one of these exits?
             If they merely express an opinion or a tendency, it is NOT "DECIDED".
             They must say "Confirmed", "Final word", "Yes, I'm sure", or repeat their choice EMPHATICALLY after being asked "Is this your final choice?".
             
-            Reply ONLY JSON: { "status": "DECIDED" | "DEBATING" }
+            Reply ONLY JSON: { "status": "DECIDED", "exitId": "ID_OF_EXIT" } OR { "status": "DEBATING" }
         `);
         return JSON.parse(res);
     } catch (e) {

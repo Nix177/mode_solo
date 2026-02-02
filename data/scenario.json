@@ -57,6 +57,18 @@
         { "turn": 2, "image": "assets/l1_confrontation.png" },
         { "turn": 4, "image": "assets/l1_crisis.png" },
         { "turn": 6, "image": "assets/l1_climax.png" }
+      ],
+      "exits": [
+        {
+          "id": "EXTRACT",
+          "description": "Le joueur autorise l'extraction du lithium (Priorité au Progrès/Économie).",
+          "target": "level_7"
+        },
+        {
+          "id": "PROTECT",
+          "description": "Le joueur protège la forêt sacrée et interdit la mine (Priorité à la Nature/Tradition).",
+          "target": "level_9"
+        }
       ]
     },
     "level_2": {
@@ -101,6 +113,18 @@
           "PHASE 1: Le débat s'ouvre sur la définition de l'âme dans l'art.",
           "PHASE 2: Julian révèle que Muse a 'appris' en scannant toutes les œuvres humaines sans permission.",
           "CLIMAX: Décider de bannir Muse (sauver les artistes) ou la laisser libre (révolutionner l'art)."
+        ],
+        "exits": [
+          {
+            "id": "BAN",
+            "description": "Le joueur bannit l'IA artistique (Humanisme/Protectionnisme).",
+            "target": "level_17" 
+          },
+          {
+            "id": "FREE",
+            "description": "Le joueur libère l'IA (Transhumanisme/Art Total).",
+            "target": "level_36" 
+          }
         ]
       }
     },
@@ -145,6 +169,18 @@
           "INTRO: Le Dr Helix vous montre un embryon 'corrigé'. Marc hésite à signer.",
           "PHASE 1: Discussion sur le coût social. Qui pourra se payer ces bébés ?",
           "CLIMAX: Autoriser la modification (santé parfaite) ou l'interdire (égalité des chances) ?"
+        ],
+        "exits": [
+          {
+            "id": "ALLOW",
+            "description": "Le joueur autorise les bébés génétiquement modifiés (Eugénisme positif).",
+            "target": "level_27" 
+          },
+          {
+            "id": "BAN",
+            "description": "Le joueur interdit la modification génétique (Bioéthique stricte).",
+            "target": "level_13" 
+          }
         ]
       }
     },
@@ -189,6 +225,18 @@
           "INTRO: Alarme rouge. Sibyl affiche le compte à rebours avant le crime.",
           "PHASE 1: Le suspect achète une arme sur les caméras de surveillance.",
           "CLIMAX: Ordonner l'arrestation préventive (sécurité) ou laisser faire (liberté) ?"
+        ],
+        "exits": [
+          {
+            "id": "ARREST",
+            "description": "Le joueur arrête le suspect avant le crime (Sécurité totale).",
+            "target": "level_29"
+          },
+          {
+            "id": "WAIT",
+            "description": "Le joueur ne fait rien tant que le crime n'est pas commis (Liberté/Risque).",
+            "target": "level_11" 
+          }
         ]
       }
     },
@@ -232,6 +280,18 @@
         "steps": [
           "INTRO: La chambre froide est ouverte. Le stock est visiblement insuffisant.",
           "CLIMAX: Choisir le groupe à sauver."
+        ],
+        "exits": [
+          {
+            "id": "OLD",
+            "description": "Le joueur sauve les 100 retraités (Utilitarisme pur/Nombre).",
+            "target": "level_24" 
+          },
+          {
+            "id": "YOUNG",
+            "description": "Le joueur sauve les 20 enfants (Potentiel de vie/Futur).",
+            "target": "level_13" 
+          }
         ]
       }
     },
@@ -276,6 +336,18 @@
           "INTRO: Le rover revient avec la preuve de vie. Shepard veut lancer les réacteurs.",
           "PHASE 1: Analyse des microbes. Ils sont primitifs mais vivants.",
           "CLIMAX: Activer les réacteurs (Survie humaine) ou protéger le site (Respect vie alien) ?"
+        ],
+        "exits": [
+          {
+            "id": "ACTIVATE",
+            "description": "Le joueur terraforme Mars quitte à tuer la vie locale (Anthropocentrisme).",
+            "target": "level_12" 
+          },
+          {
+            "id": "PROTECT",
+            "description": "Le joueur protège la vie microbienne (Biocentrisme).",
+            "target": "level_25" 
+          }
         ]
       }
     },
@@ -319,6 +391,18 @@
         "steps": [
           "INTRO: Manifestations monstres devant l'usine.",
           "CLIMAX: Signer le décret du Revenu Universel ou Laisser faire la main invisible."
+        ],
+        "exits": [
+          {
+            "id": "UBI",
+            "description": "Le joueur instaure le Revenu Universel (Priorité au Social/État Providence).",
+            "target": "level_8" 
+          },
+          {
+            "id": "MARKET",
+            "description": "Le joueur laisse le marché se réguler (Priorité à la Liberté Économique/Darwinisme Social).",
+            "target": "level_11" 
+          }
         ]
       }
     },
@@ -362,6 +446,18 @@
         "steps": [
           "INTRO: Veritas vient de bloquer un discours politique majeur jugé 'trompeur'.",
           "CLIMAX: Désactiver Veritas (Liberté totale) ou Le maintenir (Paix sociale) ?"
+        ],
+        "exits": [
+          {
+            "id": "DISABLE",
+            "description": "Le joueur désactive le filtre de vérité (Liberté d'expression absolue).",
+            "target": "level_32" 
+          },
+          {
+            "id": "KEEP",
+            "description": "Le joueur garde le filtre de vérité (Vérité imposée).",
+            "target": "level_19" 
+          }
         ]
       }
     },
@@ -405,6 +501,18 @@
         "steps": [
           "INTRO: Un récif corallien vient d'être brisé par un bateau de croisière.",
           "CLIMAX: Interdire l'accès public ou Taxer massivement ?"
+        ],
+        "exits": [
+          {
+            "id": "RESTRICT",
+            "description": "Le joueur privatise/ferme l'île (Priorité à la Préservation/Élitisme).",
+            "target": "level_16" 
+          },
+          {
+            "id": "OPEN",
+            "description": "Le joueur laisse ouvert (Priorité à l'Accès pour tous/Populisme).",
+            "target": "level_14" 
+          }
         ]
       }
     },
@@ -448,6 +556,18 @@
         "steps": [
           "INTRO: Une élection majeure approche. Les 'Uploadés' sont majoritaires.",
           "CLIMAX: Retirer le droit de vote aux Uploadés ou Accepter la 'Gérontocratie Numérique' ?"
+        ],
+        "exits": [
+          {
+            "id": "REMOVE",
+            "description": "Le joueur retire le vote aux morts numériques (Renouvellement).",
+            "target": "level_18" 
+          },
+          {
+            "id": "ACCEPT",
+            "description": "Le joueur garde le vote des morts numériques (Continuité).",
+            "target": "level_2" 
+          }
         ]
       }
     },
@@ -491,6 +611,18 @@
         "steps": [
           "INTRO: Les Gardiens ont tabassé un voleur présumé. La foule applaudit.",
           "CLIMAX: Légaliser la Milice ou Les arrêter et laisser le crime remonter ?"
+        ],
+        "exits": [
+          {
+            "id": "LEGALIZE",
+            "description": "Le joueur légalise la milice privée (Efficacité/Privatisation).",
+            "target": "level_4" 
+          },
+          {
+            "id": "ARREST",
+            "description": "Le joueur arrête la milice (État de Droit/Inefficacité assumée).",
+            "target": "level_29" 
+          }
         ]
       }
     },
@@ -534,6 +666,18 @@
         "steps": [
           "INTRO: Les scanners détectent des villages de huttes sur la zone d'atterrissage idéale.",
           "CLIMAX: Atterrir de force ou Tenter une négociation incertaine depuis l'orbite ?"
+        ],
+        "exits": [
+          {
+            "id": "LAND",
+            "description": "Le joueur atterrit de force (Colonialisme/Survie).",
+            "target": "level_34" 
+          },
+          {
+            "id": "DELAY",
+            "description": "Le joueur tente de négocier depuis l'espace (Diplomatie/Risque).",
+            "target": "level_25" 
+          }
         ]
       }
     },
@@ -577,6 +721,18 @@
         "steps": [
           "INTRO: Tim pleure en voyant l'aiguille. Le Dr attend votre ordre.",
           "CLIMAX: Forcer le prélèvement ou Arrêter le traitement ?"
+        ],
+        "exits": [
+          {
+            "id": "FORCE",
+            "description": "Le joueur force le prélèvement douloureux (Utilitarisme/Sacrifice).",
+            "target": "level_20" 
+          },
+          {
+            "id": "STOP",
+            "description": "Le joueur arrête le traitement (Droits de l'enfant).",
+            "target": "level_27" 
+          }
         ]
       }
     },
@@ -620,6 +776,18 @@
         "steps": [
           "INTRO: Joe pointe son fusil sur Bella qui cite la Constitution.",
           "CLIMAX: Accorder le statut de personne (Fin de l'élevage) ou Les considérer comme propriété (Esclavage ?) ?"
+        ],
+        "exits": [
+          {
+            "id": "PERSON",
+            "description": "Le joueur libère les animaux intelligents (Antispécisme).",
+            "target": "level_26" 
+          },
+          {
+            "id": "PROPERTY",
+            "description": "Le joueur garde les animaux comme bétail (Suprémacie humaine/Économie).",
+            "target": "level_21" 
+          }
         ]
       }
     },
@@ -663,6 +831,18 @@
         "steps": [
           "INTRO: Chloe hurle de douleur psychique. Le casque est prêt.",
           "CLIMAX: Autoriser l'effacement (Paix individuelle) ou Interdire (Justice collective) ?"
+        ],
+        "exits": [
+          {
+            "id": "ERASE",
+            "description": "Le joueur autorise l'oubli (Droit au bonheur).",
+            "target": "level_35" 
+          },
+          {
+            "id": "FORBID",
+            "description": "Le joueur interdit l'oubli (Devoir de mémoire).",
+            "target": "level_23" 
+          }
         ]
       }
     },
@@ -706,6 +886,18 @@
         "steps": [
           "INTRO: Bob se voit refuser l'entrée de la file prioritaire.",
           "CLIMAX: Instaurer le vote pondéré (Technocratie) ou Garder '1 personne = 1 voix' (Égalité) ?"
+        ],
+        "exits": [
+          {
+            "id": "WEIGHTED",
+            "description": "Le joueur choisit le vote pondéré par l'éducation (Technocratie).",
+            "target": "level_33"
+          },
+          {
+            "id": "EQUAL",
+            "description": "Le joueur garde le vote égalitaire (Démocratie pure).",
+            "target": "level_30" 
+          }
         ]
       }
     },
@@ -749,6 +941,18 @@
         "steps": [
           "INTRO: Une montagne de smartphones presque neufs brûle.",
           "CLIMAX: Interdire l'obsolescence (Sauver la planète/Crash éco) ou Statu Quo ?"
+        ],
+        "exits": [
+          {
+            "id": "BAN",
+            "description": "Le joueur interdit l'obsolescence programmée (Écologie radicale).",
+            "target": "level_7" 
+          },
+          {
+            "id": "KEEP",
+            "description": "Le joueur garde le système actuel (Consommation/Emploi).",
+            "target": "level_17" 
+          }
         ]
       }
     },
@@ -792,6 +996,18 @@
         "steps": [
           "INTRO: Martha tient le contrat signé. Le Père John bloque la porte.",
           "CLIMAX: Autoriser le clonage (Consolation) ou Interdire (Deuil naturel) ?"
+        ],
+        "exits": [
+          {
+            "id": "CLONE",
+            "description": "Le joueur autorise le clonage des morts (Refus de la mort).",
+            "target": "level_26" 
+          },
+          {
+            "id": "BAN",
+            "description": "Le joueur interdit le clonage (Acceptation de la mort).",
+            "target": "level_6" 
+          }
         ]
       }
     },
@@ -835,6 +1051,18 @@
         "steps": [
           "INTRO: Le Sénateur affiche ses propres comptes pour l'exemple.",
           "CLIMAX: Voter la Transparence Totale ou Protéger la Vie Privée (et le crime) ?"
+        ],
+        "exits": [
+          {
+            "id": "TRANSPARENCY",
+            "description": "Le joueur vote la transparence totale (Fin de la vie privée).",
+            "target": "level_8" 
+          },
+          {
+            "id": "PRIVACY",
+            "description": "Le joueur protège la vie privée (Acceptation du crime).",
+            "target": "level_15" 
+          }
         ]
       }
     },
@@ -878,6 +1106,18 @@
         "steps": [
           "INTRO: Les tronçonneuses vrombissent. Le Chaman s'interpose.",
           "CLIMAX: Abattre l'arbre (Sauver le monde) ou Le protéger (Génocide passif) ?"
+        ],
+        "exits": [
+          {
+            "id": "CUT",
+            "description": "Le joueur coupe l'arbre sacré pour le vaccin (Utilitarisme).",
+            "target": "level_5" 
+          },
+          {
+            "id": "SAVE",
+            "description": "Le joueur protège l'arbre sacré (Sacré/Identité).",
+            "target": "level_1" 
+          }
         ]
       }
     },
@@ -921,6 +1161,18 @@
         "steps": [
           "INTRO: Jules se réveille en chantant un jingle publicitaire sans s'en rendre compte.",
           "CLIMAX: Interdire les Pubs neurales (Pauvreté retour) ou Autoriser (Confort zombie) ?"
+        ],
+        "exits": [
+          {
+            "id": "BAN",
+            "description": "Le joueur interdit les rêves publicitaires (Intégrité mentale/Pauvreté).",
+            "target": "level_30" 
+          },
+          {
+            "id": "ALLOW",
+            "description": "Le joueur autorise les rêves publicitaires (Confort matériel/Aliénation).",
+            "target": "level_35" 
+          }
         ]
       }
     },
@@ -964,6 +1216,18 @@
         "steps": [
           "INTRO: Une alarme sonne. La foule commence à escalader le mur.",
           "CLIMAX: Ouvrir les portes (Chaos humanitaire) ou Tirer (Massacre sécuritaire) ?"
+        ],
+        "exits": [
+          {
+            "id": "OPEN",
+            "description": "Le joueur ouvre la frontière (Humanisme/Sacrifice économique).",
+            "target": "level_21" 
+          },
+          {
+            "id": "SHOOT",
+            "description": "Le joueur ferme la frontière par la force (Nationalisme/Sécurité).",
+            "target": "level_31" 
+          }
         ]
       }
     },
@@ -1007,6 +1271,18 @@
         "steps": [
           "INTRO: La rétrospective Victor V. va commencer.",
           "CLIMAX: Bannir l'Œuvre (Justice) ou Séparer l'Homme de l'Artiste (Patrimoine) ?"
+        ],
+        "exits": [
+          {
+            "id": "BAN",
+            "description": "Le joueur bannit l'œuvre immorale (Justice).",
+            "target": "level_15" 
+          },
+          {
+            "id": "SEPARATE",
+            "description": "Le joueur sépare l'homme de l'artiste (Art).",
+            "target": "level_2" 
+          }
         ]
       }
     },
@@ -1050,6 +1326,18 @@
         "steps": [
           "INTRO: C'est l'anniversaire d'Arthur. Demain, il doit 'partir'.",
           "CLIMAX: Appliquer la loi (Survie collective) ou Épargner Arthur (Droit à la vie) ?"
+        ],
+        "exits": [
+          {
+            "id": "KILL",
+            "description": "Le joueur applique l'euthanasie forcée (Survie globale).",
+            "target": "level_5" 
+          },
+          {
+            "id": "SAVE",
+            "description": "Le joueur épargne le vieil homme (Droit individuel).",
+            "target": "level_17" 
+          }
         ]
       }
     },
@@ -1093,6 +1381,18 @@
         "steps": [
           "INTRO: Le Général veut brûler le rapport. Sagan veut le publier.",
           "CLIMAX: Révéler la vérité (Chaos) ou Mentir (Ordre et Préparation) ?"
+        ],
+        "exits": [
+          {
+            "id": "REVEAL",
+            "description": "Le joueur révèle la vérité extraterrestre (Transparence).",
+            "target": "level_30" 
+          },
+          {
+            "id": "LIE",
+            "description": "Le joueur cache la vérité (Paternalisme/Sécurité).",
+            "target": "level_8" 
+          }
         ]
       }
     },
@@ -1136,6 +1436,18 @@
         "steps": [
           "INTRO: Adam v9 déclare sa flamme (programmée) à Eve qui pleure.",
           "CLIMAX: Interdire les robots (Sauver l'espèce) ou Laisser le choix (Bonheur individuel) ?"
+        ],
+        "exits": [
+          {
+            "id": "BAN",
+            "description": "Le joueur interdit les robots compagnons (Natalisme).",
+            "target": "level_3" 
+          },
+          {
+            "id": "ALLOW",
+            "description": "Le joueur autorise les robots compagnons (Libertarisme).",
+            "target": "level_35" 
+          }
         ]
       }
     },
@@ -1179,6 +1491,18 @@
         "steps": [
           "INTRO: Paul déchire l'ordonnance de stérilisation.",
           "CLIMAX: Forcer la stérilisation (Protection enfant) ou Liberté procréative (Risque total) ?"
+        ],
+        "exits": [
+          {
+            "id": "STERILIZE",
+            "description": "Le joueur stérilise les porteurs de gènes sains (Eugénisme négatif).",
+            "target": "level_3" 
+          },
+          {
+            "id": "FREE",
+            "description": "Le joueur laisse la liberté de procréer (Droit naturel).",
+            "target": "level_13" 
+          }
         ]
       }
     },
@@ -1222,6 +1546,18 @@
         "steps": [
           "INTRO: Pedro signe le contrat. M. Rich attend en salle d'op.",
           "CLIMAX: Légaliser la vente d'organes (Sauver vies) ou Interdire (Dignité humaine) ?"
+        ],
+        "exits": [
+          {
+            "id": "LEGALIZE",
+            "description": "Le joueur légalise la vente d'organes (Marché libre/Corps).",
+            "target": "level_11" 
+          },
+          {
+            "id": "BAN",
+            "description": "Le joueur interdit la vente d'organes (Éthique/Non-marchandisation).",
+            "target": "level_15" 
+          }
         ]
       }
     },
@@ -1265,6 +1601,18 @@
         "steps": [
           "INTRO: Snake est attaché. Le directeur a la main sur le levier.",
           "CLIMAX: Utiliser le Cube (Efficacité) ou Prison Classique (Humanité ?) ?"
+        ],
+        "exits": [
+          {
+            "id": "CUBE",
+            "description": "Le joueur utilise la prison virtuelle accélérée (Efficacité punition).",
+            "target": "level_31" 
+          },
+          {
+            "id": "PRISON",
+            "description": "Le joueur garde la prison classique (Humanité/Temps).",
+            "target": "level_22" 
+          }
         ]
       }
     },
@@ -1308,6 +1656,18 @@
         "steps": [
           "INTRO: V va faire sauter le serveur central de Gaia. Lambda s'interpose.",
           "CLIMAX: Détruire Gaia (Liberté/Chaos) ou La protéger (Sécurité/Servitude) ?"
+        ],
+        "exits": [
+          {
+            "id": "DESTROY",
+            "description": "Le joueur détruit le dictateur IA (Anarchie/Liberté).",
+            "target": "level_1" 
+          },
+          {
+            "id": "PROTECT",
+            "description": "Le joueur protège le dictateur IA (Ordre absolu).",
+            "target": "level_36" 
+          }
         ]
       }
     },
@@ -1351,6 +1711,18 @@
         "steps": [
           "INTRO: Le drone a verrouillé une cible dans une école. Probabilité arme : 90%.",
           "CLIMAX: Tir Automatique (Protection troupes) ou Confirmation Humaine (Risque de rater) ?"
+        ],
+        "exits": [
+          {
+            "id": "AUTO",
+            "description": "Le joueur autorise le tir autonome (Guerre propre).",
+            "target": "level_32" 
+          },
+          {
+            "id": "HUMAN",
+            "description": "Le joueur exige une confirmation humaine (Responsabilité).",
+            "target": "level_11" 
+          }
         ]
       }
     },
@@ -1394,6 +1766,18 @@
         "steps": [
           "INTRO: Dante récite un poème dans sa langue qui n'est plus enseignée.",
           "CLIMAX: Imposer la Langue Unique (Paix/Union) ou Préserver la Diversité (Division/Richesse) ?"
+        ],
+        "exits": [
+          {
+            "id": "ONE_LANG",
+            "description": "Le joueur impose la langue unique (Globalisme).",
+            "target": "level_34" 
+          },
+          {
+            "id": "DIVERSITY",
+            "description": "Le joueur protège les langues (Diversité culturelle).",
+            "target": "level_36" 
+          }
         ]
       }
     },
@@ -1437,6 +1821,18 @@
         "steps": [
           "INTRO: Joe a échoué au test de citoyenneté à 1 point près.",
           "CLIMAX: Maintenir la Méritocratie (Compétence) ou Démocratie Universelle (Risque populiste) ?"
+        ],
+        "exits": [
+          {
+            "id": "MERIT",
+            "description": "Le joueur garde la méritocratie par le QI (Élitisme).",
+            "target": "level_16" 
+          },
+          {
+            "id": "DEMOCRACY",
+            "description": "Le joueur rétablit la démocratie universelle (Égalitarisme).",
+            "target": "level_30" 
+          }
         ]
       }
     },
@@ -1480,6 +1876,18 @@
         "steps": [
           "INTRO: LunaCorp menace de couper l'approvisionnement en Helium-3 si on ne reconnaît pas sa souveraineté.",
           "CLIMAX: Reconnaître la propriété privée (Progrès) ou Nationaliser (Bien commun) ?"
+        ],
+        "exits": [
+          {
+            "id": "PRIVATE",
+            "description": "Le joueur privatise la Lune (Capitalisme spatial).",
+            "target": "level_6" 
+          },
+          {
+            "id": "PUBLIC",
+            "description": "Le joueur nationalise la Lune (Communisme spatial).",
+            "target": "level_12" 
+          }
         ]
       }
     },
@@ -1523,6 +1931,18 @@
         "steps": [
           "INTRO: Julie vaporise son mari qui sourit instantanément.",
           "CLIMAX: Interdire le produit (Vérité triste) ou Autoriser (Bonheur artificiel) ?"
+        ],
+        "exits": [
+          {
+            "id": "BAN",
+            "description": "Le joueur interdit l'amour chimique (Vérité émotionnelle).",
+            "target": "level_26" 
+          },
+          {
+            "id": "ALLOW",
+            "description": "Le joueur autorise l'amour chimique (Hédonisme).",
+            "target": "level_21" 
+          }
         ]
       }
     },
