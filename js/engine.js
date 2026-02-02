@@ -1170,6 +1170,7 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
             // Just a small 1s-1.5s typing feel
             if (!isNarrative && container) {
                 chunkLoadingId = 'chunk-loading-' + Date.now() + Math.random();
+                console.log(`[callBot DEBUG] Creating chunk loader: ${chunkLoadingId}`);
                 container.innerHTML += buildMsgHTML('bot', '...', targetId)
                     .replace('msg-bubble', 'msg-bubble loading')
                     .replace('class="msg-row bot"', `id="${chunkLoadingId}" class="msg-row bot"`);
@@ -1279,6 +1280,7 @@ function addMessageToUI(role, text, personaId, skipTypewriter = false) {
     if (useTypewriter) {
         const bubble = messageRow.querySelector('.msg-bubble');
         if (bubble) {
+            console.log(`[addMessageToUI DEBUG] Bubble found. Ready to type.`);
             // Calculate delay for faster typing (~260 wpm)
             const speedMs = 28;
             let i = 0;
@@ -1292,12 +1294,13 @@ function addMessageToUI(role, text, personaId, skipTypewriter = false) {
                 }
             }
             // Start typing with a tiny delay to ensure render
+            console.log(`[addMessageToUI DEBUG] Starting typewriter timeout for text len ${displayText.length}...`);
             setTimeout(type, 10);
 
             // FAILSAFE: Force text appearance if animation stalls
             setTimeout(() => {
                 if (bubble.textContent.length < displayText.length) {
-                    console.warn("[addMessageToUI] Typewriter stalled. Forcing text.");
+                    console.warn(`[addMessageToUI FAILSAFE] Typewriter stalled at ${bubble.textContent.length}/${displayText.length}. Forcing text.`);
                     bubble.textContent = displayText;
                     container.scrollTop = container.scrollHeight;
                 }
