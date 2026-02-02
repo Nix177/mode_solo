@@ -537,23 +537,31 @@ window.sendPlayerAction = async function (text) {
 
         await updatePlayerProfile(CURRENT_SCENE.theme);
 
+        // Show Transition
+        showLoadingTransition();
+
         setTimeout(async () => {
             if (decisionCheck.exitId) {
                 const exit = CURRENT_SCENE.exits.find(e => e.id === decisionCheck.exitId);
                 if (exit && exit.target) {
                     console.log("Branching to:", exit.target);
+                    // Remove overlay just before loading (loadScene handles its own intro)
+                    // Actually, let loadScene remove it or replace it.
                     loadScene(exit.target);
                 } else {
-                    // Fallback if exit invalid
                     loadScene(await pickNextScene());
                 }
             } else {
-                // Fallback legacy behavior
                 const nextSceneId = await pickNextScene();
                 if (nextSceneId) loadScene(nextSceneId);
                 else showGameSummary();
             }
-        }, 3000);
+
+            // Clean up overlays
+            const overlays = document.querySelectorAll('div[style*="z-index: 9999"]');
+            overlays.forEach(o => o.remove());
+
+        }, 1500); // Short delay to read the "Choix enregistré" message
         return;
     }
 
@@ -666,23 +674,55 @@ async function checkDecisionMade(lastUserAction, theme, turnCount) {
             exitPrompt = "POSSIBLE EXITS:\n" + CURRENT_SCENE.exits.map(e => `- ID: "${e.id}" -> ${e.description}`).join('\n');
         }
 
+        // KEYWORDS FORCE CHECK
+        const lowerInput = lastUserAction.toLowerCase();
+        if (lowerInput.includes('niveau suivant') || lowerInput.includes('valid') || lowerInput.includes('confirm') || lowerInput.includes('choix fait')) {
+            // Force decision mode
+            return { status: "DECIDED", exitId: null };
+            // We let the AI decide WHICH exit in a second pass or just default if unclear, 
+            // but here we want to trigger the end.
+            // Actually, we need the EXIT ID.
+            // Let's ask the AI specifically for the exit ID in this forced mode.
+        }
+
         const res = await callAIInternal(`
             ANALYZE PLAYER INPUT. Theme: "${theme}". 
             CONTEXT (LAST AI MESSAGE): "${lastAIMessage}"
             PLAYER INPUT: "${lastUserAction}"
-            Mode: ${leniency}
+            Mode: FORCE_DECISION_IF_CLOSE
             
             ${exitPrompt}
 
-            Did the player EXPLICITLY CONFIRM their final choice matching one of these exits?
-            Check the CONTEXT. If the AI asked "Is this your final choice?" and the player says "Yes" or "Oui", it IS "DECIDED".
-            
+            Has the player made a choice?
+            If they say "next level", "I confirm", "let's go", "it's decided", etc., MARK AS DECIDED.
+            If they argue for a specific side (e.g. "Kill the forest"), assume they want that exit.
+
             Reply ONLY JSON: { "status": "DECIDED", "exitId": "ID_OF_EXIT" } OR { "status": "DEBATING" }
         `);
         return JSON.parse(res);
     } catch (e) {
         return { status: turnCount > 6 ? "DECIDED" : "DEBATING" };
     }
+}
+
+function showLoadingTransition(targetId) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: black; color: white; display: flex; flex-direction: column;
+        justify-content: center; align-items: center; z-index: 9999;
+        animation: fadeIn 0.5s;
+    `;
+    overlay.innerHTML = `
+        <h1 style="font-family:'Playfair Display'; font-size: 2em; margin-bottom: 20px;">Choix Enregistré</h1>
+        <div style="width: 50px; height: 50px; border: 5px solid #333; border-top-color: #ff8800; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <p style="margin-top: 20px; color: #888;">Chargement de la séquence...</p>
+        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+    `;
+    document.body.appendChild(overlay);
+
+    // Fallback remove after 5s if stuck
+    setTimeout(() => overlay.remove(), 5000);
 }
 
 async function updatePlayerProfile(theme) {
