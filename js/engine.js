@@ -270,6 +270,9 @@ async function loadScene(sceneId) {
     // 2. Load History for the Narrator
     restoreChatHistory(narratorId);
 
+    // Small delay to ensure DOM is fully rendered before bot calls
+    await new Promise(r => setTimeout(r, 100));
+
     // 3. Trigger Greeting ONLY if new
     // 3. Trigger Greeting Sequence (TOUR) ONLY if new
     if (CHAT_SESSIONS[narratorId].length <= 1) {
