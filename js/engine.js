@@ -168,6 +168,54 @@ const TTSManager = {
 
 TTSManager.init();
 
+// --- MUSIC MANAGER (BACKGROUND MUSIC) ---
+const MusicManager = {
+    enabled: true,
+    audio: null,
+    tracks: {
+        contemplation: 'assets/music/contemplation.mp3',
+        thought: 'assets/music/thought.mp3',
+        tension: 'assets/music/tension.mp3',
+        resolution: 'assets/music/resolution.mp3',
+        uplifting: 'assets/music/uplifting.mp3'
+    },
+    currentTrack: null,
+
+    play: function (trackName) {
+        if (!this.enabled) return;
+        const src = this.tracks[trackName] || this.tracks.contemplation;
+        if (this.currentTrack === src && this.audio && !this.audio.paused) return;
+
+        this.stop();
+        this.audio = new Audio(src);
+        this.audio.loop = true;
+        this.audio.volume = 0.3;
+        this.audio.play().catch(e => console.warn('Music autoplay blocked:', e));
+        this.currentTrack = src;
+    },
+
+    stop: function () {
+        if (this.audio) {
+            this.audio.pause();
+            this.audio.currentTime = 0;
+            this.audio = null;
+        }
+        this.currentTrack = null;
+    },
+
+    toggle: function () {
+        this.enabled = !this.enabled;
+        if (!this.enabled) this.stop();
+        return this.enabled;
+    },
+
+    setVolume: function (vol) {
+        if (this.audio) this.audio.volume = vol;
+    }
+};
+
+window.MusicManager = MusicManager;
+
 // --- DOM ELEMENTS ---
 const ui = {
     screen: document.getElementById('game-container'),
@@ -228,6 +276,11 @@ async function loadScene(sceneId) {
     if (!PLAYED_SCENES.includes(targetId)) PLAYED_SCENES.push(targetId);
 
     updateBackground(scene.background);
+
+    // --- AUTO-PLAY BACKGROUND MUSIC ---
+    // Choose track based on scene mood or default to contemplation
+    const musicTrack = scene.music || 'contemplation';
+    MusicManager.play(musicTrack);
 
     // --- CLEANUP CHAT ---
     const chatContainer = document.getElementById('chat-scroll');
@@ -500,16 +553,25 @@ function renderInterface(scene) {
                 </h1>
             </div>
             <div style="display:flex; gap:10px;">
-                <button onclick="
-                    const isMuted = !TTSManager.toggle(); 
-                    this.textContent = isMuted ? '🔇' : '🔊'; 
-                    this.style.borderColor = isMuted ? '#666' : '#ff8800';
-                    this.style.color = isMuted ? '#666' : '#ff8800';
-                " style="background:transparent; border:1px solid #ff8800; color:#ff8800; padding:5px 10px; cursor:pointer; font-size:0.9em; border-radius:20px;">
-                    🔊
+                <button id="btn-music" onclick="
+                    const isOn = MusicManager.toggle();
+                    this.textContent = isOn ? '🎵' : '🔇';
+                    this.style.borderColor = isOn ? '#ff8800' : '#666';
+                    this.style.color = isOn ? '#ff8800' : '#666';
+                    if (isOn) MusicManager.play('contemplation');
+                " title="Musique" style="background:transparent; border:1px solid #ff8800; color:#ff8800; padding:5px 10px; cursor:pointer; font-size:0.9em; border-radius:20px;">
+                    🎵
+                </button>
+                <button id="btn-voice" onclick="
+                    const isOn = TTSManager.toggle();
+                    this.textContent = isOn ? '🗣️' : '🙊';
+                    this.style.borderColor = isOn ? '#ff8800' : '#666';
+                    this.style.color = isOn ? '#ff8800' : '#666';
+                " title="Voix" style="background:transparent; border:1px solid #ff8800; color:#ff8800; padding:5px 10px; cursor:pointer; font-size:0.9em; border-radius:20px;">
+                    🗣️
                 </button>
                 <button onclick="window.viewProfile()" style="background:transparent; border:1px solid #ff8800; color:#ff8800; padding:5px 15px; cursor:pointer; font-size:0.8em; border-radius:20px;">
-                    👁️ Voir ma synthèse
+                    👁️ Synthèse
                 </button>
             </div>
         </div>
