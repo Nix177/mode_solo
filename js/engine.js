@@ -26,6 +26,7 @@ const TTSManager = {
     enabled: true,
     voices: [],
     preferredVoiceURI: localStorage.getItem('game_voice_uri') || null,
+    elevenLabsKey: localStorage.getItem('game_eleven_key') || null,
 
     init: function () {
         if ('speechSynthesis' in window) {
@@ -46,10 +47,22 @@ const TTSManager = {
         return this.enabled;
     },
 
+    stop: function () {
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    },
+
     speak: function (text, personaId, isNarrative) {
-        if (!this.enabled || !('speechSynthesis' in window)) return;
+        if (!this.enabled) return;
         const cleanText = text.replace(/\*/g, '').replace(/["«»]/g, '').trim();
         if (!cleanText) return;
+
+        // --- OPTION C: ELEVENLABS (High Quality) ---
+        if (this.elevenLabsKey) {
+            this.speakEleven(cleanText, personaId, isNarrative);
+            return;
+        }
+
+        if (!('speechSynthesis' in window)) return;
 
         const utter = new SpeechSynthesisUtterance(cleanText);
         let selectedVoice = null;
@@ -100,6 +113,53 @@ const TTSManager = {
         utter.rate = rate;
 
         window.speechSynthesis.speak(utter);
+    },
+
+    speakEleven: async function (text, personaId, isNarrative) {
+        // Mapping ElevenLabs Voices (Examples - Replace with valid IDs if known or generic)
+        let voiceId = 'ErXwobaYiN019PkySvjV'; // Default Male (Antoni) for Narrator/Neutral
+
+        if (personaId) {
+            const personas = window.GAME_DATA.currentPersonas || window.GAME_DATA.personas || {};
+            const p = personas[personaId];
+            const gender = p ? p.gender : 'male';
+
+            if (gender === 'female') {
+                voiceId = '21m00Tcm4TlvDq8ikWAM'; // Rachel
+            } else {
+                voiceId = 'TxGEqnHWrfWFTfGW9XjX'; // Josh
+            }
+        }
+
+        try {
+            const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+                method: 'POST',
+                headers: {
+                    'xi-api-key': this.elevenLabsKey,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: text,
+                    model_id: "eleven_multilingual_v2", // Better for French
+                    voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+                })
+            });
+
+            if (!response.ok) throw new Error("ElevenLabs Error");
+
+            const blob = await response.blob();
+            const audio = new Audio(URL.createObjectURL(blob));
+            audio.play();
+
+        } catch (e) {
+            console.error(e);
+            console.warn("Falling back to Browser TTS");
+            // Temporarily disable key to prevent loop if quota exceeded
+            const keyBak = this.elevenLabsKey;
+            this.elevenLabsKey = null;
+            this.speak(text, personaId, isNarrative);
+            this.elevenLabsKey = keyBak;
+        }
     }
 };
 
@@ -309,6 +369,12 @@ window.openSettings = function () {
                 }
                 voiceSelect.appendChild(opt);
             });
+        }
+
+        // ElevenLabs Key Populate
+        const elInput = document.getElementById('eleven-key');
+        if (elInput && TTSManager.elevenLabsKey) {
+            elInput.value = TTSManager.elevenLabsKey;
         }
     }
 }
@@ -865,13 +931,44 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
 function addMessageToUI(role, text, personaId) {
     const container = document.getElementById('chat-scroll');
     if (!container) return;
-    container.innerHTML += buildMsgHTML(role, text, personaId);
+
+    // Create DOM element from HTML string
+    const htmlString = buildMsgHTML(role, text, personaId);
+    const template = document.createElement('template');
+    template.innerHTML = htmlString.trim();
+    const messageRow = template.content.firstChild;
+
+    container.appendChild(messageRow);
     container.scrollTop = container.scrollHeight;
 
-    // Trigger TTS
+    // TYPEWRITER EFFECT (Only for Bot & Non-Narrative)
     const isUser = role === 'user';
+    const isNarrative = !isUser && /^\s*\*.*\*\s*$/.test(text);
+
+    if (!isUser && !isNarrative) {
+        const bubble = messageRow.querySelector('.msg-bubble');
+        if (bubble) {
+            // clear text initially
+            bubble.textContent = '';
+
+            // Calculate delay for 250 wpm (~21 chars/sec => ~48ms/char)
+            const speedMs = 40;
+            let i = 0;
+
+            function type() {
+                if (i < text.length) {
+                    bubble.textContent += text.charAt(i);
+                    i++;
+                    container.scrollTop = container.scrollHeight; // Keep scrolling
+                    setTimeout(type, speedMs);
+                }
+            }
+            type();
+        }
+    }
+
+    // Trigger TTS (Concurrent with typing)
     if (!isUser) {
-        const isNarrative = /^\s*\*.*\*\s*$/.test(text);
         if (isNarrative || personaId) {
             TTSManager.speak(text, personaId, isNarrative);
         }
@@ -904,6 +1001,7 @@ function buildMsgHTML(role, text, personaId) {
         avatarImg = `<img src="${url}" style="width:40px; height:40px; border-radius:50%; margin-right:10px; border:2px solid #ff8800; object-fit:cover; flex-shrink:0;">`;
     }
 
+    // Return HTML string, but note that for Typewriter we will clear the bubble content in addMessageToUI
     return `
     <div class="msg-row ${isUser ? 'user' : 'bot'}" style="display:flex; align-items:flex-start; margin-bottom:10px; ${isUser ? 'justify-content:flex-end;' : ''}">
         ${!isUser ? avatarImg : ''} 
@@ -931,6 +1029,9 @@ window.openSideChat = function (personaId) {
     const p = activePersonas[personaId];
 
     // Switch Target
+    // Switch Target
+    // IMMEDIATE AUDIO CUTOFF
+    TTSManager.stop();
     CURRENT_CHAT_TARGET = personaId;
 
     // Close Modal if open (since we are switching the MAIN view now, or we can keep it as is? User asked for clicking bubbles to switch chat)
