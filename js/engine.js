@@ -256,11 +256,15 @@ async function loadScene(sceneId) {
     // Narrative Intro Logic:
     // 1. Manually inject the Context + Visual Cues as a "System Narrative" message (no speaker)
     // Only if first time loading this scene
+    // Only if first time loading this scene
     if (!CHAT_SESSIONS[narratorId] || CHAT_SESSIONS[narratorId].length === 0) {
-        const contextMsg = `*${scene.narrative ? scene.narrative.visual_cues : ""} ${scene.narrative ? scene.narrative.context : scene.theme}*`;
-        // Store narrative in narrator's history so it persists
-        if (!CHAT_SESSIONS[narratorId]) CHAT_SESSIONS[narratorId] = [];
-        CHAT_SESSIONS[narratorId].push({ role: "assistant", content: contextMsg });
+        const text = (scene.narrative ? (scene.narrative.visual_cues + " " + scene.narrative.context) : scene.theme).trim();
+        if (text) {
+            const contextMsg = `*${text}*`;
+            // Store narrative in narrator's history so it persists
+            if (!CHAT_SESSIONS[narratorId]) CHAT_SESSIONS[narratorId] = [];
+            CHAT_SESSIONS[narratorId].push({ role: "assistant", content: contextMsg });
+        }
     }
 
     // 2. Load History for the Narrator
