@@ -336,6 +336,14 @@ async function loadScene(sceneId) {
     CURRENT_SCENE = scene;
     if (!PLAYED_SCENES.includes(targetId)) PLAYED_SCENES.push(targetId);
 
+    // CORRECTION : Reset narrator session to force intro on level change
+    if (scene.narrative && scene.narrative.characters) {
+        const narrateurId = scene.narrative.characters[0].id;
+        CHAT_SESSIONS[narrateurId] = [];
+    } else {
+        CHAT_SESSIONS["A-1"] = [];
+    }
+
     updateBackground(scene.background);
     TTSManager.stop(); // Stop previous TTS
 
@@ -1266,7 +1274,7 @@ function addMessageToUI(role, text, personaId, skipTypewriter = false) {
     const htmlString = buildMsgHTML(role, initialText, personaId, isNarrative);
     const template = document.createElement('template');
     template.innerHTML = htmlString.trim();
-    const messageRow = template.content.firstChild;
+    const messageRow = template.content.firstElementChild || template.content.firstChild;
 
     container.appendChild(messageRow);
 
