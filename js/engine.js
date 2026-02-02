@@ -340,6 +340,7 @@ async function loadScene(sceneId) {
     if (scene.narrative && scene.narrative.characters) {
         const narrateurId = scene.narrative.characters[0].id;
         CHAT_SESSIONS[narrateurId] = [];
+        console.log(`[Scene Reset] Historique vidé pour le narrateur : ${narrateurId}`); // AJOUT DEBUG
     } else {
         CHAT_SESSIONS["A-1"] = [];
     }
@@ -391,8 +392,14 @@ async function loadScene(sceneId) {
     // 2. Load History for the Narrator
     restoreChatHistory(narratorId);
 
-    // Extended delay to ensure DOM is ready and avoid race conditions
-    await new Promise(r => setTimeout(r, 800));
+    // CORRECTIF DOM : Attente active que le chat soit prêt
+    let safetyCheck = 0;
+    while (!document.getElementById('chat-scroll') && safetyCheck < 20) {
+        await new Promise(r => setTimeout(r, 100));
+        safetyCheck++;
+    }
+    // Force une frame de rendu pour être sûr que le CSS est appliqué
+    await new Promise(r => requestAnimationFrame(() => setTimeout(r, 100)));
 
     // 3. Trigger Greeting Sequence (BUTTON-CONTROLLED TOUR)
     console.log(`[loadScene] Intro check: History len = ${CHAT_SESSIONS[narratorId] ? CHAT_SESSIONS[narratorId].length : 0}`);
@@ -1274,7 +1281,13 @@ function addMessageToUI(role, text, personaId, skipTypewriter = false) {
     const htmlString = buildMsgHTML(role, initialText, personaId, isNarrative);
     const template = document.createElement('template');
     template.innerHTML = htmlString.trim();
-    const messageRow = template.content.firstElementChild || template.content.firstChild;
+    // ON FORCE firstElementChild pour ignorer les espaces vides/texte
+    const messageRow = template.content.firstElementChild;
+
+    if (!messageRow) {
+        console.error("Erreur de template HTML vide pour :", text);
+        return;
+    }
 
     container.appendChild(messageRow);
 
