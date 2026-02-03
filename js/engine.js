@@ -1230,7 +1230,7 @@ async function callBot(systemPrompt, targetId, isIntro = false) {
                             </button>
                         </div>
                         `;
-                container.innerHTML += btnHTML;
+                container.insertAdjacentHTML('beforeend', btnHTML);
                 container.scrollTop = container.scrollHeight;
 
                 // Promisify the click
@@ -1303,6 +1303,7 @@ function addMessageToUI(role, text, personaId, skipTypewriter = false) {
             let i = 0;
 
             function type() {
+                // console.log(`[Typewriter DEBUG] Typing... ${i}/${displayText.length} | attached? ${document.contains(bubble)}`);
                 if (i < displayText.length) {
                     bubble.textContent += displayText.charAt(i);
                     i++;
