@@ -474,7 +474,7 @@
             "name": "Ranger Tom",
             "role": "Gardien du Parc",
             "archetype": "A-1",
-            "avatar": "assets/avatar_architecte.png",
+            "avatar": "assets/avatar_ranger_tom.png",
             "bio": "Il faut fermer l'île. La nature ne négocie pas.",
             "secret_agenda": ""
           },
@@ -483,7 +483,7 @@
             "name": "Maria",
             "role": "Guide Locale",
             "archetype": "B-2",
-            "avatar": "assets/avatar_poete.png",
+            "avatar": "assets/avatar_maria.png",
             "bio": "Le tourisme fait vivre tout le village. Fermer, c'est la famine.",
             "secret_agenda": ""
           },
@@ -492,7 +492,7 @@
             "name": "Kevin",
             "role": "Touriste",
             "archetype": "C-3",
-            "avatar": "assets/avatar_sceptique.png",
+            "avatar": "assets/avatar_kevin.png",
             "bio": "J'ai payé mon billet, j'ai le droit de voir la beauté du monde.",
             "secret_agenda": ""
           }
