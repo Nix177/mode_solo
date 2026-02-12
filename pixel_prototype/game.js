@@ -368,6 +368,10 @@ function applyThemeAssets(theme) {
   state.assets.liquid = set.liquid;
   state.assets.altar = set.altar;
 
+  // Props
+  if (set.building) state.assets.building = set.building;
+  if (set.vehicle) state.assets.vehicle = set.vehicle;
+
   // Swap NPCs to match theme
   if (set.npc_1) state.assets["A-1"] = set.npc_1;
   if (set.npc_2) state.assets["B-2"] = set.npc_2;
@@ -1604,6 +1608,68 @@ function createProceduralAssets() {
 }
 
 
+// --- Enrich theme tile sets with building / vehicle / NPC sprites ---
+// Called AFTER rebuildThemeTiles() in the external-assets path,
+// so the draw loop can find themeSet.building, themeSet.vehicle, etc.
+function enrichThemeTilesWithProps() {
+  const sheets = state.assets.sheets || {};
+
+  // Helper: extract a 32×32 sprite from a sheet image
+  const extractSprite = (sheet, index) => {
+    if (!sheet) return null;
+    const c = document.createElement("canvas");
+    c.width = 32; c.height = 32;
+    const sctx = c.getContext("2d");
+    const cols = Math.max(1, Math.floor(sheet.width / 32));
+    const row = Math.floor(index / cols);
+    const col = index % cols;
+    sctx.drawImage(sheet, col * 32, row * 32, 32, 32, 0, 0, 32, 32);
+    return c;
+  };
+
+  const themeList = [
+    { name: "nature", buildingSheet: sheets.buildings_nature, vRow: 0, npcRow: 0 },
+    { name: "urbain", buildingSheet: sheets.buildings_urbain, vRow: 1, npcRow: 1 },
+    { name: "laboratoire", buildingSheet: sheets.buildings_laboratoire, vRow: 2, npcRow: 2 },
+    { name: "espace", buildingSheet: sheets.buildings_espace, vRow: 3, npcRow: 3 },
+    { name: "bureaucratie", buildingSheet: null, vRow: 4, npcRow: 4 },
+  ];
+
+  themeList.forEach(({ name, buildingSheet, vRow, npcRow }) => {
+    const set = state.assets.themeTiles[name];
+    if (!set) return;
+
+    // --- Building ---
+    if (buildingSheet) {
+      set.building = extractSprite(buildingSheet, Math.floor(Math.random() * 4));
+    }
+    if (!set.building) set.building = drawBuilding(name);
+
+    // --- Vehicle ---
+    if (sheets.vehicles) {
+      set.vehicle = extractSprite(sheets.vehicles, vRow * 4 + Math.floor(Math.random() * 4));
+    }
+    if (!set.vehicle) set.vehicle = drawVehicle(name);
+
+    // --- NPCs ---
+    if (sheets.npcs_themes) {
+      set.npc_1 = extractSprite(sheets.npcs_themes, npcRow * 3 + 0);
+      set.npc_2 = extractSprite(sheets.npcs_themes, npcRow * 3 + 1);
+      set.npc_3 = extractSprite(sheets.npcs_themes, npcRow * 3 + 2);
+    }
+    // Procedural fallback NPCs
+    if (!set.npc_1) set.npc_1 = generateSprite("npc", { "1": "#33691e", "2": "#558b2f", "3": "#dcedc8", "4": "#1b5e20" });
+    if (!set.npc_2) set.npc_2 = generateSprite("npc", { "1": "#5d4037", "2": "#795548", "3": "#a1887f", "4": "#3e2723" });
+    if (!set.npc_3) set.npc_3 = generateSprite("npc", { "1": "#1b5e20", "2": "#2e7d32", "3": "#81c784", "4": "#003300" });
+
+    // --- Computer / alt / liquid / altar fallbacks ---
+    if (!set.computer) set.computer = generateSprite("computer", { "1": "#263238", "2": "#37474f", "3": "#ffca28" });
+    if (!set.alt) set.alt = generateTexture("hazard", { stripes: "#fbc02d" });
+    if (!set.liquid) set.liquid = generateTexture("noise", { base: name === "nature" ? "#0277bd" : "#d32f2f", light: "#fff", shadow: "#000" });
+    if (!set.altar) set.altar = generateSprite("wall", { "1": "#607d8b", "2": "#78909c", "3": "#ffffff" });
+  });
+}
+
 
 async function createAssets() {
   try {
@@ -1675,6 +1741,7 @@ async function createAssets() {
 
 
     rebuildThemeTiles();
+    enrichThemeTilesWithProps();   // <-- NEW: add building/vehicle/NPC sprites
     applyThemeAssets("nature");
     state.assets.useExternal = true;
   } catch (err) {
