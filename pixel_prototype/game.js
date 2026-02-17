@@ -1,4 +1,4 @@
-﻿import { API_BASE } from "../assets/config.js";
+import { API_BASE } from "../assets/config.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -279,23 +279,55 @@ async function loadImage(path) {
   });
 }
 
-function cropTile(sheet, tileIndex, row = 0) {
+function cropTile(sheet, tileIndex, row = 0, wTiles = 1, hTiles = 1) {
   const c = document.createElement("canvas");
-  c.width = SHEET_TILE;
-  c.height = SHEET_TILE;
+  c.width = SHEET_TILE * wTiles;
+  c.height = SHEET_TILE * hTiles;
   const cctx = c.getContext("2d");
   cctx.imageSmoothingEnabled = false;
   cctx.drawImage(
     sheet,
     tileIndex * SHEET_TILE,
     row * SHEET_TILE,
-    SHEET_TILE,
-    SHEET_TILE,
+    SHEET_TILE * wTiles,
+    SHEET_TILE * hTiles,
     0,
     0,
-    SHEET_TILE,
-    SHEET_TILE,
+    SHEET_TILE * wTiles,
+    SHEET_TILE * hTiles,
   );
+
+  // Auto-Chroma-Key for opaque backgrounds (checkerboard)
+  const imgData = cctx.getImageData(0, 0, c.width, c.height);
+  const data = imgData.data;
+
+  // Check top-left pixel alpha. If 255, assume it might be a background.
+  if (data[3] === 255) {
+    const r1 = data[0], g1 = data[1], b1 = data[2];
+
+    // Sample a second point for checkerboard pattern (e.g. 16px offset)
+    // Ensure we don't go out of bounds
+    const idx2 = (Math.min(16, c.width - 1)) * 4;
+    const r2 = data[idx2], g2 = data[idx2 + 1], b2 = data[idx2 + 2];
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+      // Tolerance for compression artifacts
+      const tol = 15;
+
+      // Match color 1
+      if (Math.abs(r - r1) < tol && Math.abs(g - g1) < tol && Math.abs(b - b1) < tol) {
+        data[i + 3] = 0;
+        continue;
+      }
+      // Match color 2
+      if (Math.abs(r - r2) < tol && Math.abs(g - g2) < tol && Math.abs(b - b2) < tol) {
+        data[i + 3] = 0;
+      }
+    }
+    cctx.putImageData(imgData, 0, 0);
+  }
+
   return c;
 }
 
@@ -333,7 +365,7 @@ function buildThemeTileSet(theme) {
     return cropTile(sheet, idx);
   };
 
-  return {
+  const set = {
     floor: getTile(["floor"], 0),
     wall: getTile(["wall"], 1),
     door_closed: getTile(["doorClosed", "door_closed", "doorclosed"], 2),
@@ -343,6 +375,110 @@ function buildThemeTileSet(theme) {
     liquid: getTile(["liquidOrHazard", "liquid", "hazard"], 6),
     altar: getTile(["panel", "altar", "altFloor"], 7),
   };
+
+  // --- EXTRACT ADVANCED ASSETS ---
+  // Theme Rows for sheets: Row 0: Nature, Row 1: Urbain, Row 2: Lab, Row 3: Espace, Row 4: Bureau
+  const tStr = safeText(theme).toLowerCase();
+  const themeRow = tStr === "nature" ? 0 : tStr === "urbain" ? 1 : tStr === "laboratoire" ? 2 : tStr === "espace" ? 3 : 4;
+
+  // Theme NPCs from spritesheet
+  if (state.assets.sheets?.npcs_themes) {
+    const npcSheet = state.assets.sheets.npcs_themes;
+    set.npc_1 = cropTile(npcSheet, 0, themeRow);
+    set.npc_2 = cropTile(npcSheet, 1, themeRow);
+    set.npc_3 = cropTile(npcSheet, 2, themeRow);
+  }
+
+  // Helper to extract a random variant of a given size
+  const extractRandom = (sheet, row, w, h, count) => {
+    if (!sheet) return null;
+    const variant = Math.floor(rng() * count); // Use seeded rng? No, strict random is fine for variety or use game state seed? 
+    // Wait, buildThemeTileSet is called once per reload. 
+    // To have variety across the map, we actually need *multiple* assets or the engine to pick randomly?
+    // The current engine picks ONE 'building' asset for the entire theme. 
+    // To have variety, we'd need to change the engine to support array of assets or "building_1", "building_2".
+    // For now, let's just pick ONE random one so at least it differs between reloads/themes.
+    // Or better: The prompt asked for "ajuster le découpage", implying we just need the *correct* cut.
+    // Let's pick a random one for now.
+    return cropTile(sheet, variant * w, row, w, h);
+  };
+
+  const buildingSheet = tStr === "nature" ? state.assets.sheets?.buildings_nature :
+    tStr === "urbain" ? state.assets.sheets?.buildings_urbain :
+      state.assets.sheets?.buildings_espace;
+
+  // Buildings
+  if (tStr === "espace" || tStr === "laboratoire") {
+    // Use new sliced space buildings
+    const bList = state.assets.buildings.space_sliced.filter(img => img !== null);
+    if (bList.length > 0) {
+      const randomB = bList[Math.floor(rng() * bList.length)];
+      // Apply chroma key to individual image (treat as 1x1 tile of size WxH)
+      // We must use cropTile to ensure the background is removed
+      // But cropTile expects tile index. We can pass the whole image as sheet and use special params?
+      // cropTile(sheet, tileIndex, row, w, h)
+      // Actually, cropTile calculates coordinates based on TILE_SIZE=32.
+      // This is tricky for arbitrary sized images.
+      // Let's modify cropTile or create specific 'cleanImage' helper?
+      // Re-using cropTile: 
+      // If we pass tileIndex=0, row=0, wTiles = image.width/32, hTiles=image.height/32
+      // It should work!
+      const wTiles = Math.ceil(randomB.width / 32);
+      const hTiles = Math.ceil(randomB.height / 32);
+      set.building = cropTile(randomB, 0, 0, wTiles, hTiles);
+      set.hasBuilding = true;
+    }
+  } else if (buildingSheet) {
+    // Old logic for Nature/Urban (using sheets)
+    // Assuming 3x3 buildings at fixed positions for now, or random?
+    // Let's just pick one for demo.
+    // Nature: (0,0), Urban: (0,0) of specific sheet?
+    // The sheets are 640x640.
+    // Let's pick a random 3x3 block from the sheet?
+    // For now, keep the simple top-left extraction.
+    set.building = cropTile(buildingSheet, 0, 0, 3, 3);
+    set.hasBuilding = true;
+  } else {
+    set.building = drawBuilding(theme);
+  }
+
+  // Vehicles
+  let vList = [];
+  if (tStr === "nature") {
+    vList = state.assets.vehicles.mixed_sliced.rustic;
+  } else if (tStr === "urbain") {
+    vList = state.assets.vehicles.mixed_sliced.urban;
+  } else { // Space/Lab
+    vList = state.assets.vehicles.mixed_sliced.scifi;
+  }
+
+  // Fallback to older sheet if list empty or undefined
+  if (vList && vList.length > 0) {
+    const vImg = vList[Math.floor(rng() * vList.length)];
+    if (vImg) {
+      const wTiles = Math.ceil(vImg.width / 32);
+      const hTiles = Math.ceil(vImg.height / 32);
+      set.vehicle = cropTile(vImg, 0, 0, wTiles, hTiles);
+      set.hasVehicle = true;
+    }
+  } else if (state.assets.sheets?.vehicles) {
+    // Fallback to original sheet logic
+    // Row based on theme?
+    const vRow = themeRow;
+    set.vehicle = cropTile(state.assets.sheets.vehicles, 0, vRow, 2, 2);
+    set.hasVehicle = true;
+  } else {
+    set.vehicle = drawVehicle(theme);
+  }
+
+  // NPCs (Keep using tileset row 4 or specific sheet?)
+  // For now, extract from tileset row 4 (generic characters)
+  if (sheet) {
+    set.npc = cropTile(sheet, 4 + (themeRow % 4), 4, 1, 1); // Arbitrary NPC
+    set.hasNPC = true;
+  }
+
+  return set;
 }
 
 function rebuildThemeTiles() {
@@ -376,6 +512,8 @@ function applyThemeAssets(theme) {
   if (set.npc_1) state.assets["A-1"] = set.npc_1;
   if (set.npc_2) state.assets["B-2"] = set.npc_2;
   if (set.npc_3) state.assets["C-3"] = set.npc_3;
+  if (set.building) state.assets.building = set.building;
+  if (set.vehicle) state.assets.vehicle = set.vehicle;
 }
 
 function mapPersonas(list) {
@@ -1506,7 +1644,7 @@ function createProceduralAssets() {
     let building;
     if (isNature && state.assets.sheets?.buildings_nature) building = extractSprite(state.assets.sheets.buildings_nature, Math.floor(Math.random() * 4));
     else if (isUrban && state.assets.sheets?.buildings_urbain) building = extractSprite(state.assets.sheets.buildings_urbain, Math.floor(Math.random() * 4));
-    else if (isLab && state.assets.sheets?.buildings_laboratoire) building = extractSprite(state.assets.sheets.buildings_laboratoire, Math.floor(Math.random() * 4));
+    else if (isLab && state.assets.sheets?.buildings_laboratoire) building = extractSprite(state.assets.sheets.buildings.laboratoire, Math.floor(Math.random() * 4));
 
     if (!building) building = drawBuilding(themeName); // Fallback
 
@@ -1671,6 +1809,46 @@ function enrichThemeTilesWithProps() {
 }
 
 
+// --- SLICED ASSETS LISTS ---
+const ASSETS_BUILDINGS_SPACE = [
+  "building_space_habitat_long.png",
+  "building_space_observatory_01.png",
+  "building_space_observatory_02.png",
+  "building_space_complex_01.png",
+  "building_space_observatory_03.png",
+  "building_space_observatory_04.png",
+  "building_space_gate_large.png",
+  "building_space_blast_door_large_01.png",
+  "building_space_blast_door_medium.png",
+  "building_space_door_airlock.png",
+  "building_space_door_vertical.png",
+  "building_space_solar_angled.png",
+  "building_space_solar_flat.png",
+  "building_space_blast_door_small.png",
+  "building_space_blast_door_large_02.png"
+];
+
+const ASSETS_VEHICLES_RUSTIC = [
+  "vehicle_rustic_wagon_0_01.png", "vehicle_rustic_wagon_1_01.png", "vehicle_rustic_wagon_2_01.png", "vehicle_rustic_wagon_3_01.png", "vehicle_rustic_wagon_4_01.png",
+  "vehicle_rustic_cart_5_01.png", "vehicle_rustic_cart_7_01.png", "vehicle_rustic_cart_8_01.png", "vehicle_rustic_cart_9_01.png",
+  "vehicle_rustic_wagon_empty_10_01.png", "vehicle_rustic_wagon_empty_11_01.png", "vehicle_rustic_wagon_empty_12_01.png", "vehicle_rustic_wagon_empty_13_01.png", "vehicle_rustic_wagon_empty_14_01.png"
+];
+
+const ASSETS_VEHICLES_SCIFI = [
+  "vehicle_scifi_heavy_15_01.png", "vehicle_scifi_heavy_16_01.png", "vehicle_scifi_heavy_19_01.png"
+];
+
+const ASSETS_VEHICLES_URBAN = [
+  "vehicle_urban_buggy_20_01.png", "vehicle_urban_buggy_21_01.png", "vehicle_urban_buggy_22_01.png", "vehicle_urban_buggy_23_01.png", "vehicle_urban_buggy_24_01.png",
+  "vehicle_urban_buggy_25_01.png", "vehicle_urban_buggy_26_01.png", "vehicle_urban_buggy_27_01.png", "vehicle_urban_buggy_28_01.png", "vehicle_urban_buggy_29_01.png",
+  "vehicle_urban_transport_31_01.png", "vehicle_urban_transport_32_01.png", "vehicle_urban_transport_33_01.png", "vehicle_urban_transport_34_01.png", "vehicle_urban_transport_35_01.png",
+  "vehicle_urban_transport_36_01.png", "vehicle_urban_transport_37_01.png", "vehicle_urban_transport_38_01.png", "vehicle_urban_transport_39_01.png"
+];
+
+const ASSETS_PROPS = [
+  "prop_wind_turbine_40_01.png", "prop_wind_turbine_41_01.png"
+];
+
 async function createAssets() {
   try {
     const [
@@ -1710,6 +1888,20 @@ async function createAssets() {
       loadImage("./assets/npcs_themes.png").catch(() => null),
     ]);
 
+    console.log("[ASSETS] Promise.all resolved", { tilesetsManifest, buildingsNature });
+
+    // --- LOAD SLICED ASSETS ---
+    state.assets.buildings = state.assets.buildings || {};
+    state.assets.buildings.space_sliced = await Promise.all(ASSETS_BUILDINGS_SPACE.map(f => loadImage(`./assets/buildings_space/${f}`).catch(e => { console.warn("Failed sliced build", f); return null; })));
+
+    state.assets.vehicles = state.assets.vehicles || {};
+    state.assets.vehicles.mixed_sliced = {
+      rustic: await Promise.all(ASSETS_VEHICLES_RUSTIC.map(f => loadImage(`./assets/vehicles_mixed/${f}`).catch(e => null))),
+      scifi: await Promise.all(ASSETS_VEHICLES_SCIFI.map(f => loadImage(`./assets/vehicles_mixed/${f}`).catch(e => null))),
+      urban: await Promise.all(ASSETS_VEHICLES_URBAN.map(f => loadImage(`./assets/vehicles_mixed/${f}`).catch(e => null))),
+      props: await Promise.all(ASSETS_PROPS.map(f => loadImage(`./assets/vehicles_mixed/${f}`).catch(e => null)))
+    };
+
 
 
     state.assets.playerManifest = playerManifest;
@@ -1745,6 +1937,7 @@ async function createAssets() {
     applyThemeAssets("nature");
     state.assets.useExternal = true;
   } catch (err) {
+    console.error("!!! ASSET LOADING ERROR !!!", err);
     console.warn("[ASSETS] External assets unavailable, using procedural fallback:", err.message || err);
     createProceduralAssets();
   }
@@ -1814,8 +2007,12 @@ function showPlayerSelection() {
 }
 
 async function loadJson(path) {
+  console.log(`[LOAD] Loading JSON: ${path}`);
   const res = await fetch(path);
-  if (!res.ok) throw new Error(`Missing file: ${path}`);
+  if (!res.ok) {
+    console.error(`[LOAD] Error 404 for ${path}`);
+    throw new Error(`Missing file: ${path}`);
+  }
   return res.json();
 }
 
@@ -2796,6 +2993,12 @@ function drawNpcEntity(entity, camX, camY) {
   const bob = Math.sin(Date.now() * 0.005) * 2;
   const dx = (entity.pixelX ?? entity.x * TILE_SIZE) - camX;
   const dy = (entity.pixelY ?? entity.y * TILE_SIZE) - camY + bob;
+  if (state.assets[entity.asset]) {
+    // Prioritize theme-specific override if available (e.g. from applyThemeAssets)
+    ctx.drawImage(state.assets[entity.asset], dx, dy, TILE_SIZE, TILE_SIZE);
+    return;
+  }
+
   if (!state.assets.useExternal || !state.assets.npc_sheet) {
     const fallback = state.assets[entity.asset];
     if (fallback) ctx.drawImage(fallback, dx, dy, TILE_SIZE, TILE_SIZE);
@@ -2936,8 +3139,16 @@ function draw() {
       if (decoKey && themeSet[decoKey]) {
         // Draw floor underneath decor
         if (themeSet.floor) ctx.drawImage(themeSet.floor, dx, dy, TILE_SIZE, TILE_SIZE);
-        // Draw decor
-        ctx.drawImage(themeSet[decoKey], dx, dy, TILE_SIZE, TILE_SIZE);
+        // Draw decor with bottom-center anchor to support larger assets
+        const asset = themeSet[decoKey];
+        if (asset) {
+          const dw = asset.width;
+          const dh = asset.height;
+          // Align bottom-center of asset with bottom-center of tile
+          const ox = dx + (TILE_SIZE - dw) / 2;
+          const oy = dy + (TILE_SIZE - dh);
+          ctx.drawImage(asset, ox, oy, dw, dh);
+        }
       } else {
         const baseTile = isWall ? themeSet.wall : themeSet.floor;
         if (baseTile) ctx.drawImage(baseTile, dx, dy, TILE_SIZE, TILE_SIZE);
