@@ -408,64 +408,26 @@ function buildThemeTileSet(theme) {
       state.assets.sheets?.buildings_espace;
 
   // Buildings
-  if (tStr === "espace" || tStr === "laboratoire") {
-    // Use new sliced space buildings
-    const bList = state.assets.buildings.space_sliced.filter(img => img !== null);
-    if (bList.length > 0) {
-      const randomB = bList[Math.floor(rng() * bList.length)];
-      // Apply chroma key to individual image (treat as 1x1 tile of size WxH)
-      // We must use cropTile to ensure the background is removed
-      // But cropTile expects tile index. We can pass the whole image as sheet and use special params?
-      // cropTile(sheet, tileIndex, row, w, h)
-      // Actually, cropTile calculates coordinates based on TILE_SIZE=32.
-      // This is tricky for arbitrary sized images.
-      // Let's modify cropTile or create specific 'cleanImage' helper?
-      // Re-using cropTile: 
-      // If we pass tileIndex=0, row=0, wTiles = image.width/32, hTiles=image.height/32
-      // It should work!
-      const wTiles = Math.ceil(randomB.width / 32);
-      const hTiles = Math.ceil(randomB.height / 32);
-      set.building = cropTile(randomB, 0, 0, wTiles, hTiles);
-      set.hasBuilding = true;
-    }
-  } else if (buildingSheet) {
-    // Old logic for Nature/Urban (using sheets)
-    // Assuming 3x3 buildings at fixed positions for now, or random?
-    // Let's just pick one for demo.
-    // Nature: (0,0), Urban: (0,0) of specific sheet?
-    // The sheets are 640x640.
-    // Let's pick a random 3x3 block from the sheet?
-    // For now, keep the simple top-left extraction.
+  if (buildingSheet) {
+    // Pick a random 3x3 building from the first row (or appropriate row)
+    // Most sheets have variants on row 0.
+    // We assume 3x3 is a safe "medium" size for now based on inspection.
+    // Nature: starts with smaller ones. Urban: starts with shops.
+    // Let's try to grab the first variant as 3x3.
     set.building = cropTile(buildingSheet, 0, 0, 3, 3);
     set.hasBuilding = true;
   } else {
     set.building = drawBuilding(theme);
   }
 
-  // Vehicles
-  let vList = [];
-  if (tStr === "nature") {
-    vList = state.assets.vehicles.mixed_sliced.rustic;
-  } else if (tStr === "urbain") {
-    vList = state.assets.vehicles.mixed_sliced.urban;
-  } else { // Space/Lab
-    vList = state.assets.vehicles.mixed_sliced.scifi;
-  }
-
-  // Fallback to older sheet if list empty or undefined
-  if (vList && vList.length > 0) {
-    const vImg = vList[Math.floor(rng() * vList.length)];
-    if (vImg) {
-      const wTiles = Math.ceil(vImg.width / 32);
-      const hTiles = Math.ceil(vImg.height / 32);
-      set.vehicle = cropTile(vImg, 0, 0, wTiles, hTiles);
-      set.hasVehicle = true;
-    }
-  } else if (state.assets.sheets?.vehicles) {
-    // Fallback to original sheet logic
-    // Row based on theme?
-    const vRow = themeRow;
-    set.vehicle = cropTile(state.assets.sheets.vehicles, 0, vRow, 2, 2);
+  // Vehicles from spritesheet
+  if (state.assets.sheets?.vehicles) {
+    const vSheet = state.assets.sheets.vehicles;
+    // Vehicles are 2x2. Variants are every 2 columns.
+    // Pick a random variant (0, 2, 4, 6...)
+    const variantOptions = [0, 2, 4, 6];
+    const variant = variantOptions[Math.floor(Math.random() * variantOptions.length)];
+    set.vehicle = cropTile(vSheet, variant, themeRow, 2, 2);
     set.hasVehicle = true;
   } else {
     set.vehicle = drawVehicle(theme);
@@ -1809,45 +1771,7 @@ function enrichThemeTilesWithProps() {
 }
 
 
-// --- SLICED ASSETS LISTS ---
-const ASSETS_BUILDINGS_SPACE = [
-  "building_space_habitat_long.png",
-  "building_space_observatory_01.png",
-  "building_space_observatory_02.png",
-  "building_space_complex_01.png",
-  "building_space_observatory_03.png",
-  "building_space_observatory_04.png",
-  "building_space_gate_large.png",
-  "building_space_blast_door_large_01.png",
-  "building_space_blast_door_medium.png",
-  "building_space_door_airlock.png",
-  "building_space_door_vertical.png",
-  "building_space_solar_angled.png",
-  "building_space_solar_flat.png",
-  "building_space_blast_door_small.png",
-  "building_space_blast_door_large_02.png"
-];
-
-const ASSETS_VEHICLES_RUSTIC = [
-  "vehicle_rustic_wagon_0_01.png", "vehicle_rustic_wagon_1_01.png", "vehicle_rustic_wagon_2_01.png", "vehicle_rustic_wagon_3_01.png", "vehicle_rustic_wagon_4_01.png",
-  "vehicle_rustic_cart_5_01.png", "vehicle_rustic_cart_7_01.png", "vehicle_rustic_cart_8_01.png", "vehicle_rustic_cart_9_01.png",
-  "vehicle_rustic_wagon_empty_10_01.png", "vehicle_rustic_wagon_empty_11_01.png", "vehicle_rustic_wagon_empty_12_01.png", "vehicle_rustic_wagon_empty_13_01.png", "vehicle_rustic_wagon_empty_14_01.png"
-];
-
-const ASSETS_VEHICLES_SCIFI = [
-  "vehicle_scifi_heavy_15_01.png", "vehicle_scifi_heavy_16_01.png", "vehicle_scifi_heavy_19_01.png"
-];
-
-const ASSETS_VEHICLES_URBAN = [
-  "vehicle_urban_buggy_20_01.png", "vehicle_urban_buggy_21_01.png", "vehicle_urban_buggy_22_01.png", "vehicle_urban_buggy_23_01.png", "vehicle_urban_buggy_24_01.png",
-  "vehicle_urban_buggy_25_01.png", "vehicle_urban_buggy_26_01.png", "vehicle_urban_buggy_27_01.png", "vehicle_urban_buggy_28_01.png", "vehicle_urban_buggy_29_01.png",
-  "vehicle_urban_transport_31_01.png", "vehicle_urban_transport_32_01.png", "vehicle_urban_transport_33_01.png", "vehicle_urban_transport_34_01.png", "vehicle_urban_transport_35_01.png",
-  "vehicle_urban_transport_36_01.png", "vehicle_urban_transport_37_01.png", "vehicle_urban_transport_38_01.png", "vehicle_urban_transport_39_01.png"
-];
-
-const ASSETS_PROPS = [
-  "prop_wind_turbine_40_01.png", "prop_wind_turbine_41_01.png"
-];
+// --- SLICED ASSETS LISTS REMOVED ---
 
 async function createAssets() {
   try {
@@ -1889,18 +1813,6 @@ async function createAssets() {
     ]);
 
     console.log("[ASSETS] Promise.all resolved", { tilesetsManifest, buildingsNature });
-
-    // --- LOAD SLICED ASSETS ---
-    state.assets.buildings = state.assets.buildings || {};
-    state.assets.buildings.space_sliced = await Promise.all(ASSETS_BUILDINGS_SPACE.map(f => loadImage(`./assets/buildings_space/${f}`).catch(e => { console.warn("Failed sliced build", f); return null; })));
-
-    state.assets.vehicles = state.assets.vehicles || {};
-    state.assets.vehicles.mixed_sliced = {
-      rustic: await Promise.all(ASSETS_VEHICLES_RUSTIC.map(f => loadImage(`./assets/vehicles_mixed/${f}`).catch(e => null))),
-      scifi: await Promise.all(ASSETS_VEHICLES_SCIFI.map(f => loadImage(`./assets/vehicles_mixed/${f}`).catch(e => null))),
-      urban: await Promise.all(ASSETS_VEHICLES_URBAN.map(f => loadImage(`./assets/vehicles_mixed/${f}`).catch(e => null))),
-      props: await Promise.all(ASSETS_PROPS.map(f => loadImage(`./assets/vehicles_mixed/${f}`).catch(e => null)))
-    };
 
 
 
